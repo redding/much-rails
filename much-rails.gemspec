@@ -6,11 +6,11 @@ require "much-rails/version"
 Gem::Specification.new do |gem|
   gem.name        = "much-rails"
   gem.version     = MuchRails::VERSION
-  gem.authors     = ["TODO: authors"]
-  gem.email       = ["TODO: emails"]
-  gem.summary     = "TODO: Write a gem summary"
-  gem.description = "TODO: Write a gem description"
-  gem.homepage    = "TODO: homepage"
+  gem.authors     = ["Kelly Redding", "Collin Redding"]
+  gem.email       = ["kelly@kellyredding.com", "collin.redding@me.com"]
+  gem.summary     = "Rails utilities."
+  gem.description = "Rails utilities."
+  gem.homepage    = "https://github.com/redding/much-rails"
   gem.license     = "MIT"
 
   gem.files         = `git ls-files | grep "^[^.]"`.split($/)
@@ -20,7 +20,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = "~> 2.5"
 
-  gem.add_development_dependency("assert", ["~> 2.18.2"])
+  gem.add_development_dependency("assert", ["~> 2.18.4"])
 
   # TODO: gem.add_dependency("gem-name", ["~> 0.0.0"])
 end

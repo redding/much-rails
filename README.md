@@ -1,6 +1,6 @@
 # MuchRails
 
-TODO: Write a gem description
+Rails utilities.
 
 ## Usage
 

@@ -26,4 +26,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency("activesupport", ["> 5.0", "< 7.0"])
   gem.add_dependency("much-plugin", ["~> 0.2.2"])
   gem.add_dependency("much-result", ["~> 0.1.2"])
+  gem.add_dependency("oj", ["~> 3.10.18"])
 end

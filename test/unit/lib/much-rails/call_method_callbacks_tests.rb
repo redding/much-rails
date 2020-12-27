@@ -1,10 +1,6 @@
 require "assert"
 require "much-rails/call_method_callbacks"
 
-require "much-plugin"
-require "much-rails/call_method"
-require "much-rails/config"
-
 module MuchRails::CallMethodCallbacks
   class UnitTests < Assert::Context
     desc "MuchRails::SaveService"
@@ -35,6 +31,7 @@ module MuchRails::CallMethodCallbacks
 
     let(:proc1) { -> {} }
     let(:proc2) { -> {} }
+    let(:proc3) { -> {} }
 
     should have_imeths :before_call, :prepend_before_call, :after_call
     should have_imeths :prepend_after_call, :around_call, :prepend_around_call
@@ -47,58 +44,55 @@ module MuchRails::CallMethodCallbacks
 
     should "know its attributes" do
       # before_callbacks
-      assert_that(
-        subject.much_rails_call_callbacks_config.before_callbacks.size
-      ).equals(0)
-
       subject.before_call(&proc1)
-      assert_that(
-        subject.much_rails_call_callbacks_config.before_callbacks.size
-      ).equals(1)
-      assert_that(subject.much_rails_call_callbacks_config.before_callbacks)
-        .equals([proc1])
 
-      subject.prepend_before_call(&proc2)
-      assert_that(
-        subject.much_rails_call_callbacks_config.before_callbacks.size
-      ).equals(2)
-      assert_that(subject.much_rails_call_callbacks_config.before_callbacks)
-        .equals([proc2, proc1])
+      assert_that { subject.before_call(&proc2) }
+        .changes(
+          "subject.much_rails_call_callbacks_config.before_callbacks.dup",
+          from: [proc1],
+          to: [proc1, proc2]
+        )
+
+      assert_that { subject.prepend_before_call(&proc3) }
+        .changes(
+          "subject.much_rails_call_callbacks_config.before_callbacks.dup",
+          from: [proc1, proc2],
+          to: [proc3, proc1, proc2]
+        )
 
       # after_callbacks
-      assert_that(subject.much_rails_call_callbacks_config.after_callbacks.size)
-        .equals(0)
-
       subject.after_call(&proc1)
-      assert_that(subject.much_rails_call_callbacks_config.after_callbacks.size)
-        .equals(1)
-      assert_that(subject.much_rails_call_callbacks_config.after_callbacks)
-        .equals([proc1])
 
-      subject.prepend_after_call(&proc2)
-      assert_that(subject.much_rails_call_callbacks_config.after_callbacks.size)
-        .equals(2)
-      assert_that(subject.much_rails_call_callbacks_config.after_callbacks)
-        .equals([proc2, proc1])
+      assert_that { subject.after_call(&proc2) }
+        .changes(
+          "subject.much_rails_call_callbacks_config.after_callbacks.dup",
+          from: [proc1],
+          to: [proc1, proc2]
+        )
+
+      assert_that { subject.prepend_after_call(&proc3) }
+        .changes(
+          "subject.much_rails_call_callbacks_config.after_callbacks.dup",
+          from: [proc1, proc2],
+          to: [proc3, proc1, proc2]
+        )
 
       # around_callbacks
-      assert_that(
-        subject.much_rails_call_callbacks_config.around_callbacks.size
-      ).equals(0)
-
       subject.around_call(&proc1)
-      assert_that(
-        subject.much_rails_call_callbacks_config.around_callbacks.size
-      ).equals(1)
-      assert_that(subject.much_rails_call_callbacks_config.around_callbacks)
-        .equals([proc1])
 
-      subject.prepend_around_call(&proc2)
-      assert_that(
-        subject.much_rails_call_callbacks_config.around_callbacks.size
-      ).equals(2)
-      assert_that(subject.much_rails_call_callbacks_config.around_callbacks)
-        .equals([proc2, proc1])
+      assert_that { subject.around_call(&proc2) }
+        .changes(
+          "subject.much_rails_call_callbacks_config.around_callbacks.dup",
+          from: [proc1],
+          to: [proc1, proc2]
+        )
+
+      assert_that { subject.prepend_around_call(&proc3) }
+        .changes(
+          "subject.much_rails_call_callbacks_config.around_callbacks.dup",
+          from: [proc1, proc2],
+          to: [proc3, proc1, proc2]
+        )
     end
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "much-plugin"
 require "much-rails/config"
 

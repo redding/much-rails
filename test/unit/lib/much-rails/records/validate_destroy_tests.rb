@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/records/validate_destroy"
 
 module MuchRails::Records::ValidateDestroy

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MuchRails; end
 module MuchRails::Records
 end

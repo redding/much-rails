@@ -1,7 +1,5 @@
 require "assert"
-
 require "much-rails/wrap_and_call_method"
-require "much-result"
 
 module MuchRails::WrapAndCallMethod
   class UnitTests < Assert::Context
@@ -51,7 +49,7 @@ module MuchRails::WrapAndCallMethod
     should have_imeths :wrap_and_call, :wrap_and_map_call
     should have_imeths :wrap_and_capture_call, :wrap_and_capture_call!
 
-    should "include MuchRails::CallMethod and MuchRails::WrapMethod" do
+    should "be configured as expected" do
       assert_that(subject).includes(MuchRails::CallMethod)
       assert_that(subject).includes(MuchRails::WrapMethod)
     end
@@ -69,7 +67,7 @@ module MuchRails::WrapAndCallMethod
         assert_that(wrapped_object).is_instance_of(subject)
         assert_that(wrapped_object.object).equals(objects[index])
         assert_that(wrapped_object.object_kargs).equals(object_kargs)
-        assert_that(wrapped_object.call_called).equals(true)
+        assert_that(wrapped_object.call_called).is_true
       end
     end
   end

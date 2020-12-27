@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "much-rails/version"
 
 require "active_support"

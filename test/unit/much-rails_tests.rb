@@ -1,4 +1,5 @@
 require "assert"
+require "much-rails"
 
 module MuchRails
   class UnitTests < Assert::Context

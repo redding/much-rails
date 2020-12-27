@@ -1,10 +1,6 @@
 require "assert"
 require "much-rails/save_service"
 
-require "much-plugin"
-require "much-rails/service"
-require "much-result"
-
 module MuchRails::SaveService
   class UnitTests < Assert::Context
     desc "MuchRails::SaveService"

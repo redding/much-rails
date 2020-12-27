@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/time"
 
 module MuchRails::Time

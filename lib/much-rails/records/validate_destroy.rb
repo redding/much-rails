@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "much-plugin"
 
 # MuchRails::Records::ValidateDestroy is used to mix in custom validation

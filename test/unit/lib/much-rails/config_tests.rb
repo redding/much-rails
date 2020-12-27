@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/config"
 
 module MuchRails::Config

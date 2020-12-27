@@ -1,10 +1,6 @@
 require "assert"
 require "much-rails/service"
 
-require "much-plugin"
-require "much-rails/call_method_callbacks"
-require "much-rails/wrap_and_call_method"
-
 module MuchRails::Service
   class UnitTests < Assert::Context
     desc "MuchRails::Service"

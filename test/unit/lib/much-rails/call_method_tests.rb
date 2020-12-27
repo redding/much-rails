@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/call_method"
 
 module MuchRails::CallMethodTest
@@ -39,8 +38,8 @@ module MuchRails::CallMethodTest
     should "call #new and #call" do
       subject.call
 
-      assert_that(@new_class_method_called).equals(true)
-      assert_that(@on_call_instance_method_called).equals(true)
+      assert_that(@new_class_method_called).is_true
+      assert_that(@on_call_instance_method_called).is_true
     end
   end
 

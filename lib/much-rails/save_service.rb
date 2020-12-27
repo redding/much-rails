@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "active_record"
 require "much-plugin"
 require "much-rails/service"
 require "much-result"

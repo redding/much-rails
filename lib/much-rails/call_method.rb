@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "much-plugin"
 
 # MuchRails::CallMethod is a mix-in to implement the `call`

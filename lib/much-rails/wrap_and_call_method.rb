@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require "much-plugin"
 require "much-rails/call_method"
 require "much-rails/wrap_method"
+require "much-result"
 
 # MuchRails::WrapAndCallMethod is a mix-in to implement the `wrap_and_call`
 # and `wrap_and_map_call` class/instance method pattern.

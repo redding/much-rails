@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/records/always_destroyable"
 
 module MuchRails::Records::AlwaysDestroyable
@@ -36,7 +35,7 @@ module MuchRails::Records::AlwaysDestroyable
       # won't raise MuchRails::Records::ValidateDestroy::DestructionInvalid
       subject.destroy!
 
-      assert_that(subject.destroyable?).equals(true)
+      assert_that(subject.destroyable?).is_true
     end
   end
 end

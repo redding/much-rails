@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/wrap_method"
 
 module MuchRails::WrapMethod

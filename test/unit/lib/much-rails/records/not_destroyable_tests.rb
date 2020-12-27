@@ -1,5 +1,4 @@
 require "assert"
-
 require "much-rails/records/not_destroyable"
 
 module MuchRails::Records::NotDestroyable
@@ -28,12 +27,12 @@ module MuchRails::Records::NotDestroyable
       assert_that(subject.destruction_error_messages)
         .equals(["#{subject.class.name} records can't be deleted."])
 
-      assert_that(subject.destroy).equals(false)
+      assert_that(subject.destroy).is_false
 
       assert_that(-> { subject.destroy! })
         .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
 
-      assert_that(subject.destroyable?).equals(false)
+      assert_that(subject.destroyable?).is_false
     end
   end
 end

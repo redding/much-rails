@@ -21,5 +21,7 @@ require "much-rails/time"
 require "much-rails/wrap_and_call_method"
 require "much-rails/wrap_method"
 
+require "much-rails/railtie" if defined?(Rails::Railtie)
+
 module MuchRails
 end

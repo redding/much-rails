@@ -8,8 +8,8 @@ module MuchRails::WrapMethod
 
     let(:unit_class) { MuchRails::WrapMethod }
 
-    should "include MuchPlugin" do
-      assert_that(subject).includes(MuchPlugin)
+    should "include MuchRails::Plugin" do
+      assert_that(subject).includes(MuchRails::Plugin)
     end
   end
 

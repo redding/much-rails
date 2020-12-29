@@ -8,8 +8,8 @@ module MuchRails::Config
 
     let(:unit_class) { MuchRails::Config }
 
-    should "include MuchPlugin" do
-      assert_that(subject).includes(MuchPlugin)
+    should "include MuchRails::Plugin" do
+      assert_that(subject).includes(MuchRails::Plugin)
     end
   end
 

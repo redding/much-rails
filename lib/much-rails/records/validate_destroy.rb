@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "much-plugin"
+require "much-rails/plugin"
 
 # MuchRails::Records::ValidateDestroy is used to mix in custom validation
 # logic and handling in destroying records.
@@ -13,7 +13,7 @@ require "much-plugin"
 module MuchRails; end
 module MuchRails::Records; end
 module MuchRails::Records::ValidateDestroy
-  include MuchPlugin
+  include MuchRails::Plugin
 
   plugin_instance_methods do
     def destruction_error_messages

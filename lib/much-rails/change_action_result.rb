@@ -1,26 +1,26 @@
 # frozen_string_literal: true
 
-require "much-result"
+require "much-rails/result"
 
 # MuchRails::ChangeActionResult is a Result object intended to wrap and
-# compose a MuchResult.
+# compose a MuchRails::Result.
 module MuchRails; end
 class MuchRails::ChangeActionResult
   def self.success(**kargs)
-    new(MuchResult.success(**kargs))
+    new(MuchRails::Result.success(**kargs))
   end
 
   def self.failure(**kargs)
-    new(MuchResult.failure(**kargs))
+    new(MuchRails::Result.failure(**kargs))
   end
 
   attr_reader :service_result
 
   def initialize(save_service_result)
-    unless save_service_result.is_a?(MuchResult)
+    unless save_service_result.is_a?(MuchRails::Result)
       raise(
         TypeError,
-        "MuchResult expected, got #{save_service_result.class}")
+        "MuchRails::Result expected, got #{save_service_result.class}")
     end
 
     @service_result = save_service_result

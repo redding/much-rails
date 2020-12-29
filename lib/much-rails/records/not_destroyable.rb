@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "much-plugin"
+require "much-rails/plugin"
 require "much-rails/records/validate_destroy"
 
 # MuchRails::Records::NotDestroyable is a mix-in to disable destroying a
@@ -9,7 +9,7 @@ require "much-rails/records/validate_destroy"
 module MuchRails; end
 module MuchRails::Records; end
 module MuchRails::Records::NotDestroyable
-  include MuchPlugin
+  include MuchRails::Plugin
 
   plugin_included do
     include MuchRails::Records::ValidateDestroy

@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require "active_record"
-require "much-plugin"
+require "much-rails/plugin"
+require "much-rails/result"
 require "much-rails/service"
-require "much-result"
 
 # MuchRails::SaveService is a common mix-in for all service objects that
 # save (e.g. create/update) records.
 module MuchRails::SaveService
-  include MuchPlugin
+  include MuchRails::Plugin
 
   plugin_included do
     include MuchRails::Service
@@ -17,7 +17,7 @@ module MuchRails::SaveService
       receiver.call
     rescue ActiveRecord::RecordInvalid => ex
       set_the_return_value_for_the_call_method(
-        MuchResult.failure(
+        MuchRails::Result.failure(
           record: ex.record,
           exception: ex,
           validation_errors: ex.record&.errors.to_h,

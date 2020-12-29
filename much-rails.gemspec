@@ -28,8 +28,10 @@ Gem::Specification.new do |gem|
   gem.add_dependency("dassets-erubi",  ["~> 0.1.0"])
   gem.add_dependency("dassets-sass",   ["~> 0.5.0"])
   gem.add_dependency("much-boolean",   ["~> 0.1.3"])
+  gem.add_dependency("much-decimal",   ["~> 0.1.1"])
   gem.add_dependency("much-not-given", ["~> 0.1.0"])
   gem.add_dependency("much-plugin",    ["~> 0.2.2"])
   gem.add_dependency("much-result",    ["~> 0.1.2"])
+  gem.add_dependency("much-slug",      ["~> 0.1.0"])
   gem.add_dependency("oj",             ["~> 3.10.18"])
 end

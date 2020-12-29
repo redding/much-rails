@@ -4,6 +4,7 @@ require "active_support"
 require "active_support/core_ext"
 
 require "much-rails/version"
+require "much-rails/action"
 require "much-rails/boolean"
 require "much-rails/call_method"
 require "much-rails/call_method_callbacks"

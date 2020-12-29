@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'oj'
+require "oj"
 
 # MuchRails::JSON is an adapter for encoding and decoding JSON values.
 # It uses Oj to do the work: https://github.com/ohler55/oj#-gem

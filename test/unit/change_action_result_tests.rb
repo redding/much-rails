@@ -31,7 +31,12 @@ class MuchRails::ChangeActionResult
     desc "when init"
     subject { unit_class.success(value: value1) }
 
-    let(:save_service_result) { [MuchResult.success, MuchResult.failure].sample }
+    let(:save_service_result) {
+      [
+        MuchRails::Result.success,
+        MuchRails::Result.failure
+      ].sample
+    }
 
     should have_readers :service_result
 
@@ -42,13 +47,13 @@ class MuchRails::ChangeActionResult
     should "know its service_result" do
       service_result = subject.service_result
 
-      assert_that(service_result).is_instance_of(MuchResult)
+      assert_that(service_result).is_instance_of(MuchRails::Result)
       assert_that(service_result.success?).is_true
       assert_that(service_result.value).equals(value1)
       assert_that(service_result.validation_errors).equals({})
     end
 
-    should "raise a TypeError when given a non-MuchResult" do
+    should "raise a TypeError when given a non-MuchRails::Result" do
       assert_that { unit_class.new(["INVALID TYPE", nil, -9].sample) }
         .raises(TypeError)
     end

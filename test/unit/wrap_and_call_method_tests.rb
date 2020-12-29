@@ -8,8 +8,8 @@ module MuchRails::WrapAndCallMethod
 
     let(:unit_class) { MuchRails::WrapAndCallMethod }
 
-    should "include MuchPlugin" do
-      assert_that(subject).includes(MuchPlugin)
+    should "include MuchRails::Plugin" do
+      assert_that(subject).includes(MuchRails::Plugin)
     end
   end
 
@@ -30,7 +30,7 @@ module MuchRails::WrapAndCallMethod
 
         def call
           @call_called = true
-          MuchResult.success(name: object.name)
+          MuchRails::Result.success(name: object.name)
         end
       end
     }
@@ -92,19 +92,19 @@ module MuchRails::WrapAndCallMethod
     subject { receiver_class }
 
     setup do
-      Assert.stub(MuchResult, :tap) { |&block| block.call(tapped_result1) }
+      Assert.stub(MuchRails::Result, :tap) { |&block| block.call(tapped_result1) }
       Assert.stub_tap_on_call(tapped_result1, :capture_for_all) { |_, call|
         @capture_for_all_call = call
       }
     end
 
-    let(:tapped_result1) { MuchResult.success }
+    let(:tapped_result1) { MuchRails::Result.success }
 
     should "wrap and call its objects and capture each return value as a "\
-           "sub-result in a given MuchResult" do
+           "sub-result in a given MuchRails::Result" do
       wrapped_objects = subject.wrap_and_call(objects, **object_kargs)
 
-      MuchResult.tap { |result|
+      MuchRails::Result.tap { |result|
         subject.wrap_and_capture_call(
           objects,
           capturing_result: result,
@@ -125,19 +125,19 @@ module MuchRails::WrapAndCallMethod
     subject { receiver_class }
 
     setup do
-      Assert.stub(MuchResult, :tap) { |&block| block.call(tapped_result1) }
+      Assert.stub(MuchRails::Result, :tap) { |&block| block.call(tapped_result1) }
       Assert.stub_tap_on_call(tapped_result1, :capture_for_all!) { |_, call|
         @capture_for_all_bang_call = call
       }
     end
 
-    let(:tapped_result1) { MuchResult.success }
+    let(:tapped_result1) { MuchRails::Result.success }
 
     should "wrap and call its objects and capture each return value as a "\
-           "sub-result in a given MuchResult" do
+           "sub-result in a given MuchRails::Result" do
       wrapped_objects = subject.wrap_and_call(objects, **object_kargs)
 
-      MuchResult.tap { |result|
+      MuchRails::Result.tap { |result|
         subject.wrap_and_capture_call!(
           objects,
           capturing_result: result,

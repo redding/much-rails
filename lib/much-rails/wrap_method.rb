@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "much-plugin"
 require "much-rails/config"
+require "much-rails/plugin"
 
 # MuchRails::WrapMethod is a mix-in to implement the `wrap` class/instance
 # method pattern used in service objects, etc.
 module MuchRails; end
 module MuchRails::WrapMethod
-  include MuchPlugin
+  include MuchRails::Plugin
 
   plugin_included do
     include MuchRails::Config

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "much-plugin"
 require "much-rails/call_method"
 require "much-rails/config"
+require "much-rails/plugin"
 
 # MuchRails::CallMethodCallbacks is a common mix-in for adding before/after
 # callback support to MuchRails::CallMethod. This is separate from the
@@ -12,7 +12,7 @@ require "much-rails/config"
 # to callback support as needed.
 module MuchRails; end
 module MuchRails::CallMethodCallbacks
-  include MuchPlugin
+  include MuchRails::Plugin
 
   plugin_included do
     include MuchRails::CallMethod

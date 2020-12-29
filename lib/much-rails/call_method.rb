@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "much-plugin"
+require "much-rails/plugin"
 
 # MuchRails::CallMethod is a mix-in to implement the `call`
 # class/instance method pattern.
 module MuchRails; end
 module MuchRails::CallMethod
-  include MuchPlugin
+  include MuchRails::Plugin
 
   plugin_class_methods do
     def call(*args, &block)

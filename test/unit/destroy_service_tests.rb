@@ -8,8 +8,8 @@ module MuchRails::DestroyService
 
     let(:unit_class) { MuchRails::DestroyService }
 
-    should "include MuchPlugin" do
-      assert_that(subject).includes(MuchPlugin)
+    should "include MuchRails::Plugin" do
+      assert_that(subject).includes(MuchRails::Plugin)
     end
   end
 
@@ -28,7 +28,7 @@ module MuchRails::DestroyService
         def on_call
           raise @exception if @exception
 
-          MuchResult.success
+          MuchRails::Result.success
         end
       end
     }

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require "much-rails"
-require "much-plugin"
+require "much-rails/plugin"
 
 # MuchRails::Config is a mix-in to implement object DSL configuration.
 module MuchRails; end
 module MuchRails::Config
-  include MuchPlugin
+  include MuchRails::Plugin
 
   after_plugin_included do
     add_config

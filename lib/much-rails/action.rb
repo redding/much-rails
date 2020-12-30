@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require "active_record"
+require "much-rails/action/change_action"
+require "much-rails/action/destroy_action"
 require "much-rails/action/head_result"
 require "much-rails/action/redirect_to_result"
 require "much-rails/action/render_result"
+require "much-rails/action/save_action"
 require "much-rails/action/send_data_result"
 require "much-rails/action/send_file_result"
 require "much-rails/action/unprocessable_entity_result"

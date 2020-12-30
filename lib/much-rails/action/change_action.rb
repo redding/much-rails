@@ -1,0 +1,84 @@
+# frozen_string_literal: true
+
+require "much-rails/action"
+require "much-rails/change_action_result"
+require "much-rails/config"
+require "much-rails/plugin"
+
+# MuchRails::Action::ChangeAction defines the common behaviors for all view
+# action classes that change (ie save or destroy) records.
+module MuchRails; end
+module MuchRails::Action; end
+module MuchRails::Action::ChangeAction
+  Error = Class.new(StandardError)
+
+  include MuchRails::Plugin
+
+  plugin_included do
+    include MuchRails::Config
+    include MuchRails::Action
+
+    add_config :much_rails_action_change_action
+
+    on_after_call do
+      if any_unextracted_change_result_validation_errors?
+        raise(
+          MuchRails::Action::ActionError,
+          unhandled_change_result_action_error_message,
+          unhandled_change_result_action_error_backtrace)
+      end
+    end
+  end
+
+  plugin_class_methods do
+    def change_result(&block)
+      much_rails_action_change_action_config.change_result_block = block
+    end
+  end
+
+  plugin_instance_methods do
+    def change_result
+      @change_result ||=
+        begin
+          unless (
+            self.class.much_rails_action_change_action_config.change_result_block
+          )
+            raise(Error, undefined_change_result_block_error_message)
+          end
+
+          MuchRails::ChangeActionResult.new(
+            instance_exec(
+              &self.class.much_rails_action_change_action_config.change_result_block
+            )
+          )
+        end
+    end
+
+    # Check the instance variable directly to make sure the main `on_call`
+    # block actually called the `change_result` method and memoized a Result.
+    # If no Result memoized, there are implicitly no unhandled errors.
+    def any_unextracted_change_result_validation_errors?
+      !!@change_result&.any_unextracted_validation_errors?
+    end
+
+    private
+
+    def unhandled_change_result_action_error_message
+      change_result.exception&.message ||
+        "#{change_result.inspect} has validation errors that were not handled by "\
+        "the Action: #{change_result.validation_errors.inspect}."
+    end
+
+    def unhandled_change_result_action_error_backtrace
+      change_result.exception&.backtrace || caller
+    end
+
+    def undefined_change_result_block_error_message
+      raise NotImplementedError
+    end
+  end
+
+  class MuchRailsActionChangeActionConfig
+    attr_accessor :change_result_block
+  end
+end

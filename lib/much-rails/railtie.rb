@@ -16,6 +16,11 @@ module MuchRails
       # This should be `false` in all other envs so proper HTTP response
       # statuses are returned.
       MuchRails::Action.raise_response_exceptions = Rails.env.development?
+
+      # See https://github.com/ohler55/oj/blob/master/pages/Rails.md.
+      Oj.optimize_rails
+
+      MuchResult.default_transaction_receiver = ActiveRecord::Base
     end
   end
 end

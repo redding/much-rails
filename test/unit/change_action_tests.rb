@@ -1,12 +1,12 @@
 require "assert"
-require "much-rails/action/change_action"
+require "much-rails/change_action"
 
-module MuchRails::Action::ChangeAction
+module MuchRails::ChangeAction
   class UnitTests < Assert::Context
-    desc "MuchRails::Action::ChangeAction"
+    desc "MuchRails::ChangeAction"
     subject { unit_class }
 
-    let(:unit_class) { MuchRails::Action::ChangeAction }
+    let(:unit_class) { MuchRails::ChangeAction }
 
     should "include MuchRails::Plugin" do
       assert_that(subject).includes(MuchRails::Plugin)
@@ -19,7 +19,7 @@ module MuchRails::Action::ChangeAction
 
     let(:receiver_class) {
       Class.new do
-        include MuchRails::Action::ChangeAction
+        include MuchRails::ChangeAction
 
         change_result { MuchRails::Result.success(something: something_value) }
 
@@ -43,12 +43,12 @@ module MuchRails::Action::ChangeAction
       assert_that(subject).includes(MuchRails::Config)
       assert_that(subject).includes(MuchRails::Action)
 
-      assert_that(subject.much_rails_action_change_action_config)
+      assert_that(subject.much_rails_change_action_config)
         .is_instance_of(
-          MuchRails::Action::ChangeAction::MuchRailsActionChangeActionConfig
+          MuchRails::ChangeAction::MuchRailsChangeActionConfig
         )
       assert_that(
-        subject.much_rails_action_change_action_config.change_result_block
+        subject.much_rails_change_action_config.change_result_block
       ).is_not_nil
     end
   end
@@ -140,7 +140,7 @@ module MuchRails::Action::ChangeAction
 
     should "raise an error when a configured change_result block is not given" do
       Assert.stub(
-        receiver_class.much_rails_action_change_action_config,
+        receiver_class.much_rails_change_action_config,
         :change_result_block
       ) { nil }
       exception =
@@ -155,7 +155,7 @@ module MuchRails::Action::ChangeAction
 
     let(:receiver_class) {
       Class.new do
-        include MuchRails::Action::ChangeAction
+        include MuchRails::ChangeAction
 
         change_result { MuchRails::Result.success }
       end
@@ -175,7 +175,7 @@ module MuchRails::Action::ChangeAction
 
     let(:receiver_class) {
       Class.new do
-        include MuchRails::Action::ChangeAction
+        include MuchRails::ChangeAction
 
         change_result { MuchRails::Result.failure(validation_errors: {}) }
       end
@@ -195,7 +195,7 @@ module MuchRails::Action::ChangeAction
 
     let(:receiver_class) {
       Class.new do
-        include MuchRails::Action::ChangeAction
+        include MuchRails::ChangeAction
 
         change_result {
           MuchRails::Result.failure(validation_errors: { name: "TEST ERROR" })

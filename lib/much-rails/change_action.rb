@@ -5,11 +5,8 @@ require "much-rails/change_action_result"
 require "much-rails/config"
 require "much-rails/plugin"
 
-# MuchRails::Action::ChangeAction defines the common behaviors for all view
-# action classes that change (ie save or destroy) records.
 module MuchRails; end
-module MuchRails::Action; end
-module MuchRails::Action::ChangeAction
+module MuchRails::ChangeAction
   Error = Class.new(StandardError)
 
   include MuchRails::Plugin
@@ -18,7 +15,7 @@ module MuchRails::Action::ChangeAction
     include MuchRails::Config
     include MuchRails::Action
 
-    add_config :much_rails_action_change_action
+    add_config :much_rails_change_action
 
     on_after_call do
       if any_unextracted_change_result_validation_errors?
@@ -32,7 +29,7 @@ module MuchRails::Action::ChangeAction
 
   plugin_class_methods do
     def change_result(&block)
-      much_rails_action_change_action_config.change_result_block = block
+      much_rails_change_action_config.change_result_block = block
     end
   end
 
@@ -41,14 +38,14 @@ module MuchRails::Action::ChangeAction
       @change_result ||=
         begin
           unless (
-            self.class.much_rails_action_change_action_config.change_result_block
+            self.class.much_rails_change_action_config.change_result_block
           )
             raise(Error, undefined_change_result_block_error_message)
           end
 
           MuchRails::ChangeActionResult.new(
             instance_exec(
-              &self.class.much_rails_action_change_action_config.change_result_block
+              &self.class.much_rails_change_action_config.change_result_block
             )
           )
         end
@@ -78,7 +75,7 @@ module MuchRails::Action::ChangeAction
     end
   end
 
-  class MuchRailsActionChangeActionConfig
+  class MuchRailsChangeActionConfig
     attr_accessor :change_result_block
   end
 end

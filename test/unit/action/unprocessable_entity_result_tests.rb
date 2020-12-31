@@ -1,6 +1,8 @@
 require "assert"
 require "much-rails/action/unprocessable_entity_result"
 
+require "test/support/fake_action_controller"
+
 class MuchRails::Action::UnprocessableEntityResult
   class UnitTests < Assert::Context
     desc "MuchRails::Action::UnprocessableEntityResult"
@@ -13,9 +15,14 @@ class MuchRails::Action::UnprocessableEntityResult
     desc "when init"
     subject { unit_class.new(errors1) }
 
-    let(:controller1) { FakeController.new }
+    let(:controller1) { FakeController.new(params1) }
+    let(:params1) {
+      {
+        MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Show",
+      }
+    }
     let(:errors1) {
-      { something: "ERROR" }
+      { field: "ERROR 1" }
     }
 
     should have_readers :errors
@@ -26,26 +33,17 @@ class MuchRails::Action::UnprocessableEntityResult
       controller1.instance_exec(subject, &subject.execute_block)
       assert_that(controller1.render_called_with)
         .equals(
-          json: "ERRORS JSON",
+          json:
+            {
+              field: "ERROR 1",
+              "nested[field]" => "ERROR 1",
+            },
           status: :unprocessable_entity
         )
-      assert_that(controller1.action_errors_json_called_with)
-        .equals(something: "ERROR")
     end
   end
 
   class FakeController
-    attr_reader :render_called_with, :action_errors_json_called_with
-
-    def render(**kargs)
-      @render_called_with = kargs
-    end
-
-    private
-
-    def action_errors_json(errors)
-      @action_errors_json_called_with = errors
-      "ERRORS JSON"
-    end
+    include FakeActionController
   end
 end

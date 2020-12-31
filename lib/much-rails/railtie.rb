@@ -9,6 +9,13 @@ module MuchRails
       require "much-rails/assets"
       MuchRails::Assets.configure_for_rails(::Rails)
       app.middleware.use MuchRails::Assets::Server
+
+      # This should be `true` in development so things fail fast and give the
+      # developers rich error information for debugging purposes.
+      #
+      # This should be `false` in all other envs so proper HTTP response
+      # statuses are returned.
+      MuchRails::Action.raise_response_exceptions = Rails.development?
     end
   end
 end

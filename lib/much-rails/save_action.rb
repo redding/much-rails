@@ -1,17 +1,14 @@
 # frozen_string_literal: true
 
 require "much-rails/plugin"
-require "much-rails/action/change_action"
+require "much-rails/change_action"
 
-# MuchRails::Action::SaveAction defines the common behaviors for all view
-# action classes that save records.
 module MuchRails; end
-module MuchRails::Action; end
-module MuchRails::Action::SaveAction
+module MuchRails::SaveAction
   include MuchRails::Plugin
 
   plugin_included do
-    include MuchRails::Action::ChangeAction
+    include MuchRails::ChangeAction
   end
 
   plugin_class_methods do

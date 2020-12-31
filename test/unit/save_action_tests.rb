@@ -1,12 +1,12 @@
 require "assert"
-require "much-rails/action/destroy_action"
+require "much-rails/save_action"
 
-module MuchRails::Action::DestroyAction
+module MuchRails::SaveAction
   class UnitTests < Assert::Context
-    desc "MuchRails::Action::DestroyAction"
+    desc "MuchRails::SaveAction"
     subject { unit_class }
 
-    let(:unit_class) { MuchRails::Action::DestroyAction }
+    let(:unit_class) { MuchRails::SaveAction }
 
     should "include MuchRails::Plugin" do
       assert_that(subject).includes(MuchRails::Plugin)
@@ -25,22 +25,22 @@ module MuchRails::Action::DestroyAction
 
     let(:receiver_class) {
       Class.new do
-        include MuchRails::Action::DestroyAction
+        include MuchRails::SaveAction
 
-        destroy_result { MuchRails::Result.success  }
+        save_result { MuchRails::Result.success  }
 
         on_call {}
       end
     }
 
-    should have_imeths :destroy_result
+    should have_imeths :save_result
 
     should "be configured as expected" do
-      assert_that(subject).includes(MuchRails::Action::ChangeAction)
+      assert_that(subject).includes(MuchRails::ChangeAction)
     end
 
-    should "call .change_result for its .destroy_result method" do
-      subject.destroy_result
+    should "call .change_result for its .save_result method" do
+      subject.save_result
 
       assert_that(@change_action_class_change_result_call).is_not_nil
     end
@@ -50,26 +50,26 @@ module MuchRails::Action::DestroyAction
     desc "when init"
     subject { receiver_class.new(params: {}) }
 
-    should have_imeths :destroy_result
+    should have_imeths :save_result
 
-    should "call #change_result for its #destroy_result method" do
+    should "call #change_result for its #save_result method" do
       Assert.stub_on_call(subject, :change_result) { |call|
         @change_action_instance_change_result_call = call
       }
 
-      subject.destroy_result
+      subject.save_result
       assert_that(@change_action_instance_change_result_call).is_not_nil
     end
 
-    should "raise a custom error message if no destroy result block defined" do
+    should "raise a custom error message if no save result block is defined" do
       Assert.stub(
-        receiver_class.much_rails_action_change_action_config,
+        receiver_class.much_rails_change_action_config,
         :change_result_block
       ) { nil }
 
-      exception = assert_that { subject.destroy_result }.raises
+      exception = assert_that { subject.save_result }.raises
       assert_that(exception.message)
-        .equals("A `destroy_result` block must be defined.")
+        .equals("A `save_result` block must be defined.")
     end
   end
 end

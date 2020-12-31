@@ -1,17 +1,14 @@
 # frozen_string_literal: true
 
 require "much-rails/plugin"
-require "much-rails/action/change_action"
+require "much-rails/change_action"
 
-# MuchRails::Action::DestroyAction defines the common behaviors for all view
-# action classes that destroy records.
 module MuchRails; end
-module MuchRails::Action; end
-module MuchRails::Action::DestroyAction
+module MuchRails::DestroyAction
   include MuchRails::Plugin
 
   plugin_included do
-    include MuchRails::Action::ChangeAction
+    include MuchRails::ChangeAction
   end
 
   plugin_class_methods do

@@ -9,4 +9,19 @@ require "pry"
 
 require "test/support/factory"
 
-# TODO: put test helpers here...
+ENV['RAILS_ENV'] ||= "test"
+
+require "rails"
+require "action_mailer/railtie"
+
+module TestRails
+  class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 6.1
+
+    config.eager_load = false
+  end
+end
+
+# Initialize the Rails application.
+Rails.application.initialize!

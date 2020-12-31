@@ -26,6 +26,14 @@ module MuchRails::Action
     [ActiveRecord::RecordInvalid]
   end
 
+  def self.raise_response_exceptions=(value)
+    @raise_response_exceptions = value
+  end
+
+  def self.raise_response_exceptions?
+    !!@raise_response_exceptions
+  end
+
   plugin_included do
     include MuchRails::Config
     include MuchRails::WrapAndCallMethod
@@ -110,7 +118,6 @@ module MuchRails::Action
   plugin_instance_methods do
     def initialize(params:)
       @params = params.to_h.with_indifferent_access
-
       @errors = Hash.new { |hash, key| hash[key] = [] }
     end
 

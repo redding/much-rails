@@ -15,7 +15,7 @@ module MuchRails
       #
       # This should be `false` in all other envs so proper HTTP response
       # statuses are returned.
-      MuchRails::Action.raise_response_exceptions = Rails.development?
+      MuchRails::Action.raise_response_exceptions = Rails.env.development?
     end
   end
 end

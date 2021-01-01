@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "much-rails/action/base_router"
-require "much-rails/rails_routes"
 
 module MuchRails; end
 module MuchRails::Action; end

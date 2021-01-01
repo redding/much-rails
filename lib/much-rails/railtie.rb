@@ -3,6 +3,8 @@
 module MuchRails
   class Railtie < Rails::Railtie
     initializer "much-rails-gem" do |app|
+      require "much-rails/rails_routes"
+
       # Helpers
       ActionView::Base.include(MuchRails::Layout::Helper)
 

@@ -224,6 +224,34 @@ class MuchRails::Action::BaseRouter
     )
   end
 
+  # TODO
+  # Example:
+  #   MyRouter =
+  #     MuchRails::Action::Router.new {
+  #       redirect "/", "/home"
+  #       redirect "/old" do
+  #         # in the scope of a MuchRails::RedirectAction
+  #         params[:version] ? "/new-#{params[:version]}" : "new"
+  #       end
+  #     }
+  # def redirect(from_path, to_path = nil, &block)
+  #   self.definitions.push([:redirect, [from_path, to_path], block])
+  # end
+
+  # TODO
+  # Example:
+  #   MyRouter =
+  #     MuchRails::Action::Router.new {
+  #       not_found "/honeypot"
+  #       not_found "/honeypot-alt" do
+  #         "The resource couldn't be found on the server."
+  #       end
+  #     }
+  # def not_found(from_path, &response_body_block)
+  #   respond_with_args = [404, {}, response_body_block || -> { "Not Found" }]
+  #   self.definitions.push([:respond_with, [from_path, respond_with_args], nil])
+  # end
+
   private
 
   def route(

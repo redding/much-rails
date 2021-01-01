@@ -39,6 +39,8 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     super(name, &block)
 
     @controller_name = controller_name || DEFAULT_CONTROLLER_NAME
+
+    # TODO if named config, eval it
   end
 
   # Example:

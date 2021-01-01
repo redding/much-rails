@@ -25,9 +25,11 @@ class MuchRails::Action::BaseRouter
         @url_set_new_call = call
         Assert.stub_on_call(url_set, :path_for) { |call|
           @url_set_path_for_call = call
+          "TEST PATH STRING"
         }
         Assert.stub_on_call(url_set, :url_for) { |call|
           @url_set_url_for_call = call
+          "TEST URL STRING"
         }
         Assert.stub_tap_on_call(url_set, :add) { |_, call|
           @url_set_add_call = call
@@ -56,6 +58,16 @@ class MuchRails::Action::BaseRouter
 
     should "not implement #apply_to" do
       assert_that{ subject.apply_to("TEST SCOPE") }.raises(NotImplementedError)
+    end
+
+    should "build path/URL strings for named URLs" do
+      path_string = subject.path_for(:url1, "TEST PATH ARGS")
+      assert_that(path_string).equals("TEST PATH STRING")
+      assert_that(@url_set_path_for_call.args).equals([:url1, "TEST PATH ARGS"])
+
+      url_string = subject.url_for(:url1, "TEST URL ARGS")
+      assert_that(url_string).equals("TEST URL STRING")
+      assert_that(@url_set_url_for_call.args).equals([:url1, "TEST URL ARGS"])
     end
 
     should "allow customing the base URL" do
@@ -142,7 +154,7 @@ class MuchRails::Action::BaseRouter
       assert_that(url).is(added_url)
     end
 
-    should "build path/URL string for named URLs" do
+    should "build path/URL strings for named URLs" do
       ex =
         assert_that{ subject.path_for(:url1) }.raises(ArgumentError)
       assert_that(ex.message).equals("There is no URL named `:url1`.")

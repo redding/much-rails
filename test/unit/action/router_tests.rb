@@ -34,7 +34,7 @@ class MuchRails::Action::Router
 
   class URLInitTests < URLUnitTests
     desc "when init"
-    subject { url_class.new(url_name1, url_path1, router1) }
+    subject { url_class.new(router1, url_path1, url_name1) }
 
     setup do
       Assert.stub_on_call(MuchRails::RailsRoutes, :method_missing) { |call|

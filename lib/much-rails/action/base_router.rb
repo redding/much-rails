@@ -12,13 +12,13 @@ class MuchRails::Action::BaseRouter
   end
 
   attr_reader :name
-  attr_reader :request_type_set, :url_set, :routes, :definitions
+  attr_reader :request_type_set, :url_set, :definitions
 
   def initialize(name = nil, &block)
     @name = name
     @request_type_set = RequestTypeSet.new
     @url_set = URLSet.new(self)
-    @routes, @definitions = [], []
+    @definitions = []
 
     @base_url = DEFAULT_BASE_URL
   end
@@ -114,6 +114,63 @@ class MuchRails::Action::BaseRouter
     @url_set.add(name, path)
   end
 
+  # Example:
+  #   MyRouter =
+  #     MuchRails::Action::Router.new {
+  #       get    "/",       "Root::Index"
+  #       get    "/new",    "Root::New"
+  #       post   "/",       "Root::Create"
+  #       get    "/edit",   "Root::Edit"
+  #       put    "/",       "Root::Update"
+  #       patch  "/",       "Root::Update"
+  #       get    "/remove", "Root::Remove"
+  #       delete "/",       "Root::Destroy"
+  #     }
+  def get(path, default_class_name = nil, **request_type_class_names)
+    route(:get, path, default_class_name, **request_type_class_names)
+  end
+
+  def post(path, default_class_name = nil, **request_type_class_names)
+    route(:post, path, default_class_name, **request_type_class_names)
+  end
+
+  def put(path, default_class_name = nil, **request_type_class_names)
+    route(:put, path, default_class_name, **request_type_class_names)
+  end
+
+  def patch(path, default_class_name = nil, **request_type_class_names)
+    route(:patch, path, default_class_name, **request_type_class_names)
+  end
+
+  def delete(path, default_class_name = nil, **request_type_class_names)
+    route(:delete, path, default_class_name, **request_type_class_names)
+  end
+
+  private
+
+  def route(http_method, path, default_class_name, **request_type_class_names)
+    url = url_class.for(self, path)
+    request_type_actions =
+      request_type_class_names
+        .reduce([]) { |acc, (request_type_name, action_class_name)|
+          acc <<
+            RequestTypeAction.new(
+              request_type_set.get(request_type_name),
+              action_class_name
+            )
+          acc
+        }
+
+    Definition
+      .for_route(
+        http_method: http_method,
+        url: url,
+        default_action_class_name: default_class_name,
+        request_type_actions: request_type_actions,
+      )
+      .tap { |definition| @definitions << definition }
+  end
+
   class RequestTypeSet
     def initialize
       @set = {}
@@ -134,16 +191,20 @@ class MuchRails::Action::BaseRouter
       end
       @set[key] = request_type
     end
-  end
 
-  class RequestType
-    attr_reader :name, :constraints_lambda
-
-    def initialize(name, constraints_lambda)
-      @name = name.to_sym
-      @constraints_lambda = constraints_lambda
+    def get(name)
+      key = name.to_sym
+      @set.fetch(key) {
+        raise(
+          ArgumentError,
+          "There is no request type named `#{name.to_sym.inspect}`."
+        )
+      }
     end
   end
+
+  RequestType = Struct.new(:name, :constraints_lambda)
+  RequestTypeAction = Struct.new(:request_type, :action_class_name)
 
   class URLSet
     def initialize(router)
@@ -156,7 +217,7 @@ class MuchRails::Action::BaseRouter
     end
 
     def add(name, path)
-      url = @router.url_class.new(name.to_sym, path, @router)
+      url = @router.url_class.new(@router, path, name.to_sym)
       key = url.name
       if !@set[key].nil?
         raise ArgumentError, "There is already a URL named `#{name.to_sym.inspect}`."
@@ -165,7 +226,7 @@ class MuchRails::Action::BaseRouter
     end
 
     def get(name)
-      key = @router.url_class.url_name(name.to_sym, @router)
+      key = @router.url_class.url_name(@router, name.to_sym)
       @set.fetch(key) {
         raise ArgumentError, "There is no URL named `#{name.to_sym.inspect}`."
       }
@@ -181,30 +242,38 @@ class MuchRails::Action::BaseRouter
   end
 
   class BaseURL
-    def self.url_name(name, router)
+    def self.url_name(router, name)
       return unless name
       return name unless router&.name
       "#{router.name}_#{name}".to_sym
     end
 
-    def self.url_path(path, router)
+    def self.url_path(router, path)
       return unless path
       return path unless router&.base_url
       File.join(router.base_url, path)
     end
 
-    def initialize(url_name, url_path, router)
-      @url_name = url_name.to_sym
-      @url_path = url_path.to_s
+    def self.for(router, url_or_path)
+      return url_or_path if url_or_path.kind_of?(self)
+
+      new(router, url_or_path)
+    end
+
+    attr_reader :router, :url_path, :url_name
+
+    def initialize(router, url_path, url_name = nil)
       @router   = router
+      @url_path = url_path.to_s
+      @url_name = url_name&.to_sym
     end
 
     def name
-      self.class.url_name(@url_name, @router)
+      self.class.url_name(@router, @url_name)
     end
 
     def path
-      self.class.url_path(@url_path, @router)
+      self.class.url_path(@router, @url_path)
     end
 
     def path_for(*args)
@@ -213,6 +282,63 @@ class MuchRails::Action::BaseRouter
 
     def url_for(*args)
       raise NotImplementedError
+    end
+
+    def ==(other_url)
+      return super unless other_url.kind_of?(self.class)
+
+      @router   == other_url.router &&
+      @url_path == other_url.url_path &&
+      @url_name == other_url.url_name
+    end
+  end
+
+  class Definition
+    def self.for_route(
+          http_method:,
+          url:,
+          default_action_class_name:,
+          request_type_actions:)
+      new(
+        http_method: http_method,
+        path: url.path,
+        name: url.name,
+        default_action_class_name: default_action_class_name,
+        request_type_actions: request_type_actions,
+      )
+    end
+
+    attr_reader :http_method, :path, :name, :default_params
+    attr_reader :default_action_class_name, :request_type_actions
+
+    def initialize(
+          http_method:,
+          path:,
+          name:,
+          default_action_class_name:,
+          request_type_actions:,
+          default_params: nil)
+      @http_method = http_method
+      @path = path
+      @name = name
+      @default_params = default_params || {}
+      @default_action_class_name = default_action_class_name
+      @request_type_actions = request_type_actions || []
+    end
+
+    def has_default_action_class_name?
+      !@default_action_class_name.nil?
+    end
+
+    def ==(other_definition)
+      return super unless other_definition.kind_of?(self.class)
+
+      @http_method == other_definition.http_method &&
+      @path == other_definition.path &&
+      @name == other_definition.name &&
+      @default_params == other_definition.default_params &&
+      @default_action_class_name == other_definition.default_action_class_name &&
+      @request_type_actions == other_definition.request_type_actions
     end
   end
 end

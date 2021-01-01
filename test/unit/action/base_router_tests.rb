@@ -40,22 +40,25 @@ class MuchRails::Action::BaseRouter
           @url_set_add_call = call
         }
       }
+      Assert.stub_tap_on_call(unit_class::Definition, :for_route) { |_, call|
+        @route_definition_call = call
+      }
     end
 
     should have_readers :name
-    should have_readers :request_type_set, :url_set, :routes, :definitions
+    should have_readers :request_type_set, :url_set, :definitions
 
     should have_imeths :url_class, :apply_to
     should have_imeths :path_for, :url_for
     should have_imeths :request_type
     should have_imeths :base_url, :url
+    should have_imeths :get, :post, :put, :patch, :delete
 
     should "know its default attributes" do
       assert_that(subject.name).is_nil
       assert_that(subject.request_type_set).is_empty
       assert_that(subject.url_set).is_empty
-      assert_that(subject.routes).equals([])
-      assert_that(subject.definitions).equals([])
+      assert_that(subject.definitions).is_empty
       assert_that(subject.base_url).equals(unit_class::DEFAULT_BASE_URL)
       assert_that(subject.url_class).equals(unit_class.url_class)
 
@@ -109,6 +112,78 @@ class MuchRails::Action::BaseRouter
       assert_that(ex.message)
         .equals(
           "Named URLs must be defined with String paths, given `#{path.inspect}`."
+        )
+    end
+
+    should "define HTTP method routes" do
+      request_type_name = Factory.symbol
+      request_type_proc = ->(request) {}
+      request_type = subject.request_type(request_type_name, &request_type_proc)
+      request_type_class_name = Factory.string
+      request_type_action =
+        unit_class::RequestTypeAction.new(request_type, request_type_class_name)
+      path = Factory.url
+      url = subject.url_class.for(subject, path)
+      default_class_name = Factory.string
+
+      definition =
+        subject.get(
+          url,
+          default_class_name,
+          request_type_name => request_type_class_name
+        )
+      assert_that(subject.definitions.size).equals(1)
+      assert_that(definition).is_instance_of(unit_class::Definition)
+      assert_that(@route_definition_call.kargs)
+        .equals(
+          http_method: :get,
+          url: url,
+          default_action_class_name: default_class_name,
+          request_type_actions: [request_type_action],
+        )
+
+      definition = subject.post(url, default_class_name)
+      assert_that(subject.definitions.size).equals(2)
+      assert_that(definition).is_instance_of(unit_class::Definition)
+      assert_that(@route_definition_call.kargs)
+        .equals(
+          http_method: :post,
+          url: url,
+          default_action_class_name: default_class_name,
+          request_type_actions: [],
+        )
+
+      definition = subject.put(path, default_class_name)
+      assert_that(subject.definitions.size).equals(3)
+      assert_that(definition).is_instance_of(unit_class::Definition)
+      assert_that(@route_definition_call.kargs)
+        .equals(
+          http_method: :put,
+          url: url,
+          default_action_class_name: default_class_name,
+          request_type_actions: [],
+        )
+
+      definition = subject.patch(url, default_class_name)
+      assert_that(subject.definitions.size).equals(4)
+      assert_that(definition).is_instance_of(unit_class::Definition)
+      assert_that(@route_definition_call.kargs)
+        .equals(
+          http_method: :patch,
+          url: url,
+          default_action_class_name: default_class_name,
+          request_type_actions: [],
+        )
+
+      definition = subject.delete(url, default_class_name)
+      assert_that(subject.definitions.size).equals(5)
+      assert_that(definition).is_instance_of(unit_class::Definition)
+      assert_that(@route_definition_call.kargs)
+        .equals(
+          http_method: :delete,
+          url: url,
+          default_action_class_name: default_class_name,
+          request_type_actions: [],
         )
     end
   end
@@ -350,6 +425,74 @@ class MuchRails::Action::BaseRouter
 
       assert_that{ subject.path_for("TEST ARGS") }.raises(NotImplementedError)
       assert_that{ subject.url_for("TEST ARGS") }.raises(NotImplementedError)
+    end
+  end
+
+  class DefinitionUnitTests < UnitTests
+    desc "Definition"
+    subject { definition_class }
+
+    let(:definition_class) { unit_class::Definition }
+
+    let(:router1) { unit_class.new }
+    let(:http_method1) { Factory.symbol }
+    let(:url1) { unit_class::BaseURL.for(router1, Factory.url) }
+    let(:url_path1) { url1.path }
+    let(:url_name1) { url1.name }
+    let(:default_action_class_name1) { Factory.string }
+    let(:request_type_actions1) { [] }
+
+    should have_imeths :for_route
+
+    should "build definitions given route information" do
+      definition1 =
+        definition_class.new(
+          http_method: http_method1,
+          path: url_path1,
+          name: url_name1,
+          default_action_class_name: default_action_class_name1,
+          request_type_actions: request_type_actions1,
+        )
+
+      definition =
+        definition_class.for_route(
+          http_method: http_method1,
+          url: url1,
+          default_action_class_name: default_action_class_name1,
+          request_type_actions: request_type_actions1,
+        )
+      assert_that(definition).equals(definition1)
+    end
+  end
+
+  class DefinitionInitTests < DefinitionUnitTests
+    desc "when init"
+    subject {
+      definition_class.new(
+        http_method: http_method1,
+        path: url_path1,
+        name: url_name1,
+        default_action_class_name: default_action_class_name1,
+        request_type_actions: request_type_actions1,
+        default_params: default_params1,
+      )
+    }
+
+    let(:default_params1) {
+      { Factory.string => Factory.string }
+    }
+
+    should have_readers :http_method, :path, :name, :default_params
+    should have_readers :default_action_class_name, :request_type_actions
+
+    should "know its attributes" do
+      assert_that(subject.http_method).equals(http_method1)
+      assert_that(subject.path).equals(url_path1)
+      assert_that(subject.name).equals(url_name1)
+      assert_that(subject.default_params).equals(default_params1)
+      assert_that(subject.default_action_class_name)
+        .equals(default_action_class_name1)
+      assert_that(subject.request_type_actions).equals(request_type_actions1)
     end
   end
 end

@@ -12,13 +12,13 @@ class MuchRails::Action::BaseRouter
   end
 
   attr_reader :name
-  attr_reader :request_type_set, :url_set, :routes, :definitions
+  attr_reader :request_type_set, :url_set, :definitions
 
   def initialize(name = nil, &block)
     @name = name
     @request_type_set = RequestTypeSet.new
     @url_set = URLSet.new(self)
-    @routes, @definitions = [], []
+    @definitions = []
 
     @base_url = DEFAULT_BASE_URL
   end
@@ -112,6 +112,63 @@ class MuchRails::Action::BaseRouter
       )
     end
     @url_set.add(name, path)
+  end
+
+  # Example:
+  #   MyRouter =
+  #     MuchRails::Action::Router.new {
+  #       get    "/",       "Root::Index"
+  #       get    "/new",    "Root::New"
+  #       post   "/",       "Root::Create"
+  #       get    "/edit",   "Root::Edit"
+  #       put    "/",       "Root::Update"
+  #       patch  "/",       "Root::Update"
+  #       get    "/remove", "Root::Remove"
+  #       delete "/",       "Root::Destroy"
+  #     }
+  def get(path, default_class_name = nil, **request_type_class_names)
+    route(:get, path, default_class_name, **request_type_class_names)
+  end
+
+  def post(path, default_class_name = nil, **request_type_class_names)
+    route(:post, path, default_class_name, **request_type_class_names)
+  end
+
+  def put(path, default_class_name = nil, **request_type_class_names)
+    route(:put, path, default_class_name, **request_type_class_names)
+  end
+
+  def patch(path, default_class_name = nil, **request_type_class_names)
+    route(:patch, path, default_class_name, **request_type_class_names)
+  end
+
+  def delete(path, default_class_name = nil, **request_type_class_names)
+    route(:delete, path, default_class_name, **request_type_class_names)
+  end
+
+  private
+
+  def route(http_method, path, default_class_name, **request_type_class_names)
+    url = url_class.for(self, path)
+    request_type_actions =
+      request_type_class_names
+        .reduce([]) { |acc, (request_type_name, action_class_name)|
+          acc <<
+            RequestTypeAction.new(
+              request_type_set.get(request_type_name),
+              action_class_name
+            )
+          acc
+        }
+
+    Definition
+      .for_route(
+        http_method: http_method,
+        url: url,
+        default_action_class_name: default_class_name,
+        request_type_actions: request_type_actions,
+      )
+      .tap { |definition| @definitions << definition }
   end
 
   class RequestTypeSet
@@ -233,6 +290,55 @@ class MuchRails::Action::BaseRouter
       @router   == other_url.router &&
       @url_path == other_url.url_path &&
       @url_name == other_url.url_name
+    end
+  end
+
+  class Definition
+    def self.for_route(
+          http_method:,
+          url:,
+          default_action_class_name:,
+          request_type_actions:)
+      new(
+        http_method: http_method,
+        path: url.path,
+        name: url.name,
+        default_action_class_name: default_action_class_name,
+        request_type_actions: request_type_actions,
+      )
+    end
+
+    attr_reader :http_method, :path, :name, :default_params
+    attr_reader :default_action_class_name, :request_type_actions
+
+    def initialize(
+          http_method:,
+          path:,
+          name:,
+          default_action_class_name:,
+          request_type_actions:,
+          default_params: nil)
+      @http_method = http_method
+      @path = path
+      @name = name
+      @default_params = default_params || {}
+      @default_action_class_name = default_action_class_name
+      @request_type_actions = request_type_actions || []
+    end
+
+    def has_default_action_class_name?
+      !@default_action_class_name.nil?
+    end
+
+    def ==(other_definition)
+      return super unless other_definition.kind_of?(self.class)
+
+      @http_method == other_definition.http_method &&
+      @path == other_definition.path &&
+      @name == other_definition.name &&
+      @default_params == other_definition.default_params &&
+      @default_action_class_name == other_definition.default_action_class_name &&
+      @request_type_actions == other_definition.request_type_actions
     end
   end
 end

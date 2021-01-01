@@ -12,12 +12,13 @@ class MuchRails::Action::BaseRouter
   end
 
   attr_reader :name
-  attr_reader :url_set, :request_types, :routes, :definitions
+  attr_reader :request_type_set, :url_set, :routes, :definitions
 
   def initialize(name = nil, &block)
     @name = name
+    @request_type_set = RequestTypeSet.new
     @url_set = URLSet.new(self)
-    @request_types, @routes, @definitions = [], [], []
+    @routes, @definitions = [], []
 
     @base_url = DEFAULT_BASE_URL
   end
@@ -65,6 +66,21 @@ class MuchRails::Action::BaseRouter
   end
 
   # Example:
+  #   MyRouter =
+  #     MuchRails::Action::Router.new {
+  #       request_type(:mobile) do |request|
+  #         mobile_user_agent?(request.user_agent)
+  #       end
+  #
+  #       url :root, "/"
+  #       get :root, "Root::Index",
+  #                  mobile: "Root::IndexMobile"
+  #     }
+  def request_type(name, &constraints_lambda)
+    @request_type_set.add(name, constraints_lambda)
+  end
+
+  # Example:
   #   AdminRouter =
   #     MuchRails::Action::Router.new(:admin) {
   #       base_url "/admin"
@@ -96,6 +112,37 @@ class MuchRails::Action::BaseRouter
       )
     end
     @url_set.add(name, path)
+  end
+
+  class RequestTypeSet
+    def initialize
+      @set = {}
+    end
+
+    def empty?
+      @set.empty?
+    end
+
+    def add(name, constraints_lambda)
+      request_type = RequestType.new(name.to_sym, constraints_lambda)
+      key = request_type.name
+      if !@set[key].nil?
+        raise(
+          ArgumentError,
+          "There is already a request type named `#{name.to_sym.inspect}`."
+        )
+      end
+      @set[key] = request_type
+    end
+  end
+
+  class RequestType
+    attr_reader :name, :constraints_lambda
+
+    def initialize(name, constraints_lambda)
+      @name = name.to_sym
+      @constraints_lambda = constraints_lambda
+    end
   end
 
   class URLSet

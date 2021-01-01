@@ -21,31 +21,39 @@ class MuchRails::Action::BaseRouter
     subject { unit_class.new }
 
     setup do
-      Assert.stub_tap_on_call(unit_class::URLSet, :new) { |url_set, call|
+      Assert.stub_tap_on_call(unit_class::RequestTypeSet, :new) { |set, _|
+        Assert.stub_tap_on_call(set, :add) { |_, call|
+          @request_type_set_add_call = call
+        }
+      }
+      Assert.stub_tap_on_call(unit_class::URLSet, :new) { |set, call|
         @url_set_new_call = call
-        Assert.stub_on_call(url_set, :path_for) { |call|
+        Assert.stub_on_call(set, :path_for) { |call|
           @url_set_path_for_call = call
+          "TEST PATH STRING"
         }
-        Assert.stub_on_call(url_set, :url_for) { |call|
+        Assert.stub_on_call(set, :url_for) { |call|
           @url_set_url_for_call = call
+          "TEST URL STRING"
         }
-        Assert.stub_tap_on_call(url_set, :add) { |_, call|
+        Assert.stub_tap_on_call(set, :add) { |_, call|
           @url_set_add_call = call
         }
       }
     end
 
     should have_readers :name
-    should have_readers :url_set, :request_types, :routes, :definitions
+    should have_readers :request_type_set, :url_set, :routes, :definitions
 
     should have_imeths :url_class, :apply_to
     should have_imeths :path_for, :url_for
+    should have_imeths :request_type
     should have_imeths :base_url, :url
 
     should "know its default attributes" do
       assert_that(subject.name).is_nil
+      assert_that(subject.request_type_set).is_empty
       assert_that(subject.url_set).is_empty
-      assert_that(subject.request_types).equals([])
       assert_that(subject.routes).equals([])
       assert_that(subject.definitions).equals([])
       assert_that(subject.base_url).equals(unit_class::DEFAULT_BASE_URL)
@@ -56,6 +64,24 @@ class MuchRails::Action::BaseRouter
 
     should "not implement #apply_to" do
       assert_that{ subject.apply_to("TEST SCOPE") }.raises(NotImplementedError)
+    end
+
+    should "build path/URL strings for named URLs" do
+      path_string = subject.path_for(:url1, "TEST PATH ARGS")
+      assert_that(path_string).equals("TEST PATH STRING")
+      assert_that(@url_set_path_for_call.args).equals([:url1, "TEST PATH ARGS"])
+
+      url_string = subject.url_for(:url1, "TEST URL ARGS")
+      assert_that(url_string).equals("TEST URL STRING")
+      assert_that(@url_set_url_for_call.args).equals([:url1, "TEST URL ARGS"])
+    end
+
+    should "allow defining request types" do
+      proc = ->(request) {}
+      request_type = subject.request_type(:type1, &proc)
+      assert_that(subject.request_type_set).is_not_empty
+      assert_that(request_type).is_instance_of(unit_class::RequestType)
+      assert_that(@request_type_set_add_call.args).equals([:type1, proc])
     end
 
     should "allow customing the base URL" do
@@ -84,6 +110,67 @@ class MuchRails::Action::BaseRouter
         .equals(
           "Named URLs must be defined with String paths, given `#{path.inspect}`."
         )
+    end
+  end
+
+  class RequestTypeSetUnitTests < UnitTests
+    desc "RequestTypeSet"
+    subject { request_type_set_class }
+
+    let(:request_type_set_class) { unit_class::RequestTypeSet }
+    let(:request_type_class) { unit_class::RequestType }
+  end
+
+  class RequestTypeSetInitTests < RequestTypeSetUnitTests
+    desc "when init"
+    subject { request_type_set_class.new }
+
+    setup do
+      Assert.stub_tap_on_call(request_type_class, :new) { |url, call|
+        @request_type_new_call = call
+      }
+    end
+
+    let(:constraints_lambda1) { ->(request) {} }
+
+    should have_imeths :empty?, :add
+
+    should "add request types" do
+      assert_that(subject).is_empty
+
+      request_type = subject.add(:type1.to_s, constraints_lambda1)
+      assert_that(subject).is_not_empty
+      assert_that(request_type).is_instance_of(request_type_class)
+      assert_that(@request_type_new_call.args)
+        .equals([:type1, constraints_lambda1])
+
+      ex =
+        assert_that{ subject.add(:type1, constraints_lambda1) }
+          .raises(ArgumentError)
+      assert_that(ex.message)
+        .equals("There is already a request type named `:type1`.")
+    end
+  end
+
+  class RequestTypeUnitTests < UnitTests
+    desc "RequestType"
+    subject { request_type_class }
+
+    let(:request_type_class) { unit_class::RequestType }
+  end
+
+  class RequestTypeInitTests < RequestTypeUnitTests
+    desc "when init"
+    subject { request_type_class.new(name1, constraints_lambda1) }
+
+    let(:name1) { Factory.symbol }
+    let(:constraints_lambda1) { ->(request) {} }
+
+    should have_imeths :name, :constraints_lambda
+
+    should "know its attributes" do
+      assert_that(subject.name).equals(name1)
+      assert_that(subject.constraints_lambda).equals(constraints_lambda1)
     end
   end
 
@@ -142,7 +229,7 @@ class MuchRails::Action::BaseRouter
       assert_that(url).is(added_url)
     end
 
-    should "build path/URL string for named URLs" do
+    should "build path/URL strings for named URLs" do
       ex =
         assert_that{ subject.path_for(:url1) }.raises(ArgumentError)
       assert_that(ex.message).equals("There is no URL named `:url1`.")

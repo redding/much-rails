@@ -15,6 +15,43 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     MuchRails::Action::Router::URL
   end
 
+  # TODO
+  # Example:
+  #  MyRouter = MuchRails::Action::Router.new { ... }
+  #  Rails.application.routes.draw do
+  #    root "/"
+  #    MyRouter.draw(self)
+  #  end
+  # def apply_to(application_routes_draw_scope)
+  #   draw_route_to = "#{controller_name}##{CONTROLLER_METHOD_NAME}"
+
+  #   definition_list.each do |definition|
+  #     definition.request_type_actions.each do |request_type, action_class_name|
+  #       application_routes_draw_scope.public_send(
+  #         definition.http_method,
+  #         definition.path,
+  #         to: draw_route_to,
+  #         as: definition.name,
+  #         defaults: { ACTION_CLASS_PARAM_NAME => action_class_name },
+  #         constraints: request_type.constraints_lambda,
+  #       )
+  #     end
+
+  #     if definition.has_default_action_class_name?
+  #       application_routes_draw_scope.public_send(
+  #         definition.http_method,
+  #         definition.path,
+  #         to: draw_route_to,
+  #         as: definition.name,
+  #         defaults: {
+  #           ACTION_CLASS_PARAM_NAME => definition.default_action_class_name
+  #         },
+  #       )
+  #     end
+  #   end
+  # end
+  # alias_method :draw, :apply_to
+
   class URL < MuchRails::Action::BaseRouter::BaseURL
     def path_for(*args)
       MuchRails::RailsRoutes.public_send("#{name}_path", *args)

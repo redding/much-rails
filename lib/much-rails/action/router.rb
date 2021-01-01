@@ -15,46 +15,53 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     MuchRails::Action::Router::URL
   end
 
-  # TODO
+  attr_reader :controller_name
+
+  def initialize(name = nil, controller_name: nil, &block)
+    super(name, &block)
+
+    @controller_name = controller_name || DEFAULT_CONTROLLER_NAME
+  end
+
   # Example:
-  #  MyRouter = MuchRails::Action::Router.new { ... }
-  #  Rails.application.routes.draw do
-  #    root "/"
-  #    MyRouter.draw(self)
-  #  end
-  # def apply_to(application_routes_draw_scope)
-  #   draw_route_to = "#{controller_name}##{CONTROLLER_METHOD_NAME}"
-  #
-  #   definitions.each do |definition|
-  #     definition.request_type_actions.each do |request_type_action|
-  #       application_routes_draw_scope.public_send(
-  #         definition.http_method,
-  #         definition.path,
-  #         to: draw_route_to,
-  #         as: definition.name,
-  #         defaults:
-  #           definition.default_params.merge({
-  #             ACTION_CLASS_PARAM_NAME => request_type_action.class_name
-  #           }),
-  #         constraints: request_type_action..constraints_lambda,
-  #       )
-  #     end
-  #
-  #     if definition.has_default_action_class_name?
-  #       application_routes_draw_scope.public_send(
-  #         definition.http_method,
-  #         definition.path,
-  #         to: draw_route_to,
-  #         as: definition.name,
-  #         defaults:
-  #           definition.default_params.merge({
-  #             ACTION_CLASS_PARAM_NAME => definition.default_action_class_name
-  #           }),
-  #       )
-  #     end
+  #   MyRouter = MuchRails::Action::Router.new { ... }
+  #   Rails.application.routes.draw do
+  #     root "/"
+  #     MyRouter.draw(self)
   #   end
-  # end
-  # alias_method :draw, :apply_to
+  def apply_to(application_routes_draw_scope)
+    draw_route_to = "#{controller_name}##{CONTROLLER_METHOD_NAME}"
+
+    definitions.each do |definition|
+      definition.request_type_actions.each do |request_type_action|
+        application_routes_draw_scope.public_send(
+          definition.http_method,
+          definition.path,
+          to: draw_route_to,
+          as: definition.name,
+          defaults:
+            definition.default_params.merge({
+              ACTION_CLASS_PARAM_NAME => request_type_action.class_name
+            }),
+          constraints: request_type_action.constraints_lambda,
+        )
+      end
+
+      if definition.has_default_action_class_name?
+        application_routes_draw_scope.public_send(
+          definition.http_method,
+          definition.path,
+          to: draw_route_to,
+          as: definition.name,
+          defaults:
+            definition.default_params.merge({
+              ACTION_CLASS_PARAM_NAME => definition.default_action_class_name
+            }),
+        )
+      end
+    end
+  end
+  alias_method :draw, :apply_to
 
   class URL < MuchRails::Action::BaseRouter::BaseURL
     def path_for(*args)

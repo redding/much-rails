@@ -10,6 +10,10 @@ class MuchRails::Action::Router
 
     should have_imeths :url_class
 
+    should "be a BaseRouter" do
+      assert_that(subject < MuchRails::Action::BaseRouter).is_true
+    end
+
     should "know its constants" do
       assert_that(subject::DEFAULT_CONTROLLER_NAME).equals("application")
       assert_that(subject::CONTROLLER_METHOD_NAME)
@@ -23,6 +27,103 @@ class MuchRails::Action::Router
   class InitTests < UnitTests
     desc "when init"
     subject { unit_class.new }
+
+    let(:controller_name1) { Factory.string }
+
+    should have_readers :controller_name, :draw
+
+    should "know its attributes" do
+      assert_that(subject.controller_name)
+        .equals(unit_class::DEFAULT_CONTROLLER_NAME)
+
+      router = unit_class.new(controller_name: controller_name1)
+      assert_that(router.controller_name).equals(controller_name1)
+    end
+
+    should "draw Rails Application routes" do
+      request_type_name = Factory.symbol
+      request_type_proc = ->(request) {}
+      subject.request_type(request_type_name, &request_type_proc)
+      request_type_class_name = Factory.string
+      path = Factory.url
+      url = subject.url_class.for(subject, path)
+      default_class_name = Factory.string
+
+      url_name = Factory.symbol
+      Assert.stub(url, :name) { url_name }
+
+      subject.get(
+        url,
+        default_class_name,
+        request_type_name => request_type_class_name
+      )
+      subject.post(url, default_class_name)
+      subject.put(path, default_class_name)
+      subject.patch(url, default_class_name)
+      subject.delete(url, default_class_name)
+
+      application_routes = FakeApplicationRoutes.new
+      subject.draw(application_routes)
+
+      expected_draw_route_to =
+        "#{subject.controller_name}##{unit_class::CONTROLLER_METHOD_NAME}"
+      expected_default_defaults =
+        { unit_class::ACTION_CLASS_PARAM_NAME => default_class_name }
+
+      assert_that(application_routes.get_calls.size).equals(2)
+      assert_that(application_routes.get_calls.first.pargs).equals([path])
+      assert_that(application_routes.get_calls.first.kargs)
+        .equals(
+          to: expected_draw_route_to,
+          as: url_name,
+          defaults:
+            { unit_class::ACTION_CLASS_PARAM_NAME => request_type_class_name },
+          constraints: request_type_proc,
+        )
+      assert_that(application_routes.get_calls.last.pargs).equals([path])
+      assert_that(application_routes.get_calls.last.kargs)
+        .equals(
+          to: expected_draw_route_to,
+          as: url_name,
+          defaults: expected_default_defaults,
+        )
+
+      assert_that(application_routes.post_calls.size).equals(1)
+      assert_that(application_routes.post_calls.last.pargs).equals([path])
+      assert_that(application_routes.post_calls.last.kargs)
+        .equals(
+          to: expected_draw_route_to,
+          as: url_name,
+          defaults: expected_default_defaults,
+        )
+
+      assert_that(application_routes.put_calls.size).equals(1)
+      assert_that(application_routes.put_calls.last.pargs).equals([path])
+      assert_that(application_routes.put_calls.last.kargs)
+        .equals(
+          to: expected_draw_route_to,
+          as: nil,
+          defaults: expected_default_defaults,
+        )
+
+      assert_that(application_routes.patch_calls.size).equals(1)
+      assert_that(application_routes.patch_calls.last.pargs).equals([path])
+      assert_that(application_routes.patch_calls.last.kargs)
+        .equals(
+          to: expected_draw_route_to,
+          as: url_name,
+          defaults: expected_default_defaults,
+        )
+
+      assert_that(application_routes.delete_calls.size).equals(1)
+      assert_that(application_routes.delete_calls.last.pargs).equals([path])
+      assert_that(application_routes.delete_calls.last.kargs)
+        .equals(
+          to: expected_draw_route_to,
+          as: url_name,
+          defaults: expected_default_defaults,
+        )
+    end
   end
 
   class URLUnitTests < UnitTests
@@ -59,6 +160,38 @@ class MuchRails::Action::Router
       assert_that(url_string).equals("TEST PATH OR URL STRING")
       assert_that(@rails_routes_method_missing_call.args)
         .equals(["#{url_name1}_url".to_sym, "TEST URL ARGS"])
+    end
+  end
+
+  class FakeApplicationRoutes
+    attr_reader :get_calls, :post_calls,:put_calls, :patch_calls, :delete_calls
+
+    def initialize
+      @get_calls    = []
+      @post_calls   = []
+      @put_calls    = []
+      @patch_calls  = []
+      @delete_calls = []
+    end
+
+    def get(*args)
+      @get_calls << MuchStub::Call.new(*args)
+    end
+
+    def post(*args)
+      @post_calls << MuchStub::Call.new(*args)
+    end
+
+    def put(*args)
+      @put_calls << MuchStub::Call.new(*args)
+    end
+
+    def patch(*args)
+      @patch_calls << MuchStub::Call.new(*args)
+    end
+
+    def delete(*args)
+      @delete_calls << MuchStub::Call.new(*args)
     end
   end
 end

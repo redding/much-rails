@@ -65,6 +65,11 @@ class MuchRails::Action::BaseRouter
       assert_that(@url_set_new_call.args).equals([subject])
     end
 
+    should "instance_exec any given block" do
+      router = unit_class.new { base_url "/test" }
+      assert_that(router.base_url).equals("/test")
+    end
+
     should "not implement #apply_to" do
       assert_that{ subject.apply_to("TEST SCOPE") }.raises(NotImplementedError)
     end
@@ -280,11 +285,13 @@ class MuchRails::Action::BaseRouter
     }
     let(:action_class_name1) { Factory.string }
 
-    should have_imeths :request_type, :action_class_name
+    should have_imeths :request_type, :class_name, :constraints_lambda
 
     should "know its attributes" do
       assert_that(subject.request_type).equals(request_type1)
-      assert_that(subject.action_class_name).equals(action_class_name1)
+      assert_that(subject.class_name).equals(action_class_name1)
+      assert_that(subject.constraints_lambda)
+        .equals(request_type1.constraints_lambda)
     end
   end
 

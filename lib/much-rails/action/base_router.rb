@@ -134,16 +134,20 @@ class MuchRails::Action::BaseRouter
       end
       @set[key] = request_type
     end
-  end
 
-  class RequestType
-    attr_reader :name, :constraints_lambda
-
-    def initialize(name, constraints_lambda)
-      @name = name.to_sym
-      @constraints_lambda = constraints_lambda
+    def get(name)
+      key = name.to_sym
+      @set.fetch(key) {
+        raise(
+          ArgumentError,
+          "There is no request type named `#{name.to_sym.inspect}`."
+        )
+      }
     end
   end
+
+  RequestType = Struct.new(:name, :constraints_lambda)
+  RequestTypeAction = Struct.new(:request_type, :action_class_name)
 
   class URLSet
     def initialize(router)

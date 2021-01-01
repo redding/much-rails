@@ -76,7 +76,7 @@ class MuchRails::Action::BaseRouter
       assert_that(@url_set_url_for_call.args).equals([:url1, "TEST URL ARGS"])
     end
 
-    should "allow defining request types" do
+    should "define request types" do
       proc = ->(request) {}
       request_type = subject.request_type(:type1, &proc)
       assert_that(subject.request_type_set).is_not_empty
@@ -133,7 +133,7 @@ class MuchRails::Action::BaseRouter
 
     let(:constraints_lambda1) { ->(request) {} }
 
-    should have_imeths :empty?, :add
+    should have_imeths :empty?, :add, :get
 
     should "add request types" do
       assert_that(subject).is_empty
@@ -149,6 +149,19 @@ class MuchRails::Action::BaseRouter
           .raises(ArgumentError)
       assert_that(ex.message)
         .equals("There is already a request type named `:type1`.")
+    end
+
+    should "get request types" do
+      ex =
+        assert_that{ subject.get(:type1) }.raises(ArgumentError)
+      assert_that(ex.message).equals("There is no request type named `:type1`.")
+
+      added_request_type = subject.add(:type1.to_s, constraints_lambda1)
+      request_type       = subject.get(:type1)
+      assert_that(request_type).is(added_request_type)
+
+      request_type = subject.get(:type1)
+      assert_that(request_type).is(added_request_type)
     end
   end
 
@@ -171,6 +184,32 @@ class MuchRails::Action::BaseRouter
     should "know its attributes" do
       assert_that(subject.name).equals(name1)
       assert_that(subject.constraints_lambda).equals(constraints_lambda1)
+    end
+  end
+
+  class RequestTypeActionUnitTests < UnitTests
+    desc "RequestTypeAction"
+    subject { request_type_action_class }
+
+    let(:request_type_action_class) { unit_class::RequestTypeAction }
+  end
+
+  class RequestTypeActionInitTests < RequestTypeActionUnitTests
+    desc "when init"
+    subject { request_type_action_class.new(request_type1, action_class_name1) }
+
+    let(:name1) { Factory.symbol }
+    let(:constraints_lambda1) { ->(request) {} }
+    let(:request_type1) {
+      unit_class::RequestType.new(name1, constraints_lambda1)
+    }
+    let(:action_class_name1) { Factory.string }
+
+    should have_imeths :request_type, :action_class_name
+
+    should "know its attributes" do
+      assert_that(subject.request_type).equals(request_type1)
+      assert_that(subject.action_class_name).equals(action_class_name1)
     end
   end
 

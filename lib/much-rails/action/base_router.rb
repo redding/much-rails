@@ -156,7 +156,7 @@ class MuchRails::Action::BaseRouter
     end
 
     def add(name, path)
-      url = @router.url_class.new(name.to_sym, path, @router)
+      url = @router.url_class.new(@router, path, name.to_sym)
       key = url.name
       if !@set[key].nil?
         raise ArgumentError, "There is already a URL named `#{name.to_sym.inspect}`."
@@ -165,7 +165,7 @@ class MuchRails::Action::BaseRouter
     end
 
     def get(name)
-      key = @router.url_class.url_name(name.to_sym, @router)
+      key = @router.url_class.url_name(@router, name.to_sym)
       @set.fetch(key) {
         raise ArgumentError, "There is no URL named `#{name.to_sym.inspect}`."
       }
@@ -181,30 +181,38 @@ class MuchRails::Action::BaseRouter
   end
 
   class BaseURL
-    def self.url_name(name, router)
+    def self.url_name(router, name)
       return unless name
       return name unless router&.name
       "#{router.name}_#{name}".to_sym
     end
 
-    def self.url_path(path, router)
+    def self.url_path(router, path)
       return unless path
       return path unless router&.base_url
       File.join(router.base_url, path)
     end
 
-    def initialize(url_name, url_path, router)
-      @url_name = url_name.to_sym
-      @url_path = url_path.to_s
+    def self.for(router, url_or_path)
+      return url_or_path if url_or_path.kind_of?(self)
+
+      new(router, url_or_path)
+    end
+
+    attr_reader :router, :url_path, :url_name
+
+    def initialize(router, url_path, url_name = nil)
       @router   = router
+      @url_path = url_path.to_s
+      @url_name = url_name&.to_sym
     end
 
     def name
-      self.class.url_name(@url_name, @router)
+      self.class.url_name(@router, @url_name)
     end
 
     def path
-      self.class.url_path(@url_path, @router)
+      self.class.url_path(@router, @url_path)
     end
 
     def path_for(*args)
@@ -213,6 +221,14 @@ class MuchRails::Action::BaseRouter
 
     def url_for(*args)
       raise NotImplementedError
+    end
+
+    def ==(other_url)
+      return super unless other_url.kind_of?(self.class)
+
+      @router   == other_url.router &&
+      @url_path == other_url.url_path &&
+      @url_name == other_url.url_name
     end
   end
 end

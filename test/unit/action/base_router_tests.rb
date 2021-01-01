@@ -84,12 +84,12 @@ class MuchRails::Action::BaseRouter
       assert_that(@request_type_set_add_call.args).equals([:type1, proc])
     end
 
-    should "allow customing the base URL" do
+    should "define the base URL" do
       subject.base_url(new_url = Factory.url)
       assert_that(subject.base_url).equals(new_url)
     end
 
-    should "allow defining URLs" do
+    should "define URLs" do
       url = subject.url(:url1, path = Factory.url)
       assert_that(subject.url_set).is_not_empty
       assert_that(url).is_kind_of(subject.url_class)
@@ -209,7 +209,7 @@ class MuchRails::Action::BaseRouter
       url = subject.add(:url1.to_s, path = Factory.url)
       assert_that(subject).is_not_empty
       assert_that(url).is_kind_of(router1.url_class)
-      assert_that(@url_new_call.args).equals([:url1, path, router1])
+      assert_that(@url_new_call.args).equals([router1, path, :url1])
 
       ex =
         assert_that{ subject.add(:url1, Factory.url) }.raises(ArgumentError)
@@ -255,48 +255,59 @@ class MuchRails::Action::BaseRouter
 
     let(:base_url_class) { unit_class::BaseURL }
 
-    let(:url_name1) { Factory.symbol }
-    let(:url_path1) { Factory.url }
     let(:router1) { unit_class.new }
+    let(:url_path1) { Factory.url }
+    let(:url_name1) { Factory.symbol }
 
-    should have_imeths :url_name, :url_path
+    should have_imeths :url_name, :url_path, :for
 
     should "know its URL name" do
       assert_that(subject.url_name(nil, nil)).is_nil
-      assert_that(subject.url_name(nil, router1)).is_nil
-      assert_that(subject.url_name(url_name1, nil)).equals(url_name1)
-      assert_that(subject.url_name(url_name1, router1)).equals(url_name1)
+      assert_that(subject.url_name(router1, nil)).is_nil
+      assert_that(subject.url_name(nil, url_name1)).equals(url_name1)
+      assert_that(subject.url_name(router1, url_name1)).equals(url_name1)
 
       router_name = Factory.symbol
       Assert.stub(router1, :name) { router_name }
-      assert_that(subject.url_name(url_name1, router1))
+      assert_that(subject.url_name(router1, url_name1))
         .equals("#{router_name}_#{url_name1}".to_sym)
     end
 
     should "know its URL path" do
       assert_that(subject.url_path(nil, nil)).is_nil
-      assert_that(subject.url_path(nil, router1)).is_nil
-      assert_that(subject.url_path(url_path1, nil)).equals(url_path1)
-      assert_that(subject.url_path(url_path1, router1)).equals(url_path1)
+      assert_that(subject.url_path(router1, nil)).is_nil
+      assert_that(subject.url_path(nil, url_path1)).equals(url_path1)
+      assert_that(subject.url_path(router1, url_path1)).equals(url_path1)
 
       router_base_url = Factory.url
       Assert.stub(router1, :base_url) { router_base_url }
-      assert_that(subject.url_path(url_path1, router1))
+      assert_that(subject.url_path(router1, url_path1))
         .equals(File.join(router_base_url, url_path1))
+    end
+
+    should "build URLs from an existing URL or a path string" do
+      url1 = base_url_class.new(router1, url_path1, url_name1)
+
+      url = base_url_class.for(router1, url1)
+      assert_that(url).is(url1)
+
+      url = base_url_class.for(router1, url_path1)
+      assert_that(url.path).equals(url1.path)
     end
   end
 
   class BaseURLInitTests < BaseURLUnitTests
     desc "when init"
-    subject { base_url_class.new(url_name1, url_path1, router1) }
+    subject { base_url_class.new(router1, url_path1, url_name1) }
 
+    should have_readers :router, :url_path, :url_name
     should have_imeths :name, :path, :path_for, :url_for
 
     should "know its attributes" do
       assert_that(subject.name)
-        .equals(base_url_class.url_name(url_name1, router1))
+        .equals(base_url_class.url_name(router1, url_name1))
       assert_that(subject.path)
-        .equals(base_url_class.url_path(url_path1, router1))
+        .equals(base_url_class.url_path(router1, url_path1))
 
       assert_that{ subject.path_for("TEST ARGS") }.raises(NotImplementedError)
       assert_that{ subject.url_for("TEST ARGS") }.raises(NotImplementedError)

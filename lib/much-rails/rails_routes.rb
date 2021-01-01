@@ -9,6 +9,17 @@ class MuchRails::RailsRoutes
   include Singleton
   include ::Rails.application.routes.url_helpers
 
+  # These methods support stubbing #method_missing in tests but have no real
+  # effect or behavior.
+
+  def self.method_missing(name, *args, &block)
+    super
+  end
+
+  def self.respond_to_missing?(*args)
+    super
+  end
+
   private
 
   def default_url_options

@@ -6,6 +6,8 @@ require "much-rails/records/validate_destroy"
 require "much-rails/result"
 require "much-rails/service"
 
+module MuchRails; end
+
 # MuchRails::DestroyService is a common mix-in for all service objects that
 # destroy records.
 module MuchRails::DestroyService

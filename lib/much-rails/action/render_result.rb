@@ -2,10 +2,11 @@
 
 require "much-rails/action/base_result"
 
-# MuchRails::Action::RenderResult is a result returned by calling a view
-# action that directs the controller to render a response.
 module MuchRails; end
 module MuchRails::Action; end
+
+# MuchRails::Action::RenderResult is a result returned by calling a view
+# action that directs the controller to render a response.
 class MuchRails::Action::RenderResult < MuchRails::Action::BaseResult
   attr_reader :render_view_model, :render_kargs
 

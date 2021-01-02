@@ -2,6 +2,9 @@
 
 require "much-rails/plugin"
 
+module MuchRails; end
+module MuchRails::Records; end
+
 # MuchRails::Records::ValidateDestroy is used to mix in custom validation
 # logic and handling in destroying records.
 #
@@ -10,8 +13,6 @@ require "much-rails/plugin"
 # #destroyable?. This check runs the custom #validate_destroy logic. If the
 # record is not destroyable, the #validate_destroy method should add
 # #destruction_error_messages.
-module MuchRails; end
-module MuchRails::Records; end
 module MuchRails::Records::ValidateDestroy
   include MuchRails::Plugin
 

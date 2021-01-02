@@ -2,6 +2,7 @@
 
 module MuchRails; end
 module MuchRails::Layout; end
+
 module MuchRails::Layout::Helper
   # This is used to render layouts. It is designed to be used in
   # the Rails layout template to render the nested layouts.

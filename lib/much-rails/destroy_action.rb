@@ -4,6 +4,7 @@ require "much-rails/plugin"
 require "much-rails/change_action"
 
 module MuchRails; end
+
 module MuchRails::DestroyAction
   include MuchRails::Plugin
 

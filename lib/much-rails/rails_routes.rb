@@ -2,9 +2,10 @@
 
 require "singleton"
 
+module MuchRails; end
+
 # MuchRails::RailsRoutes is a Singleton object that provides Rails' URL helpers
 # and path/URL generation.
-module MuchRails; end
 class MuchRails::RailsRoutes
   include Singleton
   include ::Rails.application.routes.url_helpers

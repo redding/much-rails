@@ -2,9 +2,10 @@
 
 require "much-rails/plugin"
 
+module MuchRails; end
+
 # MuchRails::CallMethod is a mix-in to implement the `call`
 # class/instance method pattern.
-module MuchRails; end
 module MuchRails::CallMethod
   include MuchRails::Plugin
 

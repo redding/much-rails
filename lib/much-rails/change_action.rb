@@ -6,6 +6,7 @@ require "much-rails/config"
 require "much-rails/plugin"
 
 module MuchRails; end
+
 module MuchRails::ChangeAction
   Error = Class.new(StandardError)
 

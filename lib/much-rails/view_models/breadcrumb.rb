@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-require "much-rails"
-
 module MuchRails; end
+
 module MuchRails::ViewModels; end
 MuchRails::ViewModels::Breadcrumb =
   Struct.new(:name, :url) do

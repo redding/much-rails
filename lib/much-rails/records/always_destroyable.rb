@@ -3,11 +3,12 @@
 require "much-rails/plugin"
 require "much-rails/records/validate_destroy"
 
+module MuchRails; end
+module MuchRails::Records; end
+
 # MuchRails::Records::AlwaysDestroyable is a mix-in to always enable destroying
 # a record. It mixes-in MuchRails::Records::ValidateDestroy and hard-codes
 # never adding destruction error messages.
-module MuchRails; end
-module MuchRails::Records; end
 module MuchRails::Records::AlwaysDestroyable
   include MuchRails::Plugin
 

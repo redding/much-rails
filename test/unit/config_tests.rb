@@ -23,7 +23,15 @@ module MuchRails::Config
       end
 
       class receiver_class::AnotherConfig
+        include MuchRails::Config
+
+        add_instance_config :sub, method_name: :sub
+
         attr_accessor :another_value
+
+        class SubConfig
+          attr_accessor :sub_value
+        end
       end
     end
 
@@ -31,6 +39,7 @@ module MuchRails::Config
       Class.new do
         include MuchRails::Config
 
+        add_config
         add_config :another
       end
     }
@@ -39,12 +48,19 @@ module MuchRails::Config
 
     should "know its attributes" do
       assert_that(subject.config).is_instance_of(subject::Config)
-      subject.configure { |config| config.value = "VALUE1" }
-      assert_that(subject.config.value).equals("VALUE1")
+      subject.configure { |config| config.value = "VALUE 1" }
+      assert_that(subject.config.value).equals("VALUE 1")
 
       assert_that(subject.another_config).is_instance_of(subject::AnotherConfig)
-      subject.configure_another { |config| config.another_value = "VALUE2" }
-      assert_that(subject.another_config.another_value).equals("VALUE2")
+      subject.configure_another { |config| config.another_value = "VALUE 2" }
+      assert_that(subject.another_config.another_value).equals("VALUE 2")
+
+      assert_that(subject.another_config.sub)
+        .is_instance_of(subject::AnotherConfig::SubConfig)
+      subject.another_config.configure_sub { |sub|
+        sub.sub_value = "VALUE 3"
+      }
+      assert_that(subject.another_config.sub.sub_value).equals("VALUE 3")
     end
   end
 end

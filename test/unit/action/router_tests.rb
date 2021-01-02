@@ -46,21 +46,20 @@ class MuchRails::Action::Router
       subject.request_type(request_type_name, &request_type_proc)
       request_type_class_name = Factory.string
       path = Factory.url
-      url = subject.url_class.for(subject, path)
+      url_name = Factory.symbol
+      url_path = Factory.url
+      url = subject.url(url_name, url_path)
       default_class_name = Factory.string
 
-      url_name = Factory.symbol
-      Assert.stub(url, :name) { url_name }
-
       subject.get(
-        url,
+        url_name,
         default_class_name,
         request_type_name => request_type_class_name
       )
-      subject.post(url, default_class_name)
-      subject.put(path, default_class_name)
-      subject.patch(url, default_class_name)
-      subject.delete(url, default_class_name)
+      subject.post(url_name, default_class_name)
+      subject.put(url_path, default_class_name)
+      subject.patch(url_name, default_class_name)
+      subject.delete(url_name, default_class_name)
 
       application_routes = FakeApplicationRoutes.new
       subject.draw(application_routes)
@@ -71,7 +70,7 @@ class MuchRails::Action::Router
         { unit_class::ACTION_CLASS_PARAM_NAME => default_class_name }
 
       assert_that(application_routes.get_calls.size).equals(2)
-      assert_that(application_routes.get_calls.first.pargs).equals([path])
+      assert_that(application_routes.get_calls.first.pargs).equals([url_path])
       assert_that(application_routes.get_calls.first.kargs)
         .equals(
           to: expected_draw_route_to,
@@ -80,7 +79,7 @@ class MuchRails::Action::Router
             { unit_class::ACTION_CLASS_PARAM_NAME => request_type_class_name },
           constraints: request_type_proc,
         )
-      assert_that(application_routes.get_calls.last.pargs).equals([path])
+      assert_that(application_routes.get_calls.last.pargs).equals([url_path])
       assert_that(application_routes.get_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
@@ -89,7 +88,7 @@ class MuchRails::Action::Router
         )
 
       assert_that(application_routes.post_calls.size).equals(1)
-      assert_that(application_routes.post_calls.last.pargs).equals([path])
+      assert_that(application_routes.post_calls.last.pargs).equals([url_path])
       assert_that(application_routes.post_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
@@ -98,7 +97,7 @@ class MuchRails::Action::Router
         )
 
       assert_that(application_routes.put_calls.size).equals(1)
-      assert_that(application_routes.put_calls.last.pargs).equals([path])
+      assert_that(application_routes.put_calls.last.pargs).equals([url_path])
       assert_that(application_routes.put_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
@@ -107,7 +106,7 @@ class MuchRails::Action::Router
         )
 
       assert_that(application_routes.patch_calls.size).equals(1)
-      assert_that(application_routes.patch_calls.last.pargs).equals([path])
+      assert_that(application_routes.patch_calls.last.pargs).equals([url_path])
       assert_that(application_routes.patch_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
@@ -116,7 +115,7 @@ class MuchRails::Action::Router
         )
 
       assert_that(application_routes.delete_calls.size).equals(1)
-      assert_that(application_routes.delete_calls.last.pargs).equals([path])
+      assert_that(application_routes.delete_calls.last.pargs).equals([url_path])
       assert_that(application_routes.delete_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,

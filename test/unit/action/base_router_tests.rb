@@ -127,13 +127,14 @@ class MuchRails::Action::BaseRouter
       request_type_class_name = Factory.string
       request_type_action =
         unit_class::RequestTypeAction.new(request_type, request_type_class_name)
-      path = Factory.url
-      url = subject.url_class.for(subject, path)
+      url_name = Factory.symbol
+      url_path = Factory.url
+      url = subject.url(url_name, url_path)
       default_class_name = Factory.string
 
       definition =
         subject.get(
-          url,
+          url_name,
           default_class_name,
           request_type_name => request_type_class_name
         )
@@ -147,7 +148,7 @@ class MuchRails::Action::BaseRouter
           request_type_actions: [request_type_action],
         )
 
-      definition = subject.post(url, default_class_name)
+      definition = subject.post(url_name, default_class_name)
       assert_that(subject.definitions.size).equals(2)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -158,18 +159,18 @@ class MuchRails::Action::BaseRouter
           request_type_actions: [],
         )
 
-      definition = subject.put(path, default_class_name)
+      definition = subject.put(url_path, default_class_name)
       assert_that(subject.definitions.size).equals(3)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
         .equals(
           http_method: :put,
-          url: url,
+          url: subject.url_class.for(subject, url_path),
           default_action_class_name: default_class_name,
           request_type_actions: [],
         )
 
-      definition = subject.patch(url, default_class_name)
+      definition = subject.patch(url_name, default_class_name)
       assert_that(subject.definitions.size).equals(4)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -180,7 +181,7 @@ class MuchRails::Action::BaseRouter
           request_type_actions: [],
         )
 
-      definition = subject.delete(url, default_class_name)
+      definition = subject.delete(url_name, default_class_name)
       assert_that(subject.definitions.size).equals(5)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -322,7 +323,7 @@ class MuchRails::Action::BaseRouter
 
     let(:router1) { unit_class.new }
 
-    should have_imeths :empty?, :add, :get, :path_for, :url_for
+    should have_imeths :empty?, :add, :fetch, :path_for, :url_for
 
     should "add URLs" do
       assert_that(subject).is_empty
@@ -337,16 +338,17 @@ class MuchRails::Action::BaseRouter
       assert_that(ex.message).equals("There is already a URL named `:url1`.")
     end
 
-    should "get URLs" do
+    should "fetch URLs" do
       ex =
-        assert_that{ subject.get(:url1) }.raises(ArgumentError)
+        assert_that{ subject.fetch(:url1) }.raises(ArgumentError)
       assert_that(ex.message).equals("There is no URL named `:url1`.")
+      assert_that(subject.fetch(:url1) { "/url1" }).equals("/url1")
 
       added_url = subject.add(:url1, Factory.url)
-      url       = subject.get(:url1)
+      url       = subject.fetch(:url1)
       assert_that(url).is(added_url)
 
-      url = subject.get(:url1.to_s)
+      url = subject.fetch(:url1.to_s)
       assert_that(url).is(added_url)
     end
 

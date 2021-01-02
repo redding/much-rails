@@ -26,13 +26,13 @@ class MuchRails::Action::RenderResult
       assert_that(subject.render_kargs).equals(render_kargs1)
 
       controller1.instance_exec(subject, &subject.execute_block)
-      assert_that(controller1.view_model).equals(view_model1)
+      assert_that(controller1.view).equals(view_model1)
       assert_that(controller1.render_called_with).equals(render_kargs1)
     end
   end
 
   class FakeController
-    attr_reader :view_model, :render_called_with
+    attr_reader :view, :render_called_with
 
     def render(**kargs)
       @render_called_with = kargs

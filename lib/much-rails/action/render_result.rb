@@ -17,7 +17,7 @@ class MuchRails::Action::RenderResult < MuchRails::Action::BaseResult
   # This block is called using `instance_exec` in the scope of the controller
   def execute_block
     ->(result) {
-      @view_model = result.render_view_model
+      @view = result.render_view_model
       render(**result.render_kargs)
     }
   end

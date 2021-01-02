@@ -21,6 +21,7 @@ class MuchRails::Action::BaseRouter
     @definitions = []
 
     @base_url = DEFAULT_BASE_URL
+    instance_exec(&(block || proc{}))
   end
 
   def url_class
@@ -204,7 +205,12 @@ class MuchRails::Action::BaseRouter
   end
 
   RequestType = Struct.new(:name, :constraints_lambda)
-  RequestTypeAction = Struct.new(:request_type, :action_class_name)
+  RequestTypeAction =
+    Struct.new(:request_type, :class_name) do
+      def constraints_lambda
+        request_type.constraints_lambda
+      end
+    end
 
   class URLSet
     def initialize(router)

@@ -31,7 +31,7 @@ module MuchRails::Action
 
     add_config :much_rails_action
 
-    attr_reader :params, :errors
+    attr_reader :params, :current_user, :request, :errors
   end
 
   plugin_class_methods do
@@ -107,8 +107,10 @@ module MuchRails::Action
   end
 
   plugin_instance_methods do
-    def initialize(params:)
+    def initialize(params:, current_user:, request:)
       @params = params.to_h.with_indifferent_access
+      @current_user = current_user
+      @request = request
       @errors = Hash.new { |hash, key| hash[key] = [] }
     end
 

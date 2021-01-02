@@ -157,7 +157,13 @@ module MuchRails::Action
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject { receiver_class.new(params: params) }
+    subject {
+      receiver_class.new(
+        params: params1,
+        current_user: current_user1,
+        request: request1,
+      )
+    }
 
     let(:receiver_class) {
       Class.new do
@@ -202,16 +208,25 @@ module MuchRails::Action
     let(:date1) { current_date }
     let(:time1) { current_time.utc }
 
-    let(:params) {
+    let(:params1) {
       {
         name: "NAME",
         entered_on: current_date,
         updated_at: current_time.utc,
-        active: "true"
+        active: "true",
       }
     }
+    let(:current_user1) { "CURRENT USER 1"}
+    let(:request1) { "REQUEST 1"}
 
+    should have_readers :params, :current_user, :request, :errors
     should have_imeths :on_call, :valid_action?, :successful_action?
+
+    should "know its attributes" do
+      assert_that(subject.params).equals(params1.with_indifferent_access)
+      assert_that(subject.current_user).equals(current_user1)
+      assert_that(subject.request).equals(request1)
+    end
 
     should "return the expected Result" do
       result = subject.call
@@ -306,22 +321,50 @@ module MuchRails::Action
       result = subject.call
       assert_that(result.errors).equals(subject.errors)
 
-      params.delete(:name)
-      result = receiver_class.new(params: params).call
+      params1.delete(:name)
+      result =
+        receiver_class
+          .new(
+            params: params1,
+            current_user: current_user1,
+            request: request1,
+          )
+          .call
       assert_that(result.errors[:name]).includes("can't be blank")
 
-      params[:entered_on] = "INVALID DATE"
-      result = receiver_class.new(params: params).call
+      params1[:entered_on] = "INVALID DATE"
+      result =
+        receiver_class
+          .new(
+            params: params1,
+            current_user: current_user1,
+            request: request1,
+          )
+          .call
       assert_that(result.errors[:entered_on]).includes("invalid date")
 
-      params[:updated_at] = "INVALID TIME"
-      result = receiver_class.new(params: params).call
+      params1[:updated_at] = "INVALID TIME"
+      result =
+        receiver_class
+          .new(
+            params: params1,
+            current_user: current_user1,
+            request: request1,
+          )
+          .call
       assert_that(result.errors[:updated_at]).includes("invalid time")
 
-      params[:validate_other_param] = true
-      params[:other_param] = [nil, ""].sample
-      params[:fail_custom_validation] = true
-      result = receiver_class.new(params: params).call
+      params1[:validate_other_param] = true
+      params1[:other_param] = [nil, ""].sample
+      params1[:fail_custom_validation] = true
+      result =
+        receiver_class
+          .new(
+            params: params1,
+            current_user: current_user1,
+            request: request1,
+          )
+          .call
       assert_that(result.errors[:other_param]).includes("can't be blank")
       assert_that(result.errors[:custom_validation]).includes("ERROR1")
     end

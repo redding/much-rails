@@ -48,7 +48,13 @@ module MuchRails::SaveAction
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     should have_imeths :save_result
 

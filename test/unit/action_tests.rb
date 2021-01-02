@@ -197,14 +197,16 @@ module MuchRails::Action
       end
     }
 
-    let(:date1) { Date.current }
-    let(:time1) { Time.current.utc }
+    let(:current_date) { Date.current }
+    let(:current_time) { Time.current }
+    let(:date1) { current_date }
+    let(:time1) { current_time.utc }
 
     let(:params) {
       {
         name: "NAME",
-        entered_on: Date.current,
-        updated_at: Time.current.utc,
+        entered_on: current_date,
+        updated_at: current_time.utc,
         active: "true"
       }
     }

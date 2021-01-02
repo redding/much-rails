@@ -149,8 +149,13 @@ class MuchRails::Action::BaseRouter
 
   private
 
-  def route(http_method, path, default_class_name, **request_type_class_names)
-    url = url_class.for(self, path)
+  def route(
+        http_method,
+        url_name_or_path,
+        default_class_name,
+        **request_type_class_names)
+    url =
+      @url_set.fetch(url_name_or_path){ url_class.for(self, url_name_or_path) }
     request_type_actions =
       request_type_class_names
         .reduce([]) { |acc, (request_type_name, action_class_name)|
@@ -231,19 +236,25 @@ class MuchRails::Action::BaseRouter
       @set[key] = url
     end
 
-    def get(name)
+    def fetch(name, &block)
       key = @router.url_class.url_name(@router, name.to_sym)
-      @set.fetch(key) {
-        raise ArgumentError, "There is no URL named `#{name.to_sym.inspect}`."
-      }
+      @set.fetch(
+        key,
+        &(
+          block ||
+          proc {
+            raise ArgumentError, "There is no URL named `#{name.to_sym.inspect}`."
+          }
+        )
+      )
     end
 
     def path_for(name, *args)
-      get(name).path_for(*args)
+      fetch(name).path_for(*args)
     end
 
     def url_for(name, *args)
-      get(name).url_for(*args)
+      fetch(name).url_for(*args)
     end
   end
 

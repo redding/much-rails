@@ -86,20 +86,6 @@ module MuchRails::Layout
         .equals("Some Resource attribute1 - Some Portal | Some App")
     end
 
-    should "know its #full_page_title given custom separators" do
-      receiver_class.application_page_title { "Some App" }
-      receiver_class.page_title { "Some Portal" }
-      receiver_class.page_title { "Some Resource #{attribute1}" }
-
-      assert_that(
-        subject
-          .full_page_title(
-            segment_separator: ".",
-            application_separator: "^")
-          )
-          .equals("Some Resource attribute1 . Some Portal ^ Some App")
-    end
-
     should "know its #breadcrumbs" do
       receiver = receiver_class.new
       assert_that(receiver.breadcrumbs).is_empty

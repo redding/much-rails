@@ -8,15 +8,8 @@ module MuchRails::Action
 
     let(:unit_class) { MuchRails::Action }
 
-    should have_imeths :sanitized_exception_classes
-
     should "include MuchRails::Plugin" do
       assert_that(subject).includes(MuchRails::Plugin)
-    end
-
-    should "know its attributes" do
-      assert_that(subject.sanitized_exception_classes)
-        .equals([ActiveRecord::RecordInvalid])
     end
   end
 

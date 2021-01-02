@@ -15,25 +15,14 @@ require "much-rails/plugin"
 require "much-rails/time"
 require "much-rails/wrap_and_call_method"
 
-# MuchRails::Action defines the common behaviors for all view action classes.
 module MuchRails; end
+
+# MuchRails::Action defines the common behaviors for all view action classes.
 module MuchRails::Action
   ForbiddenError = Class.new(StandardError)
   ActionError = Class.new(StandardError)
 
   include MuchRails::Plugin
-
-  def self.sanitized_exception_classes
-    [ActiveRecord::RecordInvalid]
-  end
-
-  def self.raise_response_exceptions=(value)
-    @raise_response_exceptions = value
-  end
-
-  def self.raise_response_exceptions?
-    !!@raise_response_exceptions
-  end
 
   plugin_included do
     include MuchRails::Config
@@ -224,7 +213,7 @@ module MuchRails::Action
       call_action_on_before_call_blocks
       catch(:halt) { instance_exec(&self.class.on_call_block) }
       call_action_on_after_call_blocks
-    rescue *MuchRails::Action.sanitized_exception_classes => ex
+    rescue *MuchRails.config.action.sanitized_exception_classes => ex
       raise(self.class.action_error_class, ex.message, ex.backtrace, cause: ex)
     end
 

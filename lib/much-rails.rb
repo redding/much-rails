@@ -35,6 +35,7 @@ require "much-rails/railtie" if defined?(Rails::Railtie)
 
 module MuchRails
   include MuchRails::Config
+  include MuchRails::NotGiven
 
   add_config :much_rails, method_name: :config
   singleton_class.alias_method :configure, :configure_much_rails

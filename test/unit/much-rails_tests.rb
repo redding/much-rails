@@ -11,6 +11,8 @@ module MuchRails
     should have_imeths :config, :configure_much_rails, :configure
 
     should "be configured as expected" do
+      assert_that(subject).includes(MuchRails::Config)
+      assert_that(subject).includes(MuchRails::NotGiven)
       assert_that(subject.config).is_not_nil
     end
   end

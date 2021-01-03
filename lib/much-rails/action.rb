@@ -107,7 +107,7 @@ module MuchRails::Action
   end
 
   plugin_instance_methods do
-    def initialize(params:, current_user:, request:)
+    def initialize(params: nil, current_user: nil, request: nil)
       @params = params.to_h.with_indifferent_access
       @current_user = current_user
       @request = request

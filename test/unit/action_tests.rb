@@ -291,8 +291,7 @@ module MuchRails::Action
         .equals(template: subject.class.to_s.tableize.singularize)
 
       receiver_class.on_call { render("some/view/template", layout: false) }
-      action =
-        receiver_class.new(params: params1, current_user: nil,request: nil)
+      action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is_nil
       assert_that(result.render_kargs)
@@ -304,8 +303,7 @@ module MuchRails::Action
       receiver_class.on_call {
         render(view_model, "some/view/template", layout: false)
       }
-      action =
-        receiver_class.new(params: params1, current_user: nil,request: nil)
+      action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
       assert_that(result.render_kargs)
@@ -317,15 +315,13 @@ module MuchRails::Action
       receiver_class.on_call {
         render(view_model, "some/view/template", template: "other/template")
       }
-      action =
-        receiver_class.new(params: params1, current_user: nil,request: nil)
+      action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
       assert_that(result.render_kargs).equals(template: "other/template")
 
       receiver_class.on_call { render(view_model, template: "other/template") }
-      action =
-        receiver_class.new(params: params1, current_user: nil,request: nil)
+      action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
       assert_that(result.render_kargs).equals(template: "other/template")
@@ -364,49 +360,21 @@ module MuchRails::Action
       assert_that(result.errors).equals(subject.errors)
 
       params1.delete(:name)
-      result =
-        receiver_class
-          .new(
-            params: params1,
-            current_user: current_user1,
-            request: request1,
-          )
-          .call
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:name]).includes("can't be blank")
 
       params1[:entered_on] = "INVALID DATE"
-      result =
-        receiver_class
-          .new(
-            params: params1,
-            current_user: current_user1,
-            request: request1,
-          )
-          .call
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:entered_on]).includes("invalid date")
 
       params1[:updated_at] = "INVALID TIME"
-      result =
-        receiver_class
-          .new(
-            params: params1,
-            current_user: current_user1,
-            request: request1,
-          )
-          .call
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:updated_at]).includes("invalid time")
 
       params1[:validate_other_param] = true
       params1[:other_param] = [nil, ""].sample
       params1[:fail_custom_validation] = true
-      result =
-        receiver_class
-          .new(
-            params: params1,
-            current_user: current_user1,
-            request: request1,
-          )
-          .call
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:other_param]).includes("can't be blank")
       assert_that(result.errors[:custom_validation]).includes("ERROR1")
     end

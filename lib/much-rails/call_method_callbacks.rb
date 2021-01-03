@@ -4,13 +4,14 @@ require "much-rails/call_method"
 require "much-rails/config"
 require "much-rails/plugin"
 
+module MuchRails; end
+
 # MuchRails::CallMethodCallbacks is a common mix-in for adding before/after
 # callback support to MuchRails::CallMethod. This is separate from the
 # MuchRails::CallMethod mix-in as it adds a bit of overhead (e.g. the
 # `much_rails_call_callbacks_config`) that may not be desired by things
 # just wanting to use the basic `MuchRails::CallMethod`. This allows opting-in
 # to callback support as needed.
-module MuchRails; end
 module MuchRails::CallMethodCallbacks
   include MuchRails::Plugin
 

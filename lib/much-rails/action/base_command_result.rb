@@ -2,10 +2,11 @@
 
 require "much-rails/action/base_result"
 
-# MuchRails::Action::BaseCommandResult is a base result that, when
-# executed, runs a generic controller command with some given args.
 module MuchRails; end
 module MuchRails::Action; end
+
+# MuchRails::Action::BaseCommandResult is a base result that, when
+# executed, runs a generic controller command with some given args.
 class MuchRails::Action::BaseCommandResult < MuchRails::Action::BaseResult
   attr_reader :command_name, :command_args
 

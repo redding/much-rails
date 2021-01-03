@@ -4,10 +4,11 @@ require "much-rails/layout/helper"
 require "much-rails/plugin"
 require "much-rails/view_models/breadcrumb"
 
+module MuchRails; end
+
 # MuchRails::Layout is a mix-in for view models that represent HTML rendered
 # in a layout. It adds a DSL for accumulating page titles, stylesheets and
 # javascripts.
-module MuchRails; end
 module MuchRails::Layout
   include MuchRails::Plugin
 
@@ -68,7 +69,7 @@ module MuchRails::Layout
         instance_eval(&(self.class.application_page_title || ->(_) {}))
     end
 
-    def full_page_title(segment_separator: "-", application_separator: "|")
+    def full_page_title
       @full_page_title ||=
         [
           self
@@ -76,12 +77,12 @@ module MuchRails::Layout
             .page_titles
             .reverse
             .map! { |segment| instance_eval(&segment) }
-            .join(" #{segment_separator} "),
+            .join(MuchRails.config.layout.full_page_title_segment_separator),
           application_page_title
         ]
           .map(&:presence)
           .compact
-          .join(" #{application_separator} ")
+          .join(MuchRails.config.layout.full_page_title_application_separator)
           .presence
     end
 

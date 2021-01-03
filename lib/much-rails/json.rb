@@ -2,9 +2,10 @@
 
 require "oj"
 
+module MuchRails; end
+
 # MuchRails::JSON is an adapter for encoding and decoding JSON values.
 # It uses Oj to do the work: https://github.com/ohler55/oj#-gem
-module MuchRails; end
 module MuchRails::JSON
   InvalidError = Class.new(TypeError)
 

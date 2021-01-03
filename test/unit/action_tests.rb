@@ -8,15 +8,8 @@ module MuchRails::Action
 
     let(:unit_class) { MuchRails::Action }
 
-    should have_imeths :sanitized_exception_classes
-
     should "include MuchRails::Plugin" do
       assert_that(subject).includes(MuchRails::Plugin)
-    end
-
-    should "know its attributes" do
-      assert_that(subject.sanitized_exception_classes)
-        .equals([ActiveRecord::RecordInvalid])
     end
   end
 
@@ -164,7 +157,13 @@ module MuchRails::Action
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject { receiver_class.new(params: params) }
+    subject {
+      receiver_class.new(
+        params: params1,
+        current_user: current_user1,
+        request: request1,
+      )
+    }
 
     let(:receiver_class) {
       Class.new do
@@ -204,19 +203,30 @@ module MuchRails::Action
       end
     }
 
-    let(:date1) { Date.current }
-    let(:time1) { Time.current.utc }
+    let(:current_date) { Date.current }
+    let(:current_time) { Time.current }
+    let(:date1) { current_date }
+    let(:time1) { current_time.utc }
 
-    let(:params) {
+    let(:params1) {
       {
         name: "NAME",
-        entered_on: Date.current,
-        updated_at: Time.current.utc,
-        active: "true"
+        entered_on: current_date,
+        updated_at: current_time.utc,
+        active: "true",
       }
     }
+    let(:current_user1) { "CURRENT USER 1"}
+    let(:request1) { "REQUEST 1"}
 
+    should have_readers :params, :current_user, :request, :errors
     should have_imeths :on_call, :valid_action?, :successful_action?
+
+    should "know its attributes" do
+      assert_that(subject.params).equals(params1.with_indifferent_access)
+      assert_that(subject.current_user).equals(current_user1)
+      assert_that(subject.request).equals(request1)
+    end
 
     should "return the expected Result" do
       result = subject.call
@@ -273,10 +283,48 @@ module MuchRails::Action
     end
 
     should "return the expected Result given an on_call block that renders" do
-      receiver_class.on_call { render("VIEW MODEL", layout: false) }
+      view_model = Object.new
+      receiver_class.on_call { render(view_model) }
       result = subject.call
-      assert_that(result.render_view_model).equals("VIEW MODEL")
-      assert_that(result.render_kargs).equals(layout: false)
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs)
+        .equals(template: subject.class.to_s.tableize.singularize)
+
+      receiver_class.on_call { render("some/view/template", layout: false) }
+      action = receiver_class.new(params: params1)
+      result = action.call
+      assert_that(result.render_view_model).is_nil
+      assert_that(result.render_kargs)
+        .equals(
+          template: "some/view/template",
+          layout: false,
+        )
+
+      receiver_class.on_call {
+        render(view_model, "some/view/template", layout: false)
+      }
+      action = receiver_class.new(params: params1)
+      result = action.call
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs)
+        .equals(
+          template: "some/view/template",
+          layout: false,
+        )
+
+      receiver_class.on_call {
+        render(view_model, "some/view/template", template: "other/template")
+      }
+      action = receiver_class.new(params: params1)
+      result = action.call
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs).equals(template: "other/template")
+
+      receiver_class.on_call { render(view_model, template: "other/template") }
+      action = receiver_class.new(params: params1)
+      result = action.call
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs).equals(template: "other/template")
     end
 
     should "return the expected Result given an on_call block that redirects" do
@@ -311,22 +359,22 @@ module MuchRails::Action
       result = subject.call
       assert_that(result.errors).equals(subject.errors)
 
-      params.delete(:name)
-      result = receiver_class.new(params: params).call
+      params1.delete(:name)
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:name]).includes("can't be blank")
 
-      params[:entered_on] = "INVALID DATE"
-      result = receiver_class.new(params: params).call
+      params1[:entered_on] = "INVALID DATE"
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:entered_on]).includes("invalid date")
 
-      params[:updated_at] = "INVALID TIME"
-      result = receiver_class.new(params: params).call
+      params1[:updated_at] = "INVALID TIME"
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:updated_at]).includes("invalid time")
 
-      params[:validate_other_param] = true
-      params[:other_param] = [nil, ""].sample
-      params[:fail_custom_validation] = true
-      result = receiver_class.new(params: params).call
+      params1[:validate_other_param] = true
+      params1[:other_param] = [nil, ""].sample
+      params1[:fail_custom_validation] = true
+      result = receiver_class.new(params: params1).call
       assert_that(result.errors[:other_param]).includes("can't be blank")
       assert_that(result.errors[:custom_validation]).includes("ERROR1")
     end

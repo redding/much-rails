@@ -73,14 +73,14 @@ module MuchRails::Action::Controller
     }
 
     should "return not found when not raising response exceptions" do
-      Assert.stub(MuchRails::Action, :raise_response_exceptions?) { false }
+      Assert.stub(MuchRails.config.action, :raise_response_exceptions?) { false }
 
       assert_that(subject.much_rails_action_class).is_nil
       assert_that(subject.head_called_with).equals([:not_found])
     end
 
     should "raise an exception when raising response exceptions" do
-      Assert.stub(MuchRails::Action, :raise_response_exceptions?) { true }
+      Assert.stub(MuchRails.config.action, :raise_response_exceptions?) { true }
 
       assert_that { subject.much_rails_action_class }
         .raises(MuchRails::Action::ActionError)

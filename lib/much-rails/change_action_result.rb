@@ -2,9 +2,10 @@
 
 require "much-rails/result"
 
+module MuchRails; end
+
 # MuchRails::ChangeActionResult is a Result object intended to wrap and
 # compose a MuchRails::Result.
-module MuchRails; end
 class MuchRails::ChangeActionResult
   def self.success(**kargs)
     new(MuchRails::Result.success(**kargs))

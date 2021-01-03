@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_record"
+require "much-rails/action/controller"
 require "much-rails/action/head_result"
 require "much-rails/action/redirect_to_result"
 require "much-rails/action/render_result"
@@ -15,25 +16,14 @@ require "much-rails/plugin"
 require "much-rails/time"
 require "much-rails/wrap_and_call_method"
 
-# MuchRails::Action defines the common behaviors for all view action classes.
 module MuchRails; end
+
+# MuchRails::Action defines the common behaviors for all view action classes.
 module MuchRails::Action
   ForbiddenError = Class.new(StandardError)
   ActionError = Class.new(StandardError)
 
   include MuchRails::Plugin
-
-  def self.sanitized_exception_classes
-    [ActiveRecord::RecordInvalid]
-  end
-
-  def self.raise_response_exceptions=(value)
-    @raise_response_exceptions = value
-  end
-
-  def self.raise_response_exceptions?
-    !!@raise_response_exceptions
-  end
 
   plugin_included do
     include MuchRails::Config
@@ -41,7 +31,7 @@ module MuchRails::Action
 
     add_config :much_rails_action
 
-    attr_reader :params, :errors
+    attr_reader :params, :current_user, :request, :errors
   end
 
   plugin_class_methods do
@@ -117,8 +107,10 @@ module MuchRails::Action
   end
 
   plugin_instance_methods do
-    def initialize(params:)
+    def initialize(params: nil, current_user: nil, request: nil)
       @params = params.to_h.with_indifferent_access
+      @current_user = current_user
+      @request = request
       @errors = Hash.new { |hash, key| hash[key] = [] }
     end
 
@@ -224,7 +216,7 @@ module MuchRails::Action
       call_action_on_before_call_blocks
       catch(:halt) { instance_exec(&self.class.on_call_block) }
       call_action_on_after_call_blocks
-    rescue *MuchRails::Action.sanitized_exception_classes => ex
+    rescue *MuchRails.config.action.sanitized_exception_classes => ex
       raise(self.class.action_error_class, ex.message, ex.backtrace, cause: ex)
     end
 
@@ -248,9 +240,19 @@ module MuchRails::Action
       throw(:halt)
     end
 
-    def render(view_model = nil, **kargs)
+    def render(*args, **kargs)
+      template, view_model =
+        [
+          args.last.kind_of?(::String) ? args.pop : nil,
+          args.pop
+        ]
+      result_kargs =
+        {
+          template: template || self.class.to_s.tableize.singularize
+        }.merge(**kargs)
+
       @much_rails_action_result =
-        MuchRails::Action::RenderResult.new(view_model, **kargs)
+        MuchRails::Action::RenderResult.new(view_model, *args, **result_kargs)
       halt
     end
 

@@ -3,10 +3,11 @@
 require "much-rails/action/router"
 require "much-rails/plugin"
 
-# MuchRails::Action::Controller defines the behaviors for controllers processing
-# MuchRails::Actions.
 module MuchRails; end
 module MuchRails::Action; end
+
+# MuchRails::Action::Controller defines the behaviors for controllers processing
+# MuchRails::Actions.
 module MuchRails::Action::Controller
   include MuchRails::Plugin
 
@@ -58,7 +59,7 @@ module MuchRails::Action::Controller
       begin
         @much_rails_action_class = much_rails_action_class_name.constantize
       rescue NameError => ex
-        if MuchRails::Action.raise_response_exceptions?
+        if MuchRails.config.action.raise_response_exceptions?
           raise(
             MuchRails::Action::ActionError,
             "No Action class defined for #{much_rails_action_class_name.inspect}.",

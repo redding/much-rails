@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require "much-rails"
+module MuchRails; end
 
 # MuchRails::InputValue is a utility module for dealing with input field values.
-module MuchRails;end
 module MuchRails::InputValue
   def self.strip(value)
     return if value.blank?

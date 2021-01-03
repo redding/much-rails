@@ -56,6 +56,13 @@ module MuchRails::ChangeAction
   class InitTests < ReceiverTests
     desc "when init"
     subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     setup do
       Assert.stub(subject, :any_unextracted_change_result_validation_errors?) {
@@ -75,7 +82,13 @@ module MuchRails::ChangeAction
 
   class RecordErrorsWithResultExceptionTests < InitTests
     desc "with record errors and a result exception"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     setup do
       Assert.stub(subject, :any_unextracted_change_result_validation_errors?) {
@@ -103,7 +116,13 @@ module MuchRails::ChangeAction
 
   class RecordErrorsWithNoResultExceptionTests < InitTests
     desc "with record errors and no result exception"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     setup do
       Assert.stub(subject, :any_unextracted_change_result_validation_errors?) {
@@ -128,7 +147,13 @@ module MuchRails::ChangeAction
 
   class ChangeResultMethodTests < InitTests
     desc "#change_result method"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     should "memoize and return the expected Result" do
       result = subject.change_result
@@ -151,7 +176,13 @@ module MuchRails::ChangeAction
 
   class AnyUnextractedChangeResultValidationErrorsMethodTests < ReceiverTests
     desc "#any_unextracted_change_result_validation_errors? method"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     let(:receiver_class) {
       Class.new do
@@ -171,7 +202,13 @@ module MuchRails::ChangeAction
 
   class NoValidationErrorsTests < AnyUnextractedChangeResultValidationErrorsMethodTests
     desc "with no validation errors"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     let(:receiver_class) {
       Class.new do
@@ -191,7 +228,13 @@ module MuchRails::ChangeAction
 
   class ValidationErrorsTests < AnyUnextractedChangeResultValidationErrorsMethodTests
     desc "with validation errors"
-    subject { receiver_class.new(params: {}) }
+    subject {
+      receiver_class.new(
+        params: {},
+        current_user: nil,
+        request: nil,
+      )
+    }
 
     let(:receiver_class) {
       Class.new do

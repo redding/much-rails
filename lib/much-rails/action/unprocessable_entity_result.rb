@@ -2,14 +2,15 @@
 
 require "much-rails/action/base_result"
 
+module MuchRails; end
+module MuchRails::Action; end
+
 # MuchRails::Action::UnprocessableEntityResult is a result returned by
 # calling a view action that is not valid. It returns JSON with the validation
 # details.
 #
 # This result is only returned if, after validating the action, there are
 # errors. Most commonly this occurs when validating form submission params.
-module MuchRails; end
-module MuchRails::Action; end
 class MuchRails::Action::UnprocessableEntityResult <
         MuchRails::Action::BaseResult
   attr_reader :errors

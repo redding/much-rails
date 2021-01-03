@@ -240,9 +240,19 @@ module MuchRails::Action
       throw(:halt)
     end
 
-    def render(view_model = nil, **kargs)
+    def render(*args, **kargs)
+      template, view_model =
+        [
+          args.last.kind_of?(::String) ? args.pop : nil,
+          args.pop
+        ]
+      result_kargs =
+        {
+          template: template || self.class.to_s.tableize.singularize
+        }.merge(**kargs)
+
       @much_rails_action_result =
-        MuchRails::Action::RenderResult.new(view_model, **kargs)
+        MuchRails::Action::RenderResult.new(view_model, *args, **result_kargs)
       halt
     end
 

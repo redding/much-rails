@@ -283,10 +283,52 @@ module MuchRails::Action
     end
 
     should "return the expected Result given an on_call block that renders" do
-      receiver_class.on_call { render("VIEW MODEL", layout: false) }
+      view_model = Object.new
+      receiver_class.on_call { render(view_model) }
       result = subject.call
-      assert_that(result.render_view_model).equals("VIEW MODEL")
-      assert_that(result.render_kargs).equals(layout: false)
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs)
+        .equals(template: subject.class.to_s.tableize.singularize)
+
+      receiver_class.on_call { render("some/view/template", layout: false) }
+      action =
+        receiver_class.new(params: params1, current_user: nil,request: nil)
+      result = action.call
+      assert_that(result.render_view_model).is_nil
+      assert_that(result.render_kargs)
+        .equals(
+          template: "some/view/template",
+          layout: false,
+        )
+
+      receiver_class.on_call {
+        render(view_model, "some/view/template", layout: false)
+      }
+      action =
+        receiver_class.new(params: params1, current_user: nil,request: nil)
+      result = action.call
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs)
+        .equals(
+          template: "some/view/template",
+          layout: false,
+        )
+
+      receiver_class.on_call {
+        render(view_model, "some/view/template", template: "other/template")
+      }
+      action =
+        receiver_class.new(params: params1, current_user: nil,request: nil)
+      result = action.call
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs).equals(template: "other/template")
+
+      receiver_class.on_call { render(view_model, template: "other/template") }
+      action =
+        receiver_class.new(params: params1, current_user: nil,request: nil)
+      result = action.call
+      assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_kargs).equals(template: "other/template")
     end
 
     should "return the expected Result given an on_call block that redirects" do

@@ -30,12 +30,14 @@ module MuchRails
     desc ".action"
     subject { unit_class.config.action }
 
+    should have_accessors :namespace
     should have_accessors :sanitized_exception_classes
     should have_accessors :raise_response_exceptions
 
     should have_imeths :raise_response_exceptions?
 
     should "be configured as expected" do
+      assert_that(subject.namespace).equals("")
       assert_that(subject.sanitized_exception_classes)
         .equals([ActiveRecord::RecordInvalid])
       assert_that(subject.raise_response_exceptions).is_false

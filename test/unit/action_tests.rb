@@ -17,6 +17,14 @@ module MuchRails::Action
     desc "receiver"
     subject { receiver_class }
 
+    setup do
+      Assert.stub(MuchRails.config.action, :namespace) { "Actions::" }
+      Assert.stub(receiver_class, :to_s) {
+        "#{MuchRails.config.action.namespace}Some::Namespace::For::"\
+        "#{MuchRails.config.action.namespace}Thing::Show"
+      }
+    end
+
     let(:receiver_class) {
       Class.new do
         include MuchRails::Action
@@ -151,6 +159,14 @@ module MuchRails::Action
           "subject.on_after_call_blocks.dup",
           from: [block1],
           to: [block1, block2]
+        )
+
+      # default_action_template_name
+      assert_that(subject.default_action_template_name)
+        .equals(
+          "some/namespace/for/"\
+          "#{MuchRails.config.action.namespace.tableize.singularize}"\
+          "thing/show"
         )
     end
   end
@@ -288,7 +304,7 @@ module MuchRails::Action
       result = subject.call
       assert_that(result.render_view_model).is(view_model)
       assert_that(result.render_kargs)
-        .equals(template: subject.class.to_s.tableize.singularize)
+        .equals(template: subject.class.default_action_template_name)
 
       receiver_class.on_call { render("some/view/template", layout: false) }
       action = receiver_class.new(params: params1)

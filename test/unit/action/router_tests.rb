@@ -45,10 +45,9 @@ class MuchRails::Action::Router
       request_type_proc = ->(request) {}
       subject.request_type(request_type_name, &request_type_proc)
       request_type_class_name = Factory.string
-      path = Factory.url
       url_name = Factory.symbol
       url_path = Factory.url
-      url = subject.url(url_name, url_path)
+      subject.url(url_name, url_path)
       default_class_name = Factory.string
 
       subject.get(
@@ -137,7 +136,10 @@ class MuchRails::Action::Router
     subject { url_class.new(router1, url_path1, url_name1) }
 
     setup do
-      Assert.stub_on_call(MuchRails::RailsRoutes, :method_missing) { |call|
+      Assert.stub_on_call(
+        MuchRails::RailsRoutes.instance,
+        :method_missing
+      ) { |call|
         @rails_routes_method_missing_call = call
         "TEST PATH OR URL STRING"
       }

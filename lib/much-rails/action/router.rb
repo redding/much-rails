@@ -64,11 +64,11 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
 
   class URL < MuchRails::Action::BaseRouter::BaseURL
     def path_for(*args)
-      MuchRails::RailsRoutes.public_send("#{name}_path", *args)
+      MuchRails::RailsRoutes.instance.public_send("#{name}_path", *args)
     end
 
     def url_for(*args)
-      MuchRails::RailsRoutes.public_send("#{name}_url", *args)
+      MuchRails::RailsRoutes.instance.public_send("#{name}_url", *args)
     end
   end
 end

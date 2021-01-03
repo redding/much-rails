@@ -46,10 +46,12 @@ module MuchRails
     add_instance_config :layout, method_name: :layout
 
     class ActionConfig
+      attr_accessor :namespace
       attr_accessor :sanitized_exception_classes
       attr_accessor :raise_response_exceptions
 
       def initialize
+        @namespace = ""
         @sanitized_exception_classes = [ActiveRecord::RecordInvalid]
         @raise_response_exceptions   = false
       end

@@ -104,6 +104,14 @@ module MuchRails::Action
     def on_after_call_blocks
       much_rails_action_config.on_after_call_blocks
     end
+
+    def default_action_template_name
+      @default_action_template_name ||=
+        to_s
+          .remove(/\A#{MuchRails.config.action.namespace}/)
+          .tableize
+          .singularize
+    end
   end
 
   plugin_instance_methods do
@@ -248,7 +256,7 @@ module MuchRails::Action
         ]
       result_kargs =
         {
-          template: template || self.class.to_s.tableize.singularize
+          template: template || default_action_template_name
         }.merge(**kargs)
 
       @much_rails_action_result =
@@ -278,6 +286,10 @@ module MuchRails::Action
       @much_rails_action_result =
         MuchRails::Action::SendDataResult.new(*args)
       halt
+    end
+
+    def default_action_template_name
+      self.class.default_action_template_name
     end
   end
 

@@ -1,6 +1,8 @@
 require "assert"
 require "much-rails/action/router"
 
+require "much-rails/rails_routes"
+
 class MuchRails::Action::Router
   class UnitTests < Assert::Context
     desc "MuchRails::Action::Router"
@@ -21,6 +23,28 @@ class MuchRails::Action::Router
       assert_that(subject::ACTION_CLASS_PARAM_NAME)
         .equals(:much_rails_action_class_name)
       assert_that(subject.url_class).equals(unit_class::URL)
+    end
+  end
+
+  class LoadTests < UnitTests
+    desc ".load"
+
+    setup do
+      Assert.stub(::Rails, :root) { Pathname.new(TEST_SUPPORT_PATH)}
+    end
+
+    should "eval the named routes file" do
+      router = unit_class.load(:test)
+      assert_that(router.url_set).is_not_empty
+      assert_that(router.url_set.fetch(:root).path).equals("/")
+    end
+
+    should "complain if no file name given" do
+      assert_that { unit_class.load([nil, "", "  "]) }.raises(ArgumentError)
+    end
+
+    should "complain if the named routes file can't be found" do
+      assert_that { unit_class.load(:unknown) }.raises(ArgumentError)
     end
   end
 
@@ -45,10 +69,9 @@ class MuchRails::Action::Router
       request_type_proc = ->(request) {}
       subject.request_type(request_type_name, &request_type_proc)
       request_type_class_name = Factory.string
-      path = Factory.url
       url_name = Factory.symbol
       url_path = Factory.url
-      url = subject.url(url_name, url_path)
+      subject.url(url_name, url_path)
       default_class_name = Factory.string
 
       subject.get(
@@ -137,7 +160,10 @@ class MuchRails::Action::Router
     subject { url_class.new(router1, url_path1, url_name1) }
 
     setup do
-      Assert.stub_on_call(MuchRails::RailsRoutes, :method_missing) { |call|
+      Assert.stub_on_call(
+        MuchRails::RailsRoutes.instance,
+        :method_missing
+      ) { |call|
         @rails_routes_method_missing_call = call
         "TEST PATH OR URL STRING"
       }

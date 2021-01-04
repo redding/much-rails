@@ -3,6 +3,8 @@
 module MuchRails; end
 
 class MuchRails::Railtie < Rails::Railtie
+  config.action_mailer.default_url_options ||= {}
+
   initializer "much-rails-gem" do |app|
     require "much-rails/rails_routes"
 

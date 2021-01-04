@@ -13,11 +13,11 @@ class MuchRails::RailsRoutes
   # These methods support stubbing #method_missing in tests but have no real
   # effect or behavior.
 
-  def self.method_missing(name, *args, &block)
+  def method_missing(name, *args, &block)
     super
   end
 
-  def self.respond_to_missing?(*args)
+  def respond_to_missing?(*args)
     super
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "much-rails/action/send_file_result"
 

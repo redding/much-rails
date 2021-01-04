@@ -47,6 +47,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
   #     MyRouter.draw(self)
   #   end
   def apply_to(application_routes_draw_scope)
+    validate!
     draw_route_to = "#{controller_name}##{CONTROLLER_METHOD_NAME}"
 
     definitions.each do |definition|

@@ -10,6 +10,8 @@ class MuchRails::Action::Router
 
     let(:unit_class) { MuchRails::Action::Router }
 
+    let(:caller1) { ["TEST CALLER 1"] }
+
     should have_imeths :url_class
 
     should "be a BaseRouter" do
@@ -68,11 +70,11 @@ class MuchRails::Action::Router
       request_type_name = Factory.symbol
       request_type_proc = ->(request) {}
       subject.request_type(request_type_name, &request_type_proc)
-      request_type_class_name = Factory.string
+      request_type_class_name = "Actions::Show"
       url_name = Factory.symbol
       url_path = Factory.url
       subject.url(url_name, url_path)
-      default_class_name = Factory.string
+      default_class_name = "Actions::Show"
 
       subject.get(
         url_name,
@@ -145,6 +147,16 @@ class MuchRails::Action::Router
           as: url_name,
           defaults: expected_default_defaults,
         )
+    end
+
+    should "complain when drawing a route with an unknown Action class" do
+      action_class_name = "Unknown::Action"
+      subject.get(Factory.url, action_class_name, called_from: caller1)
+      application_routes = FakeApplicationRoutes.new
+
+      exception =
+        assert_that { subject.draw(application_routes) }.raises(NameError)
+      assert_that(exception.backtrace).equals(caller1)
     end
   end
 

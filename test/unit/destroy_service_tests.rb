@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "much-rails/destroy_service"
 
@@ -45,7 +47,7 @@ module MuchRails::DestroyService
   class DestructionInvalidErrorSetupTests < ReceiverTests
     desc "with a MuchRails::Records::ValidateDestroy::DestructionInvalid error"
     setup do
-      MuchStub.(exception, :record) { record }
+      Assert.stub(exception, :record) { record }
     end
 
     let(:exception) {

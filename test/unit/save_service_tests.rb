@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "assert"
 require "much-rails/save_service"
 
@@ -45,7 +47,7 @@ module MuchRails::SaveService
   class RecordInvalidErrorSetupTests < ReceiverTests
     desc "with an ActiveRecord::RecordInvalid error"
     setup do
-      MuchStub.(exception, :record) { record }
+      Assert.stub(exception, :record) { record }
     end
 
     let(:exception) { ActiveRecord::RecordInvalid.new }

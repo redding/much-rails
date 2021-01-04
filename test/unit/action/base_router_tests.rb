@@ -8,6 +8,8 @@ class MuchRails::Action::BaseRouter
 
     let(:unit_class) { MuchRails::Action::BaseRouter }
 
+    let(:caller1) { ["TEST CALLER 1"] }
+
     should have_imeths :url_class
 
     should "know its constants" do
@@ -136,7 +138,8 @@ class MuchRails::Action::BaseRouter
         subject.get(
           url_name,
           default_class_name,
-          request_type_name => request_type_class_name
+          called_from: caller1,
+          **{ request_type_name => request_type_class_name },
         )
       assert_that(subject.definitions.size).equals(1)
       assert_that(definition).is_instance_of(unit_class::Definition)
@@ -146,9 +149,11 @@ class MuchRails::Action::BaseRouter
           url: url,
           default_action_class_name: default_class_name,
           request_type_actions: [request_type_action],
+          called_from: caller1,
         )
 
-      definition = subject.post(url_name, default_class_name)
+      definition =
+        subject.post(url_name, default_class_name, called_from: caller1)
       assert_that(subject.definitions.size).equals(2)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -157,9 +162,11 @@ class MuchRails::Action::BaseRouter
           url: url,
           default_action_class_name: default_class_name,
           request_type_actions: [],
+          called_from: caller1,
         )
 
-      definition = subject.put(url_path, default_class_name)
+      definition =
+        subject.put(url_path, default_class_name, called_from: caller1)
       assert_that(subject.definitions.size).equals(3)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -168,9 +175,11 @@ class MuchRails::Action::BaseRouter
           url: subject.url_class.for(subject, url_path),
           default_action_class_name: default_class_name,
           request_type_actions: [],
+          called_from: caller1,
         )
 
-      definition = subject.patch(url_name, default_class_name)
+      definition =
+        subject.patch(url_name, default_class_name, called_from: caller1)
       assert_that(subject.definitions.size).equals(4)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -179,9 +188,11 @@ class MuchRails::Action::BaseRouter
           url: url,
           default_action_class_name: default_class_name,
           request_type_actions: [],
+          called_from: caller1,
         )
 
-      definition = subject.delete(url_name, default_class_name)
+      definition =
+        subject.delete(url_name, default_class_name, called_from: caller1)
       assert_that(subject.definitions.size).equals(5)
       assert_that(definition).is_instance_of(unit_class::Definition)
       assert_that(@route_definition_call.kargs)
@@ -190,6 +201,7 @@ class MuchRails::Action::BaseRouter
           url: url,
           default_action_class_name: default_class_name,
           request_type_actions: [],
+          called_from: caller1,
         )
     end
   end
@@ -461,6 +473,7 @@ class MuchRails::Action::BaseRouter
           name: url_name1,
           default_action_class_name: default_action_class_name1,
           request_type_actions: request_type_actions1,
+          called_from: caller1,
         )
 
       definition =
@@ -469,6 +482,7 @@ class MuchRails::Action::BaseRouter
           url: url1,
           default_action_class_name: default_action_class_name1,
           request_type_actions: request_type_actions1,
+          called_from: caller1,
         )
       assert_that(definition).equals(definition1)
     end
@@ -484,6 +498,7 @@ class MuchRails::Action::BaseRouter
         default_action_class_name: default_action_class_name1,
         request_type_actions: request_type_actions1,
         default_params: default_params1,
+        called_from: caller1,
       )
     }
 
@@ -493,6 +508,7 @@ class MuchRails::Action::BaseRouter
 
     should have_readers :http_method, :path, :name, :default_params
     should have_readers :default_action_class_name, :request_type_actions
+    should have_reader :called_from
 
     should "know its attributes" do
       assert_that(subject.http_method).equals(http_method1)
@@ -502,6 +518,7 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.default_action_class_name)
         .equals(default_action_class_name1)
       assert_that(subject.request_type_actions).equals(request_type_actions1)
+      assert_that(subject.called_from).equals(caller1)
     end
   end
 end

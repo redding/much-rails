@@ -28,6 +28,26 @@ class MuchRails::Action::BaseRouter
     self.class.url_class
   end
 
+  def validate!
+    definitions.each do |definition|
+      definition.request_type_actions.each do |request_type_action|
+        begin
+          request_type_action.class_name.constantize
+        rescue NameError => ex
+          raise(NameError, ex.message, definition.called_from, cause: ex)
+        end
+      end
+
+      if definition.has_default_action_class_name?
+        begin
+          definition.default_action_class_name.constantize
+        rescue NameError => ex
+          raise(NameError, ex.message, definition.called_from, cause: ex)
+        end
+      end
+    end
+  end
+
   def apply_to(to_scope)
     raise NotImplementedError
   end
@@ -127,24 +147,74 @@ class MuchRails::Action::BaseRouter
   #       get    "/remove", "Root::Remove"
   #       delete "/",       "Root::Destroy"
   #     }
-  def get(path, default_class_name = nil, **request_type_class_names)
-    route(:get, path, default_class_name, **request_type_class_names)
+  def get(
+        path,
+        default_class_name = nil,
+        called_from: caller,
+        **request_type_class_names)
+    route(
+      :get,
+      path,
+      default_class_name,
+      called_from: called_from,
+      **request_type_class_names,
+    )
   end
 
-  def post(path, default_class_name = nil, **request_type_class_names)
-    route(:post, path, default_class_name, **request_type_class_names)
+  def post(
+        path,
+        default_class_name = nil,
+        called_from: caller,
+        **request_type_class_names)
+    route(
+      :post,
+      path,
+      default_class_name,
+      called_from: called_from,
+      **request_type_class_names,
+    )
   end
 
-  def put(path, default_class_name = nil, **request_type_class_names)
-    route(:put, path, default_class_name, **request_type_class_names)
+  def put(
+        path,
+        default_class_name = nil,
+        called_from: caller,
+        **request_type_class_names)
+    route(
+      :put,
+      path,
+      default_class_name,
+      called_from: called_from,
+      **request_type_class_names,
+    )
   end
 
-  def patch(path, default_class_name = nil, **request_type_class_names)
-    route(:patch, path, default_class_name, **request_type_class_names)
+  def patch(
+        path,
+        default_class_name = nil,
+        called_from: caller,
+        **request_type_class_names)
+    route(
+      :patch,
+      path,
+      default_class_name,
+      called_from: called_from,
+      **request_type_class_names,
+    )
   end
 
-  def delete(path, default_class_name = nil, **request_type_class_names)
-    route(:delete, path, default_class_name, **request_type_class_names)
+  def delete(
+        path,
+        default_class_name = nil,
+        called_from: caller,
+        **request_type_class_names)
+    route(
+      :delete,
+      path,
+      default_class_name,
+      called_from: called_from,
+      **request_type_class_names,
+    )
   end
 
   private
@@ -153,6 +223,7 @@ class MuchRails::Action::BaseRouter
         http_method,
         url_name_or_path,
         default_class_name,
+        called_from:,
         **request_type_class_names)
     url =
       @url_set.fetch(url_name_or_path){ url_class.for(self, url_name_or_path) }
@@ -173,6 +244,7 @@ class MuchRails::Action::BaseRouter
         url: url,
         default_action_class_name: default_class_name,
         request_type_actions: request_type_actions,
+        called_from: called_from,
       )
       .tap { |definition| @definitions << definition }
   end
@@ -315,18 +387,21 @@ class MuchRails::Action::BaseRouter
           http_method:,
           url:,
           default_action_class_name:,
-          request_type_actions:)
+          request_type_actions:,
+          called_from:)
       new(
         http_method: http_method,
         path: url.path,
         name: url.name,
         default_action_class_name: default_action_class_name,
         request_type_actions: request_type_actions,
+        called_from: called_from,
       )
     end
 
     attr_reader :http_method, :path, :name, :default_params
     attr_reader :default_action_class_name, :request_type_actions
+    attr_reader :called_from
 
     def initialize(
           http_method:,
@@ -334,6 +409,7 @@ class MuchRails::Action::BaseRouter
           name:,
           default_action_class_name:,
           request_type_actions:,
+          called_from:,
           default_params: nil)
       @http_method = http_method
       @path = path
@@ -341,6 +417,7 @@ class MuchRails::Action::BaseRouter
       @default_params = default_params || {}
       @default_action_class_name = default_action_class_name
       @request_type_actions = request_type_actions || []
+      @called_from = called_from
     end
 
     def has_default_action_class_name?

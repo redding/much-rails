@@ -1,6 +1,8 @@
 require "assert"
 require "much-rails/action/router"
 
+require "much-rails/rails_routes"
+
 class MuchRails::Action::Router
   class UnitTests < Assert::Context
     desc "MuchRails::Action::Router"
@@ -21,6 +23,28 @@ class MuchRails::Action::Router
       assert_that(subject::ACTION_CLASS_PARAM_NAME)
         .equals(:much_rails_action_class_name)
       assert_that(subject.url_class).equals(unit_class::URL)
+    end
+  end
+
+  class LoadTests < UnitTests
+    desc ".load"
+
+    setup do
+      Assert.stub(::Rails, :root) { Pathname.new(TEST_SUPPORT_PATH)}
+    end
+
+    should "eval the named routes file" do
+      router = unit_class.load(:test)
+      assert_that(router.url_set).is_not_empty
+      assert_that(router.url_set.fetch(:root).path).equals("/")
+    end
+
+    should "complain if no file name given" do
+      assert_that { unit_class.load([nil, "", "  "]) }.raises(ArgumentError)
+    end
+
+    should "complain if the named routes file can't be found" do
+      assert_that { unit_class.load(:unknown) }.raises(ArgumentError)
     end
   end
 

@@ -14,6 +14,24 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     MuchRails::Action::Router::URL
   end
 
+  def self.load(routes_file_name, controller_name: nil)
+    if routes_file_name.to_s.strip.empty?
+      raise(
+        ArgumentError,
+        "expected a routes file name, given `#{routes_file_name.inspect}`."
+      )
+    end
+
+    file_path = ::Rails.root.join("config/routes/#{routes_file_name}.rb")
+    unless file_path.exist?
+      raise ArgumentError, "routes file `#{file_path.inspect}` does not exist."
+    end
+
+    new(routes_file_name, controller_name: controller_name) {
+      instance_eval(File.read(file_path), file_path.to_s, 1)
+    }
+  end
+
   attr_reader :controller_name
 
   def initialize(name = nil, controller_name: nil, &block)

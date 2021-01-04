@@ -212,23 +212,23 @@ class MuchRails::Action::Router
     end
 
     def get(*args)
-      @get_calls << MuchStub::Call.new(*args)
+      @get_calls << Assert::StubCall.new(*args)
     end
 
     def post(*args)
-      @post_calls << MuchStub::Call.new(*args)
+      @post_calls << Assert::StubCall.new(*args)
     end
 
     def put(*args)
-      @put_calls << MuchStub::Call.new(*args)
+      @put_calls << Assert::StubCall.new(*args)
     end
 
     def patch(*args)
-      @patch_calls << MuchStub::Call.new(*args)
+      @patch_calls << Assert::StubCall.new(*args)
     end
 
     def delete(*args)
-      @delete_calls << MuchStub::Call.new(*args)
+      @delete_calls << Assert::StubCall.new(*args)
     end
   end
 end

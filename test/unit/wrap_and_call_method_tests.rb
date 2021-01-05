@@ -10,8 +10,8 @@ module MuchRails::WrapAndCallMethod
 
     let(:unit_class) { MuchRails::WrapAndCallMethod }
 
-    should "include MuchRails::Plugin" do
-      assert_that(subject).includes(MuchRails::Plugin)
+    should "include MuchRails::Mixin" do
+      assert_that(subject).includes(MuchRails::Mixin)
     end
   end
 

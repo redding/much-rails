@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-require "much-rails/plugin"
+require "much-rails/mixin"
 require "much-rails/change_action"
 
 module MuchRails; end
 module MuchRails::SaveAction
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::ChangeAction
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def save_result(&block)
       change_result(&block)
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def save_result
       change_result
     end

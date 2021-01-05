@@ -10,8 +10,8 @@ module MuchRails::Records::AlwaysDestroyable
 
     let(:unit_class) { MuchRails::Records::AlwaysDestroyable }
 
-    should "include MuchRails::Plugin" do
-      assert_that(subject).includes(MuchRails::Plugin)
+    should "include MuchRails::Mixin" do
+      assert_that(subject).includes(MuchRails::Mixin)
     end
   end
 

@@ -10,8 +10,8 @@ module MuchRails::DestroyService
 
     let(:unit_class) { MuchRails::DestroyService }
 
-    should "include MuchRails::Plugin" do
-      assert_that(subject).includes(MuchRails::Plugin)
+    should "include MuchRails::Mixin" do
+      assert_that(subject).includes(MuchRails::Mixin)
     end
   end
 

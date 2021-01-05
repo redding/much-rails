@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module MuchRails; end
 
 # MuchRails::CallMethod is a mix-in to implement the `call`
 # class/instance method pattern.
 module MuchRails::CallMethod
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_class_methods do
+  mixin_class_methods do
     def call(*args, &block)
       new(*args, &block).call
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def call
       on_call
     end

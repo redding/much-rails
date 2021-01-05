@@ -12,7 +12,7 @@ require "much-rails/action/unprocessable_entity_result"
 require "much-rails/boolean"
 require "much-rails/config"
 require "much-rails/date"
-require "much-rails/plugin"
+require "much-rails/mixin"
 require "much-rails/time"
 require "much-rails/wrap_and_call_method"
 
@@ -23,9 +23,9 @@ module MuchRails::Action
   ForbiddenError = Class.new(StandardError)
   ActionError = Class.new(StandardError)
 
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::Config
     include MuchRails::WrapAndCallMethod
 
@@ -34,7 +34,7 @@ module MuchRails::Action
     attr_reader :params, :current_user, :request, :errors
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def action_error_class
       MuchRails::Action::ActionError
     end
@@ -114,7 +114,7 @@ module MuchRails::Action
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def initialize(params: nil, current_user: nil, request: nil)
       @params = params.to_h.with_indifferent_access
       @current_user = current_user

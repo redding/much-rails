@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module MuchRails; end
 
 # MuchRails::Config is a mix-in to implement object DSL configuration.
 module MuchRails::Config
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_class_methods do
+  mixin_class_methods do
     def add_config(name = nil, method_name: nil)
       config_method_name, config_class_name, configure_method_name =
         much_rails_config_names(name, method_name)

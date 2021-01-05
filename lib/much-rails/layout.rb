@@ -35,7 +35,7 @@ module MuchRails::Layout
     end
 
     def stylesheet(value = nil, &block)
-      stylesheets << (block || -> { value })
+      stylesheets << (block || ->{ value })
     end
 
     def stylesheets
@@ -43,7 +43,7 @@ module MuchRails::Layout
     end
 
     def javascript(value = nil, &block)
-      javascripts << (block || -> { value })
+      javascripts << (block || ->{ value })
     end
 
     def javascripts
@@ -61,12 +61,12 @@ module MuchRails::Layout
 
   mixin_instance_methods do
     def page_title
-      @page_title ||= instance_eval(&(self.class.page_titles.last || ->(_) {}))
+      @page_title ||= instance_eval(&(self.class.page_titles.last || ->(_){}))
     end
 
     def application_page_title
       @application_page_title ||=
-        instance_eval(&(self.class.application_page_title || ->(_) {}))
+        instance_eval(&(self.class.application_page_title || ->(_){}))
     end
 
     def full_page_title
@@ -76,9 +76,9 @@ module MuchRails::Layout
             .class
             .page_titles
             .reverse
-            .map! { |segment| instance_eval(&segment) }
+            .map!{ |segment| instance_eval(&segment) }
             .join(MuchRails.config.layout.full_page_title_segment_separator),
-          application_page_title
+          application_page_title,
         ]
           .map(&:presence)
           .compact
@@ -91,9 +91,9 @@ module MuchRails::Layout
         self
           .class
           .breadcrumbs
-          .map { |block|
+          .map do |block|
             MuchRails::ViewModels::Breadcrumb.new(*instance_eval(&block))
-          }
+          end
     end
 
     def stylesheets

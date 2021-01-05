@@ -13,7 +13,7 @@ module MuchRails::InputValue
   def self.strip_all(values)
     Array
       .wrap(values)
-      .map { |value| strip(value) }
+      .map{ |value| strip(value) }
       .compact
   end
 end

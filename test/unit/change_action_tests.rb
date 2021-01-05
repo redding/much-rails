@@ -6,9 +6,9 @@ require "much-rails/change_action"
 module MuchRails::ChangeAction
   class UnitTests < Assert::Context
     desc "MuchRails::ChangeAction"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::ChangeAction }
+    let(:unit_class){ MuchRails::ChangeAction }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,15 +17,15 @@ module MuchRails::ChangeAction
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::ChangeAction
 
-        change_result { MuchRails::Result.success(something: something_value) }
+        change_result{ MuchRails::Result.success(something: something_value) }
 
-        on_call {}
+        on_call{}
 
         def something_value
           "SOMETHING VALUE"
@@ -37,7 +37,7 @@ module MuchRails::ChangeAction
           "UNDEFINED CHANGE RESULT BLOCK"
         end
       end
-    }
+    end
 
     should have_imeths :change_result
 
@@ -47,29 +47,29 @@ module MuchRails::ChangeAction
 
       assert_that(subject.much_rails_change_action_config)
         .is_instance_of(
-          MuchRails::ChangeAction::MuchRailsChangeActionConfig
+          MuchRails::ChangeAction::MuchRailsChangeActionConfig,
         )
       assert_that(
-        subject.much_rails_change_action_config.change_result_block
+        subject.much_rails_change_action_config.change_result_block,
       ).is_not_nil
     end
   end
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject { receiver_class.new(params: {}) }
-    subject {
+    subject{ receiver_class.new(params: {}) }
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
+    end
 
     setup do
-      Assert.stub(subject, :any_unextracted_change_result_validation_errors?) {
+      Assert.stub(subject, :any_unextracted_change_result_validation_errors?) do
         false
-      }
+      end
     end
 
     should have_imeths :change_result
@@ -84,32 +84,32 @@ module MuchRails::ChangeAction
 
   class RecordErrorsWithResultExceptionTests < InitTests
     desc "with record errors and a result exception"
-    subject {
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
-
-    setup do
-      Assert.stub(subject, :any_unextracted_change_result_validation_errors?) {
-        true
-      }
-      Assert.stub(result_exception, :message) { "ERROR MESSAGE" }
-      Assert.stub(result_exception, :backtrace) { ["BACKTRACE LINE1"] }
-
-      Assert.stub(subject, :change_result) { change_result1 }
     end
 
-    let(:result_exception) { RuntimeError.new }
-    let(:change_result1) {
+    setup do
+      Assert.stub(subject, :any_unextracted_change_result_validation_errors?) do
+        true
+      end
+      Assert.stub(result_exception, :message){ "ERROR MESSAGE" }
+      Assert.stub(result_exception, :backtrace){ ["BACKTRACE LINE1"] }
+
+      Assert.stub(subject, :change_result){ change_result1 }
+    end
+
+    let(:result_exception){ RuntimeError.new }
+    let(:change_result1) do
       MuchRails::Result.failure(exception: result_exception)
-    }
+    end
 
     should "raise a MuchRails::Action::ActionError" do
       exception =
-        assert_that { subject.call }.raises(MuchRails::Action::ActionError)
+        assert_that{ subject.call }.raises(MuchRails::Action::ActionError)
 
       assert_that(exception.message).equals("ERROR MESSAGE")
       assert_that(exception.backtrace).equals(["BACKTRACE LINE1"])
@@ -118,44 +118,44 @@ module MuchRails::ChangeAction
 
   class RecordErrorsWithNoResultExceptionTests < InitTests
     desc "with record errors and no result exception"
-    subject {
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
-
-    setup do
-      Assert.stub(subject, :any_unextracted_change_result_validation_errors?) {
-        true
-      }
-      Assert.stub(subject, :change_result) { change_result1 }
     end
 
-    let(:change_result1) { MuchRails::Result.failure }
+    setup do
+      Assert.stub(subject, :any_unextracted_change_result_validation_errors?) do
+        true
+      end
+      Assert.stub(subject, :change_result){ change_result1 }
+    end
+
+    let(:change_result1){ MuchRails::Result.failure }
 
     should "raise a MuchRails::Action::ActionError" do
       exception =
-        assert_that { subject.call }.raises(MuchRails::Action::ActionError)
+        assert_that{ subject.call }.raises(MuchRails::Action::ActionError)
 
       assert_that(exception.message)
         .equals(
           "#{change_result1.inspect} has validation errors that were not "\
-          "handled by the Action: #{change_result1.validation_errors.inspect}."
+          "handled by the Action: #{change_result1.validation_errors.inspect}.",
         )
     end
   end
 
   class ChangeResultMethodTests < InitTests
     desc "#change_result method"
-    subject {
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
+    end
 
     should "memoize and return the expected Result" do
       result = subject.change_result
@@ -165,34 +165,34 @@ module MuchRails::ChangeAction
       assert_that(result).is(subject.change_result)
     end
 
-    should "raise an error when a configured change_result block is not given" do
+    should "raise an error when a configured change_result block isn't given" do
       Assert.stub(
         receiver_class.much_rails_change_action_config,
-        :change_result_block
-      ) { nil }
+        :change_result_block,
+      ){ nil }
       exception =
-        assert_that { subject.change_result }.raises(unit_class::Error)
+        assert_that{ subject.change_result }.raises(unit_class::Error)
       assert_that(exception.message).equals("UNDEFINED CHANGE RESULT BLOCK")
     end
   end
 
   class AnyUnextractedChangeResultValidationErrorsMethodTests < ReceiverTests
     desc "#any_unextracted_change_result_validation_errors? method"
-    subject {
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
+    end
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::ChangeAction
 
-        change_result { MuchRails::Result.success }
+        change_result{ MuchRails::Result.success }
       end
-    }
+    end
 
     should "return false" do
       subject.change_result
@@ -202,23 +202,24 @@ module MuchRails::ChangeAction
     end
   end
 
-  class NoValidationErrorsTests < AnyUnextractedChangeResultValidationErrorsMethodTests
+  class NoValidationErrorsTests <
+          AnyUnextractedChangeResultValidationErrorsMethodTests
     desc "with no validation errors"
-    subject {
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
+    end
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::ChangeAction
 
-        change_result { MuchRails::Result.failure(validation_errors: {}) }
+        change_result{ MuchRails::Result.failure(validation_errors: {}) }
       end
-    }
+    end
 
     should "return false" do
       subject.change_result
@@ -228,25 +229,26 @@ module MuchRails::ChangeAction
     end
   end
 
-  class ValidationErrorsTests < AnyUnextractedChangeResultValidationErrorsMethodTests
+  class ValidationErrorsTests <
+          AnyUnextractedChangeResultValidationErrorsMethodTests
     desc "with validation errors"
-    subject {
+    subject do
       receiver_class.new(
         params: {},
         current_user: nil,
         request: nil,
       )
-    }
+    end
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::ChangeAction
 
-        change_result {
+        change_result do
           MuchRails::Result.failure(validation_errors: { name: "TEST ERROR" })
-        }
+        end
       end
-    }
+    end
 
     should "return true" do
       subject.change_result

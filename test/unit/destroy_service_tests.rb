@@ -6,9 +6,9 @@ require "much-rails/destroy_service"
 module MuchRails::DestroyService
   class UnitTests < Assert::Context
     desc "MuchRails::DestroyService"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::DestroyService }
+    let(:unit_class){ MuchRails::DestroyService }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,9 +17,9 @@ module MuchRails::DestroyService
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::DestroyService
 
@@ -33,7 +33,7 @@ module MuchRails::DestroyService
           MuchRails::Result.success
         end
       end
-    }
+    end
 
     should "include MuchRails::Service" do
       assert_that(subject).includes(MuchRails::Service)
@@ -47,18 +47,19 @@ module MuchRails::DestroyService
   class DestructionInvalidErrorSetupTests < ReceiverTests
     desc "with a MuchRails::Records::ValidateDestroy::DestructionInvalid error"
     setup do
-      Assert.stub(exception, :record) { record }
+      Assert.stub(exception, :record){ record }
     end
 
-    let(:exception) {
+    let(:exception) do
       MuchRails::Records::ValidateDestroy::DestructionInvalid.new
-    }
+    end
   end
 
-  class ExceptionWithDestructionErrorMessagesTests < DestructionInvalidErrorSetupTests
+  class ExceptionWithDestructionErrorMessagesTests <
+          DestructionInvalidErrorSetupTests
     desc "with an exception record that has destruction_error_messages"
 
-    let(:record) { @fake_record ||= FakeRecord.new }
+    let(:record){ @fake_record ||= FakeRecord.new }
 
     should "return a failure result with the exception and validation_errors" do
       result = subject.call(exception: exception)
@@ -69,10 +70,11 @@ module MuchRails::DestroyService
     end
   end
 
-  class ExceptionWithoutDestructionErrorMessagesTests < DestructionInvalidErrorSetupTests
+  class ExceptionWithoutDestructionErrorMessagesTests <
+          DestructionInvalidErrorSetupTests
     desc "with an exception record that has no destruction_error_messages"
 
-    let(:record) { nil }
+    let(:record){ nil }
 
     should "return a failure result with the exception and empty "\
            "validation_errors" do

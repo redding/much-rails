@@ -109,7 +109,7 @@ class MuchRails::Action::BaseRouter
   #     }
   #   AdminRouter.path_for(:users) # => "/admin/users"
   def base_url(value = nil)
-    @base_url = value if !value.nil?
+    @base_url = value unless value.nil?
     @base_url
   end
 
@@ -120,16 +120,18 @@ class MuchRails::Action::BaseRouter
   #       get :root, "Root::Index"
   #     }
   def url(name, path)
-    if !name.kind_of?(::Symbol)
+    unless name.kind_of?(::Symbol)
       raise(
         ArgumentError,
-        "Named URLs must be defined with Symbol names, given `#{name.inspect}`."
+        "Named URLs must be defined with Symbol names, "\
+        "given `#{name.inspect}`.",
       )
     end
-    if !path.kind_of?(::String)
+    unless path.kind_of?(::String)
       raise(
         ArgumentError,
-        "Named URLs must be defined with String paths, given `#{path.inspect}`."
+        "Named URLs must be defined with String paths, "\
+        "given `#{path.inspect}`.",
       )
     end
     @url_set.add(name, path)
@@ -229,14 +231,14 @@ class MuchRails::Action::BaseRouter
       @url_set.fetch(url_name_or_path){ url_class.for(self, url_name_or_path) }
     request_type_actions =
       request_type_class_names
-        .reduce([]) { |acc, (request_type_name, action_class_name)|
+        .reduce([]) do |acc, (request_type_name, action_class_name)|
           acc <<
             RequestTypeAction.new(
               request_type_set.get(request_type_name),
-              action_class_name
+              action_class_name,
             )
           acc
-        }
+        end
 
     Definition
       .for_route(
@@ -246,7 +248,7 @@ class MuchRails::Action::BaseRouter
         request_type_actions: request_type_actions,
         called_from: called_from,
       )
-      .tap { |definition| @definitions << definition }
+      .tap{ |definition| @definitions << definition }
   end
 
   class RequestTypeSet
@@ -261,10 +263,10 @@ class MuchRails::Action::BaseRouter
     def add(name, constraints_lambda)
       request_type = RequestType.new(name.to_sym, constraints_lambda)
       key = request_type.name
-      if !@set[key].nil?
+      unless @set[key].nil?
         raise(
           ArgumentError,
-          "There is already a request type named `#{name.to_sym.inspect}`."
+          "There is already a request type named `#{name.to_sym.inspect}`.",
         )
       end
       @set[key] = request_type
@@ -272,12 +274,12 @@ class MuchRails::Action::BaseRouter
 
     def get(name)
       key = name.to_sym
-      @set.fetch(key) {
+      @set.fetch(key) do
         raise(
           ArgumentError,
-          "There is no request type named `#{name.to_sym.inspect}`."
+          "There is no request type named `#{name.to_sym.inspect}`.",
         )
-      }
+      end
     end
   end
 
@@ -302,23 +304,34 @@ class MuchRails::Action::BaseRouter
     def add(name, path)
       url = @router.url_class.new(@router, path, name.to_sym)
       key = url.name
-      if !@set[key].nil?
-        raise ArgumentError, "There is already a URL named `#{name.to_sym.inspect}`."
+      unless @set[key].nil?
+        raise(
+          ArgumentError,
+          "There is already a URL named `#{name.to_sym.inspect}`.",
+        )
       end
+
       @set[key] = url
     end
 
-    def fetch(name, &block)
+    def fetch(name, default_value = nil, &block)
       key = @router.url_class.url_name(@router, name.to_sym)
-      @set.fetch(
-        key,
-        &(
-          block ||
-          proc {
-            raise ArgumentError, "There is no URL named `#{name.to_sym.inspect}`."
-          }
+      if default_value
+        @set.fetch(key, default_value)
+      else
+        @set.fetch(
+          key,
+          &(
+            block ||
+            proc{
+              raise(
+                ArgumentError,
+                "There is no URL named `#{name.to_sym.inspect}`.",
+              )
+            }
+          )
         )
-      )
+      end
     end
 
     def path_for(name, *args)
@@ -334,12 +347,14 @@ class MuchRails::Action::BaseRouter
     def self.url_name(router, name)
       return unless name
       return name unless router&.name
+
       "#{router.name}_#{name}".to_sym
     end
 
     def self.url_path(router, path)
       return unless path
       return path unless router&.base_url
+
       File.join(router.base_url, path)
     end
 
@@ -431,7 +446,8 @@ class MuchRails::Action::BaseRouter
       @path == other_definition.path &&
       @name == other_definition.name &&
       @default_params == other_definition.default_params &&
-      @default_action_class_name == other_definition.default_action_class_name &&
+      @default_action_class_name ==
+        other_definition.default_action_class_name &&
       @request_type_actions == other_definition.request_type_actions
     end
   end

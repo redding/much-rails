@@ -20,7 +20,6 @@ class MuchRails::Railtie < Rails::Railtie
 
     MuchResult.default_transaction_receiver = ActiveRecord::Base
 
-
     MuchRails.configure do |config|
       # This should be `true` in development so things fail fast and give the
       # developers rich error information for debugging purposes.

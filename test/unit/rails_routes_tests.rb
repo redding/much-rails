@@ -6,9 +6,9 @@ require "much-rails/rails_routes"
 class MuchRails::RailsRoutes
   class UnitTests < Assert::Context
     desc "MuchRails::RailsRoutes"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::RailsRoutes }
+    let(:unit_class){ MuchRails::RailsRoutes }
 
     should "include Singleton, Rails url helpers" do
       assert_that(subject).includes(Singleton)
@@ -18,7 +18,7 @@ class MuchRails::RailsRoutes
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.instance }
+    subject{ unit_class.instance }
 
     should "know its default URL options" do
       assert_that(subject.__send__(:default_url_options))

@@ -6,9 +6,9 @@ require "much-rails/save_service"
 module MuchRails::SaveService
   class UnitTests < Assert::Context
     desc "MuchRails::SaveService"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::SaveService }
+    let(:unit_class){ MuchRails::SaveService }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,9 +17,9 @@ module MuchRails::SaveService
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::SaveService
 
@@ -33,7 +33,7 @@ module MuchRails::SaveService
           MuchRails::Result.success
         end
       end
-    }
+    end
 
     should "include MuchRails::Service" do
       assert_that(subject).includes(MuchRails::Service)
@@ -47,16 +47,16 @@ module MuchRails::SaveService
   class RecordInvalidErrorSetupTests < ReceiverTests
     desc "with an ActiveRecord::RecordInvalid error"
     setup do
-      Assert.stub(exception, :record) { record }
+      Assert.stub(exception, :record){ record }
     end
 
-    let(:exception) { ActiveRecord::RecordInvalid.new }
+    let(:exception){ ActiveRecord::RecordInvalid.new }
   end
 
   class ExceptionWithRecordErrorsTests < RecordInvalidErrorSetupTests
     desc "with an exception that has record errors"
 
-    let(:record) { @fake_record ||= FakeRecord.new }
+    let(:record){ @fake_record ||= FakeRecord.new }
 
     should "return a failure result with the exception and record errors" do
       result = subject.call(exception: exception)
@@ -73,7 +73,7 @@ module MuchRails::SaveService
   class ExceptionWithoutRecordErrorsTests < RecordInvalidErrorSetupTests
     desc "with an exception that has no record errors"
 
-    let(:record) { nil }
+    let(:record){ nil }
 
     should "return a failure result with the exception and empty "\
            "record errors" do

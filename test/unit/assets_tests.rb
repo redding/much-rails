@@ -6,9 +6,9 @@ require "much-rails/assets"
 module MuchRails::Assets
   class UnitTests < Assert::Context
     desc "MuchRails::Assets"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Assets }
+    let(:unit_class){ MuchRails::Assets }
 
     should have_imeths :configure_for_rails
 
@@ -24,12 +24,12 @@ module MuchRails::Assets
       subject.reset
 
       in_development_env = Factory.boolean
-      Assert.stub(FakeRails.env, :development?) { in_development_env }
-      Assert.stub(FakeRails.env, :test?) { !in_development_env }
+      Assert.stub(FakeRails.env, :development?){ in_development_env }
+      Assert.stub(FakeRails.env, :test?){ !in_development_env }
 
-      Assert.stub_on_call(subject, :init) { |call|
+      Assert.stub_on_call(subject, :init) do |call|
         @init_call = call
-      }
+      end
 
       subject.configure_for_rails(FakeRails)
     end
@@ -51,9 +51,9 @@ module MuchRails::Assets
 
     should "configure the app's app/assets folder as a source" do
       source =
-        subject.config.sources.detect { |source|
+        subject.config.sources.detect do |source|
           source.path == FakeRails.root.join("app", "assets").to_s
-        }
+        end
 
       assert_that(source).is_not_nil
       assert_that(source.engines["js"].size).equals(1)
@@ -77,9 +77,9 @@ module MuchRails::Assets
     setup do
       subject.reset
 
-      Assert.stub_on_call(subject, :init) { |call|
+      Assert.stub_on_call(subject, :init) do |call|
         @init_call = call
-      }
+      end
 
       subject.configure_for_rails(FakeRails)
     end

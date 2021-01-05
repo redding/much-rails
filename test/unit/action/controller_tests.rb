@@ -9,9 +9,9 @@ require "test/support/fake_action_controller"
 module MuchRails::Action::Controller
   class UnitTests < Assert::Context
     desc "MuchRails::Action::Controller"
-    subject { unit_module }
+    subject{ unit_module }
 
-    let(:unit_module) { MuchRails::Action::Controller }
+    let(:unit_module){ MuchRails::Action::Controller }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -20,27 +20,27 @@ module MuchRails::Action::Controller
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
-      Class.new { include FakeActionController }
-    }
+    let(:receiver_class) do
+      Class.new{ include FakeActionController }
+    end
   end
 
   class ReceiverInitTests < ReceiverTests
     desc "when init"
-    subject { receiver_class.new(params1) }
+    subject{ receiver_class.new(params1) }
 
-    let(:params1) {
+    let(:params1) do
       {
         MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Show",
         controller: "actions",
         action: "show",
         nested: {
-          value: "VALUE 1"
+          value: "VALUE 1",
         },
       }
-    }
+    end
 
     should have_readers :much_rails_action_class
 
@@ -66,25 +66,26 @@ module MuchRails::Action::Controller
 
   class ReceiverInitWithUnknownActionClassTests < ReceiverTests
     desc "when init with an unknown action class"
-    subject { receiver_class.new(params1) }
+    subject{ receiver_class.new(params1) }
 
-    let(:params1) {
+    let(:params1) do
       {
-        MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Unknown",
+        MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME =>
+          "Actions::Unknown",
       }
-    }
+    end
 
     should "return not found when not raising response exceptions" do
-      Assert.stub(MuchRails.config.action, :raise_response_exceptions?) { false }
+      Assert.stub(MuchRails.config.action, :raise_response_exceptions?){ false }
 
       assert_that(subject.much_rails_action_class).is_nil
       assert_that(subject.head_called_with).equals([:not_found])
     end
 
     should "raise an exception when raising response exceptions" do
-      Assert.stub(MuchRails.config.action, :raise_response_exceptions?) { true }
+      Assert.stub(MuchRails.config.action, :raise_response_exceptions?){ true }
 
-      assert_that { subject.much_rails_action_class }
+      assert_that{ subject.much_rails_action_class }
         .raises(MuchRails::Action::ActionError)
     end
   end
@@ -103,7 +104,7 @@ module MuchRails::Action::Controller
     def initialize(params)
       @params = FakeParams.new(params)
       self.class.before_actions.each do |before_action|
-        self.public_send(before_action)
+        public_send(before_action)
       end
     end
 
@@ -129,6 +130,7 @@ module MuchRails::Action::Controller
 
     def to_h
       raise "params haven't been permitted" unless @permit_called
+
       @params
     end
   end

@@ -6,9 +6,9 @@ require "much-rails/call_method_callbacks"
 module MuchRails::CallMethodCallbacks
   class UnitTests < Assert::Context
     desc "MuchRails::SaveService"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::CallMethodCallbacks }
+    let(:unit_class){ MuchRails::CallMethodCallbacks }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,9 +17,9 @@ module MuchRails::CallMethodCallbacks
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::CallMethodCallbacks
 
@@ -29,11 +29,11 @@ module MuchRails::CallMethodCallbacks
           @values = []
         end
       end
-    }
+    end
 
-    let(:proc1) { -> {} }
-    let(:proc2) { -> {} }
-    let(:proc3) { -> {} }
+    let(:proc1){ ->{} }
+    let(:proc2){ ->{} }
+    let(:proc3){ ->{} }
 
     should have_imeths :before_call, :prepend_before_call, :after_call
     should have_imeths :prepend_after_call, :around_call, :prepend_around_call
@@ -48,59 +48,59 @@ module MuchRails::CallMethodCallbacks
       # before_callbacks
       subject.before_call(&proc1)
 
-      assert_that { subject.before_call(&proc2) }
+      assert_that{ subject.before_call(&proc2) }
         .changes(
           "subject.much_rails_call_callbacks_config.before_callbacks.dup",
           from: [proc1],
-          to: [proc1, proc2]
+          to: [proc1, proc2],
         )
 
-      assert_that { subject.prepend_before_call(&proc3) }
+      assert_that{ subject.prepend_before_call(&proc3) }
         .changes(
           "subject.much_rails_call_callbacks_config.before_callbacks.dup",
           from: [proc1, proc2],
-          to: [proc3, proc1, proc2]
+          to: [proc3, proc1, proc2],
         )
 
       # after_callbacks
       subject.after_call(&proc1)
 
-      assert_that { subject.after_call(&proc2) }
+      assert_that{ subject.after_call(&proc2) }
         .changes(
           "subject.much_rails_call_callbacks_config.after_callbacks.dup",
           from: [proc1],
-          to: [proc1, proc2]
+          to: [proc1, proc2],
         )
 
-      assert_that { subject.prepend_after_call(&proc3) }
+      assert_that{ subject.prepend_after_call(&proc3) }
         .changes(
           "subject.much_rails_call_callbacks_config.after_callbacks.dup",
           from: [proc1, proc2],
-          to: [proc3, proc1, proc2]
+          to: [proc3, proc1, proc2],
         )
 
       # around_callbacks
       subject.around_call(&proc1)
 
-      assert_that { subject.around_call(&proc2) }
+      assert_that{ subject.around_call(&proc2) }
         .changes(
           "subject.much_rails_call_callbacks_config.around_callbacks.dup",
           from: [proc1],
-          to: [proc1, proc2]
+          to: [proc1, proc2],
         )
 
-      assert_that { subject.prepend_around_call(&proc3) }
+      assert_that{ subject.prepend_around_call(&proc3) }
         .changes(
           "subject.much_rails_call_callbacks_config.around_callbacks.dup",
           from: [proc1, proc2],
-          to: [proc3, proc1, proc2]
+          to: [proc3, proc1, proc2],
         )
     end
   end
 
   class CallMethodTests < ReceiverTests
     desc "#call"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     setup do
       subject.before_call do
@@ -132,12 +132,12 @@ module MuchRails::CallMethodCallbacks
         true
       end
 
-      subject.class_eval {
+      subject.class_eval do
         def on_call
           @values << "on call"
           self
         end
-      }
+      end
     end
 
     should "execute its callbacks" do
@@ -154,16 +154,16 @@ module MuchRails::CallMethodCallbacks
           "end around 2",
           "end around 1",
           "after 1",
-          "after 2"
+          "after 2",
         ])
     end
   end
 
   class MuchRailsCallCallbacksConfigTests < UnitTests
     desc "unit_class::MuchRailsCallCallbacksConfig"
-    subject { config_class.new }
+    subject{ config_class.new }
 
-    let(:config_class) { unit_class::MuchRailsCallCallbacksConfig }
+    let(:config_class){ unit_class::MuchRailsCallCallbacksConfig }
 
     should have_accessors :before_callbacks, :after_callbacks, :around_callbacks
 

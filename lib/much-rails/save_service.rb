@@ -5,6 +5,8 @@ require "much-rails/mixin"
 require "much-rails/result"
 require "much-rails/service"
 
+module MuchRails; end
+
 # MuchRails::SaveService is a common mix-in for all service objects that
 # save (e.g. create/update) records.
 module MuchRails::SaveService
@@ -21,7 +23,9 @@ module MuchRails::SaveService
           record: ex.record,
           exception: ex,
           validation_errors: ex.record&.errors.to_h,
-          validation_error_messages: ex.record&.errors&.full_messages.to_a))
+          validation_error_messages: ex.record&.errors&.full_messages.to_a,
+        ),
+      )
     end
   end
 end

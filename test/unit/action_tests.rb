@@ -6,9 +6,9 @@ require "much-rails/action"
 module MuchRails::Action
   class UnitTests < Assert::Context
     desc "MuchRails::Action"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Action }
+    let(:unit_class){ MuchRails::Action }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,24 +17,24 @@ module MuchRails::Action
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     setup do
-      Assert.stub(MuchRails.config.action, :namespace) { "Actions::" }
-      Assert.stub(receiver_class, :to_s) {
+      Assert.stub(MuchRails.config.action, :namespace){ "Actions::" }
+      Assert.stub(receiver_class, :to_s) do
         "#{MuchRails.config.action.namespace}Some::Namespace::For::"\
         "#{MuchRails.config.action.namespace}Thing::Show"
-      }
+      end
     end
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::Action
       end
-    }
+    end
 
-    let(:block1) { -> {} }
-    let(:block2) { -> {} }
+    let(:block1){ ->{} }
+    let(:block2){ ->{} }
 
     should have_imeths :action_error_class, :params_root, :required_params
     should have_imeths :date_params, :time_params, :boolean_params, :format
@@ -56,73 +56,73 @@ module MuchRails::Action
       assert_that(subject.action_error_class).is(MuchRails::Action::ActionError)
 
       # params_root
-      assert_that { subject.params_root("ROOT VALUE1", "ROOT VALUE2") }
+      assert_that{ subject.params_root("ROOT VALUE1", "ROOT VALUE2") }
         .changes(
           "subject.much_rails_action_config.params_root.dup",
           from: nil,
-          to: ["ROOT VALUE1", "ROOT VALUE2"]
+          to: ["ROOT VALUE1", "ROOT VALUE2"],
         )
       assert_that(subject.params_root).equals(["ROOT VALUE1", "ROOT VALUE2"])
 
       # required_params
-      assert_that { subject.required_params(:test_param, :other_param) }
+      assert_that{ subject.required_params(:test_param, :other_param) }
         .changes(
           "subject.much_rails_action_config.required_params.dup",
           from: [],
-          to: [:test_param, :other_param]
+          to: [:test_param, :other_param],
         )
       assert_that(subject.required_params).equals([:test_param, :other_param])
 
       # date_params
-      assert_that { subject.date_params(:test_param, :other_param) }
+      assert_that{ subject.date_params(:test_param, :other_param) }
         .changes(
           "subject.much_rails_action_config.date_params.dup",
           from: [],
-          to: [:test_param, :other_param]
+          to: [:test_param, :other_param],
         )
       assert_that(subject.date_params).equals([:test_param, :other_param])
 
       # time_params
-      assert_that { subject.time_params(:test_param, :other_param) }
+      assert_that{ subject.time_params(:test_param, :other_param) }
         .changes(
           "subject.much_rails_action_config.time_params.dup",
           from: [],
-          to: [:test_param, :other_param]
+          to: [:test_param, :other_param],
         )
       assert_that(subject.time_params).equals([:test_param, :other_param])
 
       # boolean_params
-      assert_that { subject.boolean_params(:test_param, :other_param) }
+      assert_that{ subject.boolean_params(:test_param, :other_param) }
         .changes(
           "subject.much_rails_action_config.boolean_params.dup",
           from: [],
-          to: [:test_param, :other_param]
+          to: [:test_param, :other_param],
         )
       assert_that(subject.boolean_params).equals([:test_param, :other_param])
 
       # format
-      assert_that { subject.format("VALUE") }
+      assert_that{ subject.format("VALUE") }
         .changes(
           "subject.much_rails_action_config.format.dup",
           from: nil,
-          to: "VALUE"
+          to: "VALUE",
         )
       assert_that(subject.format).equals("VALUE")
 
       # on_validation
-      assert_that { subject.on_validation(&block1) }
+      assert_that{ subject.on_validation(&block1) }
         .changes(
           "subject.much_rails_action_config.on_validation_blocks.dup",
           from: [],
-          to: [block1]
+          to: [block1],
         )
 
       # on_validation_blocks
-      assert_that { subject.on_validation(&block2) }
+      assert_that{ subject.on_validation(&block2) }
         .changes(
           "subject.on_validation_blocks.dup",
           from: [block1],
-          to: [block1, block2]
+          to: [block1, block2],
         )
 
       # on_call, on_call_block
@@ -132,35 +132,35 @@ module MuchRails::Action
       assert_that(subject.on_call_block).equals(block1)
 
       # on_before_call
-      assert_that { subject.on_before_call(&block1) }
+      assert_that{ subject.on_before_call(&block1) }
         .changes(
           "subject.much_rails_action_config.on_before_call_blocks.dup",
           from: [],
-          to: [block1]
+          to: [block1],
         )
 
       # on_before_call_blocks
-      assert_that { subject.on_before_call(&block2) }
+      assert_that{ subject.on_before_call(&block2) }
         .changes(
           "subject.on_before_call_blocks.dup",
           from: [block1],
-          to: [block1, block2]
+          to: [block1, block2],
         )
 
       # on_after_call
-      assert_that { subject.on_after_call(&block1) }
+      assert_that{ subject.on_after_call(&block1) }
         .changes(
           "subject.much_rails_action_config.on_after_call_blocks.dup",
           from: [],
-          to: [block1]
+          to: [block1],
         )
 
       # on_after_call_blocks
-      assert_that { subject.on_after_call(&block2) }
+      assert_that{ subject.on_after_call(&block2) }
         .changes(
           "subject.on_after_call_blocks.dup",
           from: [block1],
-          to: [block1, block2]
+          to: [block1, block2],
         )
 
       # default_action_template_name
@@ -168,22 +168,22 @@ module MuchRails::Action
         .equals(
           "some/namespace/for/"\
           "#{MuchRails.config.action.namespace.tableize.singularize}"\
-          "thing/show"
+          "thing/show",
         )
     end
   end
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject {
+    subject do
       receiver_class.new(
         params: params1,
         current_user: current_user1,
         request: request1,
       )
-    }
+    end
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::Action
 
@@ -219,23 +219,23 @@ module MuchRails::Action
           @after_call_called = true
         end
       end
-    }
+    end
 
-    let(:current_date) { Date.current }
-    let(:current_time) { Time.current }
-    let(:date1) { current_date }
-    let(:time1) { current_time.utc }
+    let(:current_date){ Date.current }
+    let(:current_time){ Time.current }
+    let(:date1){ current_date }
+    let(:time1){ current_time.utc }
 
-    let(:params1) {
+    let(:params1) do
       {
         name: "NAME",
         entered_on: current_date,
         updated_at: current_time.utc,
         active: "true",
       }
-    }
-    let(:current_user1) { "CURRENT USER 1"}
-    let(:request1) { "REQUEST 1"}
+    end
+    let(:current_user1){ "CURRENT USER 1" }
+    let(:request1){ "REQUEST 1" }
 
     should have_readers :params, :current_user, :request, :errors
     should have_imeths :on_call, :valid_action?, :successful_action?
@@ -260,7 +260,7 @@ module MuchRails::Action
     end
 
     should "return the expected Result when halted in an on_validation block" do
-      receiver_class.on_validation { halt }
+      receiver_class.on_validation{ halt }
       result = subject.call
       assert_that(result.head_args).equals([:ok])
 
@@ -271,7 +271,7 @@ module MuchRails::Action
 
     should "return the expected Result "\
            "when halted in an on_before_call block" do
-      receiver_class.on_before_call { halt }
+      receiver_class.on_before_call{ halt }
       result = subject.call
       assert_that(result.head_args).equals([:ok])
 
@@ -281,7 +281,7 @@ module MuchRails::Action
     end
 
     should "return the expected Result when halted in the on_call block" do
-      receiver_class.on_call { halt }
+      receiver_class.on_call{ halt }
       result = subject.call
       assert_that(result.head_args).equals([:ok])
 
@@ -291,7 +291,7 @@ module MuchRails::Action
     end
 
     should "return the expected Result when halted in an on_after_call block" do
-      receiver_class.on_after_call { halt }
+      receiver_class.on_after_call{ halt }
       result = subject.call
       assert_that(result.head_args).equals([:ok])
 
@@ -302,13 +302,13 @@ module MuchRails::Action
 
     should "return the expected Result given an on_call block that renders" do
       view_model = Object.new
-      receiver_class.on_call { render(view_model) }
+      receiver_class.on_call{ render(view_model) }
       result = subject.call
       assert_that(result.render_view_model).is(view_model)
       assert_that(result.render_kargs)
         .equals(template: subject.class.default_action_template_name)
 
-      receiver_class.on_call { render("some/view/template", layout: false) }
+      receiver_class.on_call{ render("some/view/template", layout: false) }
       action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is_nil
@@ -318,9 +318,9 @@ module MuchRails::Action
           layout: false,
         )
 
-      receiver_class.on_call {
+      receiver_class.on_call do
         render(view_model, "some/view/template", layout: false)
-      }
+      end
       action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
@@ -330,15 +330,15 @@ module MuchRails::Action
           layout: false,
         )
 
-      receiver_class.on_call {
+      receiver_class.on_call do
         render(view_model, "some/view/template", template: "other/template")
-      }
+      end
       action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
       assert_that(result.render_kargs).equals(template: "other/template")
 
-      receiver_class.on_call { render(view_model, template: "other/template") }
+      receiver_class.on_call{ render(view_model, template: "other/template") }
       action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
@@ -346,34 +346,34 @@ module MuchRails::Action
     end
 
     should "return the expected Result given an on_call block that redirects" do
-      receiver_class.on_call { redirect_to("URL") }
+      receiver_class.on_call{ redirect_to("URL") }
       result = subject.call
       assert_that(result.redirect_to_args).equals(["URL"])
     end
 
     should "return the expected Result "\
            "given an on_call block that responds with a header" do
-      receiver_class.on_call { head(:not_found) }
+      receiver_class.on_call{ head(:not_found) }
       result = subject.call
       assert_that(result.head_args).equals([:not_found])
     end
 
     should "return the expected Result "\
            "given an on_call block that sends a file" do
-      receiver_class.on_call { send_file("FILE") }
+      receiver_class.on_call{ send_file("FILE") }
       result = subject.call
       assert_that(result.send_file_args).equals(["FILE"])
     end
 
     should "return the expected Result "\
            "given an on_call block that sends data" do
-      receiver_class.on_call { send_data("DATA") }
+      receiver_class.on_call{ send_data("DATA") }
       result = subject.call
       assert_that(result.send_data_args).equals(["DATA"])
     end
 
     should "return the expected Result given invalid params" do
-      Assert.stub(subject, :valid_action?) { false }
+      Assert.stub(subject, :valid_action?){ false }
       result = subject.call
       assert_that(result.errors).equals(subject.errors)
 

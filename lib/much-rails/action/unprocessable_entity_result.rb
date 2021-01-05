@@ -21,15 +21,15 @@ class MuchRails::Action::UnprocessableEntityResult <
 
   # This block is called using `instance_exec` in the scope of the controller
   def execute_block
-    ->(result) {
+    ->(result){
       errors =
         Array
           .wrap(much_rails_action_class&.params_root)
-          .reduce(result.errors) { |acc, root|
+          .reduce(result.errors) do |acc, root|
             acc.merge(
-              acc.transform_keys { |error_key| "#{root}[#{error_key}]" }
+              acc.transform_keys{ |error_key| "#{root}[#{error_key}]" },
             )
-          }
+          end
 
       render(json: errors, status: :unprocessable_entity)
     }

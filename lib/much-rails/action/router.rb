@@ -18,7 +18,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     if routes_file_name.to_s.strip.empty?
       raise(
         ArgumentError,
-        "expected a routes file name, given `#{routes_file_name.inspect}`."
+        "expected a routes file name, given `#{routes_file_name.inspect}`.",
       )
     end
 
@@ -27,9 +27,9 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
       raise ArgumentError, "routes file `#{file_path.inspect}` does not exist."
     end
 
-    new(routes_file_name, controller_name: controller_name) {
+    new(routes_file_name, controller_name: controller_name) do
       instance_eval(File.read(file_path), file_path.to_s, 1)
-    }
+    end
   end
 
   attr_reader :controller_name
@@ -59,7 +59,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
           as: definition.name,
           defaults:
             definition.default_params.merge({
-              ACTION_CLASS_PARAM_NAME => request_type_action.class_name
+              ACTION_CLASS_PARAM_NAME => request_type_action.class_name,
             }),
           constraints: request_type_action.constraints_lambda,
         )
@@ -73,7 +73,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
           as: definition.name,
           defaults:
             definition.default_params.merge({
-              ACTION_CLASS_PARAM_NAME => definition.default_action_class_name
+              ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,
             }),
         )
       end

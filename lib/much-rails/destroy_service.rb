@@ -22,7 +22,9 @@ module MuchRails::DestroyService
       set_the_return_value_for_the_call_method(
         MuchRails::Result.failure(
           exception: ex,
-          validation_errors: ex&.destruction_errors.to_h))
+          validation_errors: ex&.destruction_errors.to_h,
+        ),
+      )
     end
   end
 end

@@ -11,14 +11,14 @@ module MuchRails::Layout::Helper
       raise(
         TypeError,
         "A View Model that mixes in MuchRails::Layout expected; "\
-        "got #{view_model.class}."
+        "got #{view_model.class}.",
       )
     end
     view_model
       .layouts
       .reverse
-      .reduce(content) { |render_proc, template_path|
-        -> { render(File.join("layouts", template_path), &render_proc) }
+      .reduce(content){ |render_proc, template_path|
+        ->{ render(File.join("layouts", template_path), &render_proc) }
       }
       .call
   end

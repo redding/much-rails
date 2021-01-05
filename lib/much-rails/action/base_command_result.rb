@@ -17,6 +17,6 @@ class MuchRails::Action::BaseCommandResult < MuchRails::Action::BaseResult
 
   # This block is called using `instance_exec` in the scope of the controller
   def execute_block
-    ->(result) { public_send(result.command_name, *result.command_args) }
+    ->(result){ public_send(result.command_name, *result.command_args) }
   end
 end

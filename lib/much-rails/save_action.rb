@@ -4,6 +4,7 @@ require "much-rails/mixin"
 require "much-rails/change_action"
 
 module MuchRails; end
+
 module MuchRails::SaveAction
   include MuchRails::Mixin
 

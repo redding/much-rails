@@ -6,11 +6,11 @@ require "much-rails/action/base_router"
 class MuchRails::Action::BaseRouter
   class UnitTests < Assert::Context
     desc "MuchRails::Action::BaseRouter"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Action::BaseRouter }
+    let(:unit_class){ MuchRails::Action::BaseRouter }
 
-    let(:caller1) { ["TEST CALLER 1"] }
+    let(:caller1){ ["TEST CALLER 1"] }
 
     should have_imeths :url_class
 
@@ -22,31 +22,31 @@ class MuchRails::Action::BaseRouter
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new }
+    subject{ unit_class.new }
 
     setup do
-      Assert.stub_tap_on_call(unit_class::RequestTypeSet, :new) { |set, _|
-        Assert.stub_tap_on_call(set, :add) { |_, call|
+      Assert.stub_tap_on_call(unit_class::RequestTypeSet, :new) do |set, _|
+        Assert.stub_tap_on_call(set, :add) do |_, call|
           @request_type_set_add_call = call
-        }
-      }
-      Assert.stub_tap_on_call(unit_class::URLSet, :new) { |set, call|
+        end
+      end
+      Assert.stub_tap_on_call(unit_class::URLSet, :new) do |set, call|
         @url_set_new_call = call
-        Assert.stub_on_call(set, :path_for) { |call|
+        Assert.stub_on_call(set, :path_for) do |call|
           @url_set_path_for_call = call
           "TEST PATH STRING"
-        }
-        Assert.stub_on_call(set, :url_for) { |call|
+        end
+        Assert.stub_on_call(set, :url_for) do |call|
           @url_set_url_for_call = call
           "TEST URL STRING"
-        }
-        Assert.stub_tap_on_call(set, :add) { |_, call|
+        end
+        Assert.stub_tap_on_call(set, :add) do |_, call|
           @url_set_add_call = call
-        }
-      }
-      Assert.stub_tap_on_call(unit_class::Definition, :for_route) { |_, call|
+        end
+      end
+      Assert.stub_tap_on_call(unit_class::Definition, :for_route) do |_, call|
         @route_definition_call = call
-      }
+      end
     end
 
     should have_readers :name
@@ -70,7 +70,7 @@ class MuchRails::Action::BaseRouter
     end
 
     should "instance_exec any given block" do
-      router = unit_class.new { base_url "/test" }
+      router = unit_class.new{ base_url "/test" }
       assert_that(router.base_url).equals("/test")
     end
 
@@ -89,7 +89,7 @@ class MuchRails::Action::BaseRouter
     end
 
     should "define request types" do
-      proc = ->(request) {}
+      proc = ->(request){}
       request_type = subject.request_type(:type1, &proc)
       assert_that(subject.request_type_set).is_not_empty
       assert_that(request_type).is_instance_of(unit_class::RequestType)
@@ -112,7 +112,7 @@ class MuchRails::Action::BaseRouter
           .raises(ArgumentError)
       assert_that(ex.message)
         .equals(
-          "Named URLs must be defined with Symbol names, given `\"url2\"`."
+          "Named URLs must be defined with Symbol names, given `\"url2\"`.",
         )
 
       ex =
@@ -120,13 +120,14 @@ class MuchRails::Action::BaseRouter
           .raises(ArgumentError)
       assert_that(ex.message)
         .equals(
-          "Named URLs must be defined with String paths, given `#{path.inspect}`."
+          "Named URLs must be defined with String paths, "\
+          "given `#{path.inspect}`.",
         )
     end
 
     should "define HTTP method routes" do
       request_type_name = Factory.symbol
-      request_type_proc = ->(request) {}
+      request_type_proc = ->(request){}
       request_type = subject.request_type(request_type_name, &request_type_proc)
       request_type_class_name = Factory.string
       request_type_action =
@@ -210,23 +211,23 @@ class MuchRails::Action::BaseRouter
 
   class RequestTypeSetUnitTests < UnitTests
     desc "RequestTypeSet"
-    subject { request_type_set_class }
+    subject{ request_type_set_class }
 
-    let(:request_type_set_class) { unit_class::RequestTypeSet }
-    let(:request_type_class) { unit_class::RequestType }
+    let(:request_type_set_class){ unit_class::RequestTypeSet }
+    let(:request_type_class){ unit_class::RequestType }
   end
 
   class RequestTypeSetInitTests < RequestTypeSetUnitTests
     desc "when init"
-    subject { request_type_set_class.new }
+    subject{ request_type_set_class.new }
 
     setup do
-      Assert.stub_tap_on_call(request_type_class, :new) { |url, call|
+      Assert.stub_tap_on_call(request_type_class, :new) do |_url, call|
         @request_type_new_call = call
-      }
+      end
     end
 
-    let(:constraints_lambda1) { ->(request) {} }
+    let(:constraints_lambda1){ ->(request){} }
 
     should have_imeths :empty?, :add, :get
 
@@ -262,17 +263,17 @@ class MuchRails::Action::BaseRouter
 
   class RequestTypeUnitTests < UnitTests
     desc "RequestType"
-    subject { request_type_class }
+    subject{ request_type_class }
 
-    let(:request_type_class) { unit_class::RequestType }
+    let(:request_type_class){ unit_class::RequestType }
   end
 
   class RequestTypeInitTests < RequestTypeUnitTests
     desc "when init"
-    subject { request_type_class.new(name1, constraints_lambda1) }
+    subject{ request_type_class.new(name1, constraints_lambda1) }
 
-    let(:name1) { Factory.symbol }
-    let(:constraints_lambda1) { ->(request) {} }
+    let(:name1){ Factory.symbol }
+    let(:constraints_lambda1){ ->(request){} }
 
     should have_imeths :name, :constraints_lambda
 
@@ -284,21 +285,21 @@ class MuchRails::Action::BaseRouter
 
   class RequestTypeActionUnitTests < UnitTests
     desc "RequestTypeAction"
-    subject { request_type_action_class }
+    subject{ request_type_action_class }
 
-    let(:request_type_action_class) { unit_class::RequestTypeAction }
+    let(:request_type_action_class){ unit_class::RequestTypeAction }
   end
 
   class RequestTypeActionInitTests < RequestTypeActionUnitTests
     desc "when init"
-    subject { request_type_action_class.new(request_type1, action_class_name1) }
+    subject{ request_type_action_class.new(request_type1, action_class_name1) }
 
-    let(:name1) { Factory.symbol }
-    let(:constraints_lambda1) { ->(request) {} }
-    let(:request_type1) {
+    let(:name1){ Factory.symbol }
+    let(:constraints_lambda1){ ->(request){} }
+    let(:request_type1) do
       unit_class::RequestType.new(name1, constraints_lambda1)
-    }
-    let(:action_class_name1) { Factory.string }
+    end
+    let(:action_class_name1){ Factory.string }
 
     should have_imeths :request_type, :class_name, :constraints_lambda
 
@@ -312,30 +313,30 @@ class MuchRails::Action::BaseRouter
 
   class URLSetUnitTests < UnitTests
     desc "URLSet"
-    subject { url_set_class }
+    subject{ url_set_class }
 
-    let(:url_set_class) { unit_class::URLSet }
+    let(:url_set_class){ unit_class::URLSet }
   end
 
   class URLSetInitTests < URLSetUnitTests
     desc "when init"
-    subject { url_set_class.new(router1) }
+    subject{ url_set_class.new(router1) }
 
     setup do
-      Assert.stub_tap_on_call(router1.url_class, :new) { |url, call|
+      Assert.stub_tap_on_call(router1.url_class, :new) do |url, call|
         @url_new_call = call
-        Assert.stub_on_call(url, :path_for) { |call|
+        Assert.stub_on_call(url, :path_for) do |call|
           @url_path_for_call = call
           "TEST PATH STRING"
-        }
-        Assert.stub_on_call(url, :url_for) { |call|
+        end
+        Assert.stub_on_call(url, :url_for) do |call|
           @url_url_for_call = call
           "TEST URL STRING"
-        }
-      }
+        end
+      end
     end
 
-    let(:router1) { unit_class.new }
+    let(:router1){ unit_class.new }
 
     should have_imeths :empty?, :add, :fetch, :path_for, :url_for
 
@@ -356,7 +357,7 @@ class MuchRails::Action::BaseRouter
       ex =
         assert_that{ subject.fetch(:url1) }.raises(ArgumentError)
       assert_that(ex.message).equals("There is no URL named `:url1`.")
-      assert_that(subject.fetch(:url1) { "/url1" }).equals("/url1")
+      assert_that(subject.fetch(:url1, "/url1")).equals("/url1")
 
       added_url = subject.add(:url1, Factory.url)
       url       = subject.fetch(:url1)
@@ -388,13 +389,13 @@ class MuchRails::Action::BaseRouter
 
   class BaseURLUnitTests < UnitTests
     desc "BaseURL"
-    subject { base_url_class }
+    subject{ base_url_class }
 
-    let(:base_url_class) { unit_class::BaseURL }
+    let(:base_url_class){ unit_class::BaseURL }
 
-    let(:router1) { unit_class.new }
-    let(:url_path1) { Factory.url }
-    let(:url_name1) { Factory.symbol }
+    let(:router1){ unit_class.new }
+    let(:url_path1){ Factory.url }
+    let(:url_name1){ Factory.symbol }
 
     should have_imeths :url_name, :url_path, :for
 
@@ -405,7 +406,7 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.url_name(router1, url_name1)).equals(url_name1)
 
       router_name = Factory.symbol
-      Assert.stub(router1, :name) { router_name }
+      Assert.stub(router1, :name){ router_name }
       assert_that(subject.url_name(router1, url_name1))
         .equals("#{router_name}_#{url_name1}".to_sym)
     end
@@ -417,7 +418,7 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.url_path(router1, url_path1)).equals(url_path1)
 
       router_base_url = Factory.url
-      Assert.stub(router1, :base_url) { router_base_url }
+      Assert.stub(router1, :base_url){ router_base_url }
       assert_that(subject.url_path(router1, url_path1))
         .equals(File.join(router_base_url, url_path1))
     end
@@ -435,7 +436,7 @@ class MuchRails::Action::BaseRouter
 
   class BaseURLInitTests < BaseURLUnitTests
     desc "when init"
-    subject { base_url_class.new(router1, url_path1, url_name1) }
+    subject{ base_url_class.new(router1, url_path1, url_name1) }
 
     should have_readers :router, :url_path, :url_name
     should have_imeths :name, :path, :path_for, :url_for
@@ -453,17 +454,17 @@ class MuchRails::Action::BaseRouter
 
   class DefinitionUnitTests < UnitTests
     desc "Definition"
-    subject { definition_class }
+    subject{ definition_class }
 
-    let(:definition_class) { unit_class::Definition }
+    let(:definition_class){ unit_class::Definition }
 
-    let(:router1) { unit_class.new }
-    let(:http_method1) { Factory.symbol }
-    let(:url1) { unit_class::BaseURL.for(router1, Factory.url) }
-    let(:url_path1) { url1.path }
-    let(:url_name1) { url1.name }
-    let(:default_action_class_name1) { Factory.string }
-    let(:request_type_actions1) { [] }
+    let(:router1){ unit_class.new }
+    let(:http_method1){ Factory.symbol }
+    let(:url1){ unit_class::BaseURL.for(router1, Factory.url) }
+    let(:url_path1){ url1.path }
+    let(:url_name1){ url1.name }
+    let(:default_action_class_name1){ Factory.string }
+    let(:request_type_actions1){ [] }
 
     should have_imeths :for_route
 
@@ -492,7 +493,7 @@ class MuchRails::Action::BaseRouter
 
   class DefinitionInitTests < DefinitionUnitTests
     desc "when init"
-    subject {
+    subject do
       definition_class.new(
         http_method: http_method1,
         path: url_path1,
@@ -502,11 +503,11 @@ class MuchRails::Action::BaseRouter
         default_params: default_params1,
         called_from: caller1,
       )
-    }
+    end
 
-    let(:default_params1) {
+    let(:default_params1) do
       { Factory.string => Factory.string }
-    }
+    end
 
     should have_readers :http_method, :path, :name, :default_params
     should have_readers :default_action_class_name, :request_type_actions

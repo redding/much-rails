@@ -6,9 +6,9 @@ require "much-rails/records/not_destroyable"
 module MuchRails::Records::NotDestroyable
   class UnitTests < Assert::Context
     desc "MuchRails::Records::NotDestroyable"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Records::NotDestroyable }
+    let(:unit_class){ MuchRails::Records::NotDestroyable }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,13 +17,13 @@ module MuchRails::Records::NotDestroyable
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class.new }
+    subject{ receiver_class.new }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::Records::NotDestroyable
       end
-    }
+    end
 
     should "disable destroying a record" do
       assert_that(subject.destruction_error_messages)
@@ -31,7 +31,7 @@ module MuchRails::Records::NotDestroyable
 
       assert_that(subject.destroy).is_false
 
-      assert_that(-> { subject.destroy! })
+      assert_that(->{ subject.destroy! })
         .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
 
       assert_that(subject.destroyable?).is_false

@@ -6,14 +6,14 @@ require "much-rails/action/send_data_result"
 class MuchRails::Action::SendDataResult
   class UnitTests < Assert::Context
     desc "MuchRails::Action::SendDataResult"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Action::SendDataResult }
+    let(:unit_class){ MuchRails::Action::SendDataResult }
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new("DATA") }
+    subject{ unit_class.new("DATA") }
 
     should "know its attributes" do
       assert_that(subject.command_name).equals(:send_data)

@@ -6,19 +6,19 @@ require "much-rails/date"
 module MuchRails::Date
   class UnitTests < Assert::Context
     desc "MuchRails::Date"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Date }
+    let(:unit_class){ MuchRails::Date }
 
-    let(:time) { Time.current }
-    let(:date) { time.to_date }
+    let(:time){ Time.current }
+    let(:date){ time.to_date }
 
     should have_imeths :for, :parse, :parse_united_states, :parse8601
 
     should "know how to convert date-like representations to Date" do
       # nil, blank value(s)
       # assert_that(subject.for(nil)).is_nil
-      ["", " "].each { |object| assert_that(subject.for(object)).is_nil }
+      ["", " "].each{ |object| assert_that(subject.for(object)).is_nil }
 
       # Time, DateTime, or Date
       objects = [Time.current, DateTime.current, Date.today]
@@ -41,7 +41,7 @@ module MuchRails::Date
       # invalid values
       invalid_objects = ["VALUE", 42, Class.new]
       invalid_objects.each do |object|
-        assert_that(-> { subject.for(object) })
+        assert_that(->{ subject.for(object) })
           .raises(MuchRails::Date::InvalidError)
       end
     end

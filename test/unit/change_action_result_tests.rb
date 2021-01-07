@@ -6,11 +6,11 @@ require "much-rails/change_action_result"
 class MuchRails::ChangeActionResult
   class UnitTests < Assert::Context
     desc "MuchRails::ChangeActionResult"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::ChangeActionResult }
+    let(:unit_class){ MuchRails::ChangeActionResult }
 
-    let(:value1) { "VALUE1" }
+    let(:value1){ "VALUE1" }
 
     should have_imeths :success, :failure
 
@@ -31,14 +31,14 @@ class MuchRails::ChangeActionResult
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.success(value: value1) }
+    subject{ unit_class.success(value: value1) }
 
-    let(:save_service_result) {
+    let(:save_service_result) do
       [
         MuchRails::Result.success,
-        MuchRails::Result.failure
+        MuchRails::Result.failure,
       ].sample
-    }
+    end
 
     should have_readers :service_result
 
@@ -56,33 +56,33 @@ class MuchRails::ChangeActionResult
     end
 
     should "raise a TypeError when given a non-MuchRails::Result" do
-      assert_that { unit_class.new(["INVALID TYPE", nil, -9].sample) }
+      assert_that{ unit_class.new(["INVALID TYPE", nil, -9].sample) }
         .raises(TypeError)
     end
   end
 
   class ValidationMethodsTests < UnitTests
     desc "validation methods"
-    subject {
+    subject do
       unit_class.failure(validation_errors: {
         name: ["NAME ERROR"],
-        other: ["OTHER ERROR"]
+        other: ["OTHER ERROR"],
       })
-    }
+    end
 
     should "know its attributes" do
       # validation_errors
       assert_that(subject.validation_errors)
         .equals({
           name: ["NAME ERROR"],
-          other: ["OTHER ERROR"]
+          other: ["OTHER ERROR"],
         })
 
       # validation_error_messages
       assert_that(subject.validation_error_messages)
         .equals([
           "NAME ERROR",
-          "OTHER ERROR"
+          "OTHER ERROR",
         ])
 
       # extract_validation_error
@@ -93,20 +93,20 @@ class MuchRails::ChangeActionResult
       assert_that(subject.validation_errors).is_empty
 
       # any_unextracted_validation_errors?
-      Assert.stub(subject, :failure?) { true }
-      Assert.stub(subject, :validation_errors) { { name: "NAME ERROR" } }
+      Assert.stub(subject, :failure?){ true }
+      Assert.stub(subject, :validation_errors){ { name: "NAME ERROR" } }
       assert_that(subject.any_unextracted_validation_errors?).is_true
 
-      Assert.stub(subject, :failure?) { true }
-      Assert.stub(subject, :validation_errors) { {} }
+      Assert.stub(subject, :failure?){ true }
+      Assert.stub(subject, :validation_errors){ {} }
       assert_that(subject.any_unextracted_validation_errors?).is_false
 
-      Assert.stub(subject, :failure?) { false }
-      Assert.stub(subject, :validation_errors) { { name: "NAME ERROR" } }
+      Assert.stub(subject, :failure?){ false }
+      Assert.stub(subject, :validation_errors){ { name: "NAME ERROR" } }
       assert_that(subject.any_unextracted_validation_errors?).is_false
 
-      Assert.stub(subject, :failure?) { false }
-      Assert.stub(subject, :validation_errors) { {} }
+      Assert.stub(subject, :failure?){ false }
+      Assert.stub(subject, :validation_errors){ {} }
       assert_that(subject.any_unextracted_validation_errors?).is_false
     end
   end

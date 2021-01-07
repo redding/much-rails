@@ -6,9 +6,9 @@ require "much-rails/records/validate_destroy"
 module MuchRails::Records::ValidateDestroy
   class UnitTests < Assert::Context
     desc "MuchRails::Records::ValidateDestroy"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Records::ValidateDestroy }
+    let(:unit_class){ MuchRails::Records::ValidateDestroy }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,22 +17,22 @@ module MuchRails::Records::ValidateDestroy
 
   class ReceiverTests < UnitTests
     desc "when init"
-    subject { receiver_class.new }
+    subject{ receiver_class.new }
 
     setup do
-      Assert.stub_tap_on_call(subject, :destroy!) { |_, call|
+      Assert.stub_tap_on_call(subject, :destroy!) do |_, call|
         @destroy_bang_call = call
-      }
+      end
     end
 
-    let(:receiver_class) { FakeRecordMissingValidateDestroyClass }
+    let(:receiver_class){ FakeRecordMissingValidateDestroyClass }
 
     should have_imeths :destruction_error_messages
     should have_imeths :destroy, :destroy!
     should have_imeths :destroyable?, :not_destroyable?
 
     should "not implement its #validate_destroy method" do
-      assert_that(-> { subject.instance_eval{ validate_destroy } })
+      assert_that(->{ subject.instance_eval{ validate_destroy } })
         .raises(NotImplementedError)
     end
   end
@@ -43,7 +43,7 @@ module MuchRails::Records::ValidateDestroy
       subject.destruction_errors_exist = true
     end
 
-    let(:receiver_class) { FakeRecordClass }
+    let(:receiver_class){ FakeRecordClass }
 
     should "validate destroying records" do
       subject.destroyable?
@@ -61,7 +61,7 @@ module MuchRails::Records::ValidateDestroy
       assert_that(subject.super_destroy_called).is_true
 
       exception =
-        assert_that(-> { subject.destroy! })
+        assert_that(->{ subject.destroy! })
           .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
       assert_that(exception.message)
         .equals("TEST DESTRUCTION ERROR1\nTEST DESTRUCTION ERROR2")
@@ -70,7 +70,7 @@ module MuchRails::Records::ValidateDestroy
       assert_that(subject.super_destroy_called).is_true
 
       exception =
-        assert_that(-> { subject.destroy!(as: :thing) })
+        assert_that(->{ subject.destroy!(as: :thing) })
           .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
       assert_that(exception.destruction_errors)
         .equals(thing: subject.destruction_error_messages.to_a)
@@ -98,7 +98,7 @@ module MuchRails::Records::ValidateDestroy
       subject.destruction_errors_exist = false
     end
 
-    let(:receiver_class) { FakeRecordClass }
+    let(:receiver_class){ FakeRecordClass }
 
     should "validate destroying records" do
       subject.destroyable?
@@ -127,13 +127,13 @@ module MuchRails::Records::ValidateDestroy
   class DestroyFalseTests < ReceiverTests
     desc "when #destroy returns false"
     setup do
-      Assert.stub(subject, :destroy) { false }
+      Assert.stub(subject, :destroy){ false }
     end
 
-    let(:receiver_class) { FakeRecordClass }
+    let(:receiver_class){ FakeRecordClass }
 
     should "raise ActiveRecord::RecordNotDestroyed" do
-      assert_that(-> { subject.destroy! })
+      assert_that(->{ subject.destroy! })
         .raises(ActiveRecord::RecordNotDestroyed)
     end
   end
@@ -159,15 +159,14 @@ module MuchRails::Records::ValidateDestroy
     include MuchRails::Records::ValidateDestroy
 
     def validate_destroy
-      if destruction_errors_exist
-        destruction_error_messages << "TEST DESTRUCTION ERROR1"
-        destruction_error_messages << "TEST DESTRUCTION ERROR2"
-      end
+      return unless destruction_errors_exist
+
+      destruction_error_messages << "TEST DESTRUCTION ERROR1"
+      destruction_error_messages << "TEST DESTRUCTION ERROR2"
     end
   end
 
   class FakeRecordMissingValidateDestroyClass < FakeRecordBaseClass
     include MuchRails::Records::ValidateDestroy
-
   end
 end

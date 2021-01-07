@@ -6,9 +6,9 @@ require "much-rails/wrap_and_call_method"
 module MuchRails::WrapAndCallMethod
   class UnitTests < Assert::Context
     desc "MuchRails::WrapAndCallMethod"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::WrapAndCallMethod }
+    let(:unit_class){ MuchRails::WrapAndCallMethod }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,9 +17,9 @@ module MuchRails::WrapAndCallMethod
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::WrapAndCallMethod
 
@@ -35,18 +35,18 @@ module MuchRails::WrapAndCallMethod
           MuchRails::Result.success(name: object.name)
         end
       end
-    }
+    end
 
-    let(:objects) { [object1, object2] }
-    let(:object1) { OpenStruct.new(name: "OBJECT1") }
-    let(:object2) { OpenStruct.new(name: "OBJECT2") }
+    let(:objects){ [object1, object2] }
+    let(:object1){ OpenStruct.new(name: "OBJECT1") }
+    let(:object2){ OpenStruct.new(name: "OBJECT2") }
 
-    let(:object_kargs) {
+    let(:object_kargs) do
       {
         test_key1: 1,
-        test_key2: 2
+        test_key2: 2,
       }
-    }
+    end
 
     should have_imeths :wrap_and_call, :wrap_and_map_call
     should have_imeths :wrap_and_capture_call, :wrap_and_capture_call!
@@ -59,7 +59,7 @@ module MuchRails::WrapAndCallMethod
 
   class WrapAndCallTests < ReceiverTests
     desc "wrap and call"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     should "wrap and call its objects and return the wrapped objects" do
       wrapped_objects = subject.wrap_and_call(objects, **object_kargs)
@@ -76,7 +76,7 @@ module MuchRails::WrapAndCallMethod
 
   class WrapAndMapCallTests < ReceiverTests
     desc "wrap and map call"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     should "wrap and call its object and return each call's return value" do
       wrapped_objects = subject.wrap_and_call(objects, **object_kargs)
@@ -91,27 +91,30 @@ module MuchRails::WrapAndCallMethod
 
   class WrapAndCaptureCallTests < ReceiverTests
     desc "wrap and capture call"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     setup do
-      Assert.stub(MuchRails::Result, :tap) { |&block| block.call(tapped_result1) }
-      Assert.stub_tap_on_call(tapped_result1, :capture_for_all) { |_, call|
+      Assert.stub(MuchRails::Result, :tap) do |&block|
+        block.call(tapped_result1)
+      end
+      Assert.stub_tap_on_call(tapped_result1, :capture_for_all) do |_, call|
         @capture_for_all_call = call
-      }
+      end
     end
 
-    let(:tapped_result1) { MuchRails::Result.success }
+    let(:tapped_result1){ MuchRails::Result.success }
 
     should "wrap and call its objects and capture each return value as a "\
            "sub-result in a given MuchRails::Result" do
       wrapped_objects = subject.wrap_and_call(objects, **object_kargs)
 
-      MuchRails::Result.tap { |result|
+      MuchRails::Result.tap do |result|
         subject.wrap_and_capture_call(
           objects,
           capturing_result: result,
-          **object_kargs)
-      }
+          **object_kargs,
+        )
+      end
 
       assert_that(tapped_result1.sub_results.size).equals(objects.size)
       tapped_result1.sub_results.each_with_index do |sub_result, index|
@@ -124,27 +127,30 @@ module MuchRails::WrapAndCallMethod
 
   class WrapAndCaptureCallBangTests < ReceiverTests
     desc "wrap and capture call bang"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     setup do
-      Assert.stub(MuchRails::Result, :tap) { |&block| block.call(tapped_result1) }
-      Assert.stub_tap_on_call(tapped_result1, :capture_for_all!) { |_, call|
+      Assert.stub(MuchRails::Result, :tap) do |&block|
+        block.call(tapped_result1)
+      end
+      Assert.stub_tap_on_call(tapped_result1, :capture_for_all!) do |_, call|
         @capture_for_all_bang_call = call
-      }
+      end
     end
 
-    let(:tapped_result1) { MuchRails::Result.success }
+    let(:tapped_result1){ MuchRails::Result.success }
 
     should "wrap and call its objects and capture each return value as a "\
            "sub-result in a given MuchRails::Result" do
       wrapped_objects = subject.wrap_and_call(objects, **object_kargs)
 
-      MuchRails::Result.tap { |result|
+      MuchRails::Result.tap do |result|
         subject.wrap_and_capture_call!(
           objects,
           capturing_result: result,
-          **object_kargs)
-      }
+          **object_kargs,
+        )
+      end
 
       assert_that(tapped_result1.sub_results.size).equals(objects.size)
       tapped_result1.sub_results.each_with_index do |sub_result, index|

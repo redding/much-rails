@@ -3,9 +3,10 @@
 require "much-rails/config"
 require "much-rails/mixin"
 
+module MuchRails; end
+
 # MuchRails::WrapMethod is a mix-in to implement the `wrap` class/instance
 # method pattern used in service objects, etc.
-module MuchRails; end
 module MuchRails::WrapMethod
   include MuchRails::Mixin
 
@@ -17,15 +18,15 @@ module MuchRails::WrapMethod
 
   mixin_class_methods do
     def wrap(objects, *args)
-      Array.wrap(objects).map { |object|
+      Array.wrap(objects).map do |object|
         public_send(wrap_initializer_method, object, *args)
-      }
+      end
     end
 
     def wrap_with_index(objects, **kargs)
-      Array.wrap(objects).each_with_index.map { |object, index|
+      Array.wrap(objects).each_with_index.map do |object, index|
         public_send(wrap_initializer_method, object, index: index, **kargs)
-      }
+      end
     end
 
     def wrap_initializer_method(value = nil)

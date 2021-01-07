@@ -6,12 +6,12 @@ require "much-rails/time"
 module MuchRails::Time
   class UnitTests < Assert::Context
     desc "MuchRails::Time"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Time }
+    let(:unit_class){ MuchRails::Time }
 
-    let(:time) { Time.current }
-    let(:utc_time) { time.utc }
+    let(:time){ Time.current }
+    let(:utc_time){ time.utc }
 
     should have_imeths :for
 
@@ -43,7 +43,7 @@ module MuchRails::Time
       # invalid values
       invalid_objects = ["TEST_VALUE", 42, Class.new]
       invalid_objects.each do |object|
-        assert_that(-> { subject.for(object) })
+        assert_that(->{ subject.for(object) })
           .raises(MuchRails::Time::InvalidError)
       end
     end

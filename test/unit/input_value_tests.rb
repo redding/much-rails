@@ -6,9 +6,9 @@ require "much-rails/input_value"
 module MuchRails::InputValue
   class UnitTests < Assert::Context
     desc "MuchRails::InputValue"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::InputValue }
+    let(:unit_class){ MuchRails::InputValue }
 
     should have_imeths :strip, :strip_all
 

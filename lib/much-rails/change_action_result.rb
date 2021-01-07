@@ -21,7 +21,8 @@ class MuchRails::ChangeActionResult
     unless save_service_result.is_a?(MuchRails::Result)
       raise(
         TypeError,
-        "MuchRails::Result expected, got #{save_service_result.class}")
+        "MuchRails::Result expected, got #{save_service_result.class}",
+      )
     end
 
     @service_result = save_service_result

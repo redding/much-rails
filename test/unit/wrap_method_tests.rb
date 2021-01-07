@@ -6,9 +6,9 @@ require "much-rails/wrap_method"
 module MuchRails::WrapMethod
   class UnitTests < Assert::Context
     desc "MuchRails::WrapMethod"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::WrapMethod }
+    let(:unit_class){ MuchRails::WrapMethod }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,9 +17,9 @@ module MuchRails::WrapMethod
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class }
+    subject{ receiver_class }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         include MuchRails::WrapMethod
 
@@ -34,25 +34,25 @@ module MuchRails::WrapMethod
           new(object, initializer_method: :build, **object_kargs)
         end
       end
-    }
+    end
 
-    let(:objects) { [object1, object2] }
-    let(:object1) { OpenStruct.new(name: "OBJECT1") }
-    let(:object2) { OpenStruct.new(name: "OBJECT2") }
+    let(:objects){ [object1, object2] }
+    let(:object1){ OpenStruct.new(name: "OBJECT1") }
+    let(:object2){ OpenStruct.new(name: "OBJECT2") }
 
-    let(:object_kargs) {
+    let(:object_kargs) do
       {
         test_key1: 1,
-        test_key2: 2
+        test_key2: 2,
       }
-    }
+    end
 
     should have_imeths :wrap, :wrap_with_index, :wrap_initializer_method
   end
 
   class WrapAndWrapWithIndexTests < ReceiverTests
     desc "wrap and wrap with index"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     should "call new for each given object" do
       wrapped_objects = subject.wrap(objects, **object_kargs)
@@ -78,7 +78,7 @@ module MuchRails::WrapMethod
 
   class CustomWrapInitializerMethodTests < ReceiverTests
     desc "with a custom wrap initializer method"
-    subject { receiver_class }
+    subject{ receiver_class }
 
     setup do
       receiver_class.wrap_initializer_method(:build)
@@ -99,9 +99,9 @@ module MuchRails::WrapMethod
 
   class WrapMethodConfigTests < ReceiverTests
     desc "receiver_class::WrapMethodConfig"
-    subject { config_class.new }
+    subject{ config_class.new }
 
-    let(:config_class) { receiver_class::WrapMethodConfig }
+    let(:config_class){ receiver_class::WrapMethodConfig }
 
     should have_accessors :wrap_initializer_method
 

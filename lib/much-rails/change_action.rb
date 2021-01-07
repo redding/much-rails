@@ -23,7 +23,8 @@ module MuchRails::ChangeAction
         raise(
           MuchRails::Action::ActionError,
           unhandled_change_result_action_error_message,
-          unhandled_change_result_action_error_backtrace)
+          unhandled_change_result_action_error_backtrace,
+        )
       end
     end
   end
@@ -47,7 +48,7 @@ module MuchRails::ChangeAction
           MuchRails::ChangeActionResult.new(
             instance_exec(
               &self.class.much_rails_change_action_config.change_result_block
-            )
+            ),
           )
         end
     end
@@ -63,8 +64,8 @@ module MuchRails::ChangeAction
 
     def unhandled_change_result_action_error_message
       change_result.exception&.message ||
-        "#{change_result.inspect} has validation errors that were not handled by "\
-        "the Action: #{change_result.validation_errors.inspect}."
+        "#{change_result.inspect} has validation errors that were not handled "\
+        "by the Action: #{change_result.validation_errors.inspect}."
     end
 
     def unhandled_change_result_action_error_backtrace

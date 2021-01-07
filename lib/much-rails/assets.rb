@@ -37,12 +37,14 @@ module MuchRails::Assets
       # on all .js and .scss files. Support compilation of .scss files.
       config.source rails.root.join("app", "assets") do |s|
         # Reject SCSS partials
-        s.filter{ |paths| paths.reject{ |p| File.basename(p) =~ /^_.*\.scss$/ } }
+        s.filter do |paths|
+          paths.reject{ |p| File.basename(p) =~ /^_.*\.scss$/ }
+        end
 
         s.engine "js",   MuchRails::Assets::Erubi::Engine
         s.engine "scss", MuchRails::Assets::Erubi::Engine
         s.engine "scss", MuchRails::Assets::Sass::Engine, {
-          syntax:       "scss",
+          syntax: "scss",
           output_style: "compressed",
         }
       end

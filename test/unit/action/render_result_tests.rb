@@ -6,20 +6,20 @@ require "much-rails/action/render_result"
 class MuchRails::Action::RenderResult
   class UnitTests < Assert::Context
     desc "MuchRails::Action::RenderResult"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Action::RenderResult }
+    let(:unit_class){ MuchRails::Action::RenderResult }
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new(view_model1, **render_kargs1) }
+    subject{ unit_class.new(view_model1, **render_kargs1) }
 
-    let(:controller1) { FakeController.new }
-    let(:view_model1) { Object.new }
-    let(:render_kargs1) {
+    let(:controller1){ FakeController.new }
+    let(:view_model1){ Object.new }
+    let(:render_kargs1) do
       { something: "TEST_VALUE" }
-    }
+    end
 
     should have_readers :render_view_model, :render_kargs
 

@@ -8,11 +8,11 @@ require "much-rails/rails_routes"
 class MuchRails::Action::Router
   class UnitTests < Assert::Context
     desc "MuchRails::Action::Router"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Action::Router }
+    let(:unit_class){ MuchRails::Action::Router }
 
-    let(:caller1) { ["TEST CALLER 1"] }
+    let(:caller1){ ["TEST CALLER 1"] }
 
     should have_imeths :url_class
 
@@ -34,7 +34,7 @@ class MuchRails::Action::Router
     desc ".load"
 
     setup do
-      Assert.stub(::Rails, :root) { Pathname.new(TEST_SUPPORT_PATH)}
+      Assert.stub(::Rails, :root){ Pathname.new(TEST_SUPPORT_PATH) }
     end
 
     should "eval the named routes file" do
@@ -44,19 +44,19 @@ class MuchRails::Action::Router
     end
 
     should "complain if no file name given" do
-      assert_that { unit_class.load([nil, "", "  "]) }.raises(ArgumentError)
+      assert_that{ unit_class.load([nil, "", "  "]) }.raises(ArgumentError)
     end
 
     should "complain if the named routes file can't be found" do
-      assert_that { unit_class.load(:unknown) }.raises(ArgumentError)
+      assert_that{ unit_class.load(:unknown) }.raises(ArgumentError)
     end
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new }
+    subject{ unit_class.new }
 
-    let(:controller_name1) { Factory.string }
+    let(:controller_name1){ Factory.string }
 
     should have_readers :controller_name, :draw
 
@@ -70,7 +70,7 @@ class MuchRails::Action::Router
 
     should "draw Rails Application routes" do
       request_type_name = Factory.symbol
-      request_type_proc = ->(request) {}
+      request_type_proc = ->(request){}
       subject.request_type(request_type_name, &request_type_proc)
       request_type_class_name = "Actions::Show"
       url_name = Factory.symbol
@@ -81,7 +81,7 @@ class MuchRails::Action::Router
       subject.get(
         url_name,
         default_class_name,
-        request_type_name => request_type_class_name
+        request_type_name => request_type_class_name,
       )
       subject.post(url_name, default_class_name)
       subject.put(url_path, default_class_name)
@@ -157,35 +157,35 @@ class MuchRails::Action::Router
       application_routes = FakeApplicationRoutes.new
 
       exception =
-        assert_that { subject.draw(application_routes) }.raises(NameError)
+        assert_that{ subject.draw(application_routes) }.raises(NameError)
       assert_that(exception.backtrace).equals(caller1)
     end
   end
 
   class URLUnitTests < UnitTests
     desc "URL"
-    subject { url_class }
+    subject{ url_class }
 
-    let(:url_class) { unit_class::URL }
+    let(:url_class){ unit_class::URL }
   end
 
   class URLInitTests < URLUnitTests
     desc "when init"
-    subject { url_class.new(router1, url_path1, url_name1) }
+    subject{ url_class.new(router1, url_path1, url_name1) }
 
     setup do
       Assert.stub_on_call(
         MuchRails::RailsRoutes.instance,
-        :method_missing
-      ) { |call|
+        :method_missing,
+      ) do |call|
         @rails_routes_method_missing_call = call
         "TEST PATH OR URL STRING"
-      }
+      end
     end
 
-    let(:url_name1) { Factory.symbol }
-    let(:url_path1) { Factory.url }
-    let(:router1) { unit_class.new }
+    let(:url_name1){ Factory.symbol }
+    let(:url_path1){ Factory.url }
+    let(:router1){ unit_class.new }
 
     should have_imeths :path_for, :url_for
 
@@ -203,7 +203,7 @@ class MuchRails::Action::Router
   end
 
   class FakeApplicationRoutes
-    attr_reader :get_calls, :post_calls,:put_calls, :patch_calls, :delete_calls
+    attr_reader :get_calls, :post_calls, :put_calls, :patch_calls, :delete_calls
 
     def initialize
       @get_calls    = []

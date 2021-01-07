@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # -*- encoding: utf-8 -*-
-lib = File.expand_path("../lib", __FILE__)
+lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "much-rails/version"
 
@@ -15,7 +15,8 @@ Gem::Specification.new do |gem|
   gem.homepage    = "https://github.com/redding/much-rails"
   gem.license     = "MIT"
 
-  gem.files         = `git ls-files | grep "^[^.]"`.split($/)
+  gem.files = `git ls-files | grep "^[^.]"`.split($INPUT_RECORD_SEPARATOR)
+
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
@@ -32,8 +33,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency("dassets-sass",   ["~> 0.5.0"])
   gem.add_dependency("much-boolean",   ["~> 0.2.0"])
   gem.add_dependency("much-decimal",   ["~> 0.1.1"])
-  gem.add_dependency("much-not-given", ["~> 0.1.1"])
   gem.add_dependency("much-mixin",     ["~> 0.2.3"])
+  gem.add_dependency("much-not-given", ["~> 0.1.1"])
   gem.add_dependency("much-result",    ["~> 0.1.2"])
   gem.add_dependency("much-slug",      ["~> 0.1.0"])
   gem.add_dependency("oj",             ["~> 3.10.18"])

@@ -6,17 +6,17 @@ require "much-rails/view_models/breadcrumb"
 class MuchRails::ViewModels::Breadcrumb
   class UnitTests < Assert::Context
     desc "MuchRails::ViewModels::Breadcrumb"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::ViewModels::Breadcrumb }
+    let(:unit_class){ MuchRails::ViewModels::Breadcrumb }
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new }
+    subject{ unit_class.new }
 
-    let(:name) { "name" }
-    let(:url) { "url" }
+    let(:name){ "name" }
+    let(:url){ "url" }
 
     should have_readers :name, :url
 

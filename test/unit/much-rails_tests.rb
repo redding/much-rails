@@ -6,9 +6,9 @@ require "much-rails"
 module MuchRails
   class UnitTests < Assert::Context
     desc "MuchRails"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails }
+    let(:unit_class){ MuchRails }
 
     should have_imeths :config, :configure_much_rails, :configure
 
@@ -21,7 +21,7 @@ module MuchRails
 
   class ConfigTests < UnitTests
     desc ".config"
-    subject { unit_class.config }
+    subject{ unit_class.config }
 
     should have_imeths :action
 
@@ -32,7 +32,7 @@ module MuchRails
 
   class ActionConfigTests < UnitTests
     desc ".action"
-    subject { unit_class.config.action }
+    subject{ unit_class.config.action }
 
     should have_accessors :namespace
     should have_accessors :sanitized_exception_classes

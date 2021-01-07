@@ -119,7 +119,7 @@ module MuchRails::Action
       @params = params.to_h.with_indifferent_access
       @current_user = current_user
       @request = request
-      @errors = Hash.new { |hash, key| hash[key] = [] }
+      @errors = Hash.new{ |hash, key| hash[key] = [] }
     end
 
     def on_call
@@ -181,7 +181,7 @@ module MuchRails::Action
     def validate_action_date_param(name)
       __send__(name.to_s)
     rescue MuchRails::Date::InvalidError
-      errors[name] << action_date_param_error_message(name)
+      errors[name] << action_date_param_error_message
     end
 
     def validate_action_date_params
@@ -193,7 +193,7 @@ module MuchRails::Action
     def validate_action_time_param(name)
       __send__(name.to_s)
     rescue MuchRails::Time::InvalidError
-      errors[name] << action_time_param_error_message(name)
+      errors[name] << action_time_param_error_message
     end
 
     def validate_action_time_params
@@ -208,21 +208,21 @@ module MuchRails::Action
       end
     end
 
-    def action_required_param_error_message(param_name)
+    def action_required_param_error_message
       "can't be blank"
     end
 
-    def action_date_param_error_message(param_name)
+    def action_date_param_error_message
       "invalid date"
     end
 
-    def action_time_param_error_message(param_name)
+    def action_time_param_error_message
       "invalid time"
     end
 
     def on_action_call
       call_action_on_before_call_blocks
-      catch(:halt) { instance_exec(&self.class.on_call_block) }
+      catch(:halt){ instance_exec(&self.class.on_call_block) }
       call_action_on_after_call_blocks
     rescue *MuchRails.config.action.sanitized_exception_classes => ex
       raise(self.class.action_error_class, ex.message, ex.backtrace, cause: ex)
@@ -241,7 +241,7 @@ module MuchRails::Action
     end
 
     def add_required_param_error(param_name)
-      errors[param_name] << action_required_param_error_message(param_name)
+      errors[param_name] << action_required_param_error_message
     end
 
     def halt
@@ -252,11 +252,11 @@ module MuchRails::Action
       template, view_model =
         [
           args.last.kind_of?(::String) ? args.pop : nil,
-          args.pop
+          args.pop,
         ]
       result_kargs =
         {
-          template: template || default_action_template_name
+          template: template || default_action_template_name,
         }.merge(**kargs)
 
       @much_rails_action_result =
@@ -310,7 +310,7 @@ module MuchRails::Action
       @on_validation_blocks = []
       @on_before_call_blocks = []
       @on_after_call_blocks = []
-      @on_call_block = -> {}
+      @on_call_block = ->{}
     end
 
     def set_params_root(value)
@@ -322,34 +322,35 @@ module MuchRails::Action
     end
 
     def add_date_params(klass, param_names)
-      Array.wrap(param_names).tap { |names|
+      Array.wrap(param_names).tap do |names|
         @date_params.concat(names)
 
         names.each do |name|
           klass.public_send(:define_method, name, &memoize_date_decode(name))
         end
-      }
+      end
     end
 
     def add_time_params(klass, param_names)
-      Array.wrap(param_names).tap { |names|
+      Array.wrap(param_names).tap do |names|
         @time_params.concat(names)
 
         names.each do |name|
           klass.public_send(:define_method, name, &memoize_time_decode(name))
         end
-      }
+      end
     end
 
     def add_boolean_params(klass, param_names)
-      Array.wrap(param_names).tap { |names|
+      Array.wrap(param_names).tap do |names|
         @boolean_params.concat(names)
 
         names.each do |name|
           klass.public_send(
-            :define_method, "#{name}?", &memoize_boolean_decode(name))
+            :define_method, "#{name}?", &memoize_boolean_decode(name)
+          )
         end
-      }
+      end
     end
 
     def set_format(value)
@@ -375,12 +376,12 @@ module MuchRails::Action
     private
 
     def memoize_date_decode(method_name)
-      -> {
+      ->{
         instance_variable_name = "@#{method_name}"
         if instance_variable_get(instance_variable_name).nil?
           instance_variable_set(
             instance_variable_name,
-            MuchRails::Date.for(params[method_name])
+            MuchRails::Date.for(params[method_name]),
           )
         end
         instance_variable_get(instance_variable_name)
@@ -388,12 +389,12 @@ module MuchRails::Action
     end
 
     def memoize_time_decode(method_name)
-      -> {
+      ->{
         instance_variable_name = "@#{method_name}"
         if instance_variable_get(instance_variable_name).nil?
           instance_variable_set(
             instance_variable_name,
-            MuchRails::Time.for(params[method_name])
+            MuchRails::Time.for(params[method_name]),
           )
         end
         instance_variable_get(instance_variable_name)
@@ -401,12 +402,12 @@ module MuchRails::Action
     end
 
     def memoize_boolean_decode(method_name)
-      -> {
+      ->{
         instance_variable_name = "@#{method_name}"
         if instance_variable_get(instance_variable_name).nil?
           instance_variable_set(
             instance_variable_name,
-            MuchRails::Boolean::convert(params[method_name])
+            MuchRails::Boolean::convert(params[method_name]),
           )
         end
         instance_variable_get(instance_variable_name)

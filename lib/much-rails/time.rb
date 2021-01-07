@@ -3,6 +3,7 @@
 require "much-rails"
 
 module MuchRails; end
+
 module MuchRails::Time
   InvalidError = Class.new(TypeError)
 

@@ -26,7 +26,7 @@ module FakeActionController
     def initialize(params)
       @params = FakeParams.new(params)
       self.class.before_actions.each do |before_action|
-        self.public_send(before_action)
+        public_send(before_action)
       end
     end
 
@@ -56,6 +56,7 @@ module FakeActionController
 
     def to_h
       raise "params haven't been permitted" unless @permit_called
+
       @params
     end
   end

@@ -21,7 +21,7 @@ module MuchRails::Action::Controller
   mixin_instance_methods do
     define_method(MuchRails::Action::Router::CONTROLLER_METHOD_NAME) do
       respond_to do |format|
-        format.public_send(much_rails_action_class.format) {
+        format.public_send(much_rails_action_class.format) do
           result =
             much_rails_action_class.call(
               params: much_rails_action_params,
@@ -29,7 +29,7 @@ module MuchRails::Action::Controller
               request: request,
             )
           instance_exec(result, &result.execute_block)
-        }
+        end
       end
     end
 
@@ -48,11 +48,11 @@ module MuchRails::Action::Controller
             .except(
               MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME,
               :controller,
-              :action
-            )
-        ) { |acc, root|
+              :action,
+            ),
+        ) do |acc, root|
           acc.merge(acc[root].to_h)
-        }
+        end
     end
 
     def require_much_rails_action_class
@@ -62,8 +62,9 @@ module MuchRails::Action::Controller
         if MuchRails.config.action.raise_response_exceptions?
           raise(
             MuchRails::Action::ActionError,
-            "No Action class defined for #{much_rails_action_class_name.inspect}.",
-            cause: ex
+            "No Action class defined for "\
+            "#{much_rails_action_class_name.inspect}.",
+            cause: ex,
           )
         else
           head(:not_found)

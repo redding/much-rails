@@ -78,26 +78,35 @@ module MuchRails::CallMethodCallbacks
     private
 
     def execute_before_callbacks
-      self.class.much_rails_call_callbacks_config.before_callbacks.each do |callback|
-        instance_exec(&callback)
-      end
+      self
+        .class
+        .much_rails_call_callbacks_config
+        .before_callbacks
+        .each do |callback|
+          instance_exec(&callback)
+        end
     end
 
     def execute_around_callbacks(&on_call_block)
-      self.class
+      self
+        .class
         .much_rails_call_callbacks_config
         .around_callbacks
         .reverse
-        .reduce(on_call_block) { |acc_proc, callback_proc|
-          -> { instance_exec(acc_proc, &callback_proc) }
+        .reduce(on_call_block){ |acc_proc, callback_proc|
+          ->{ instance_exec(acc_proc, &callback_proc) }
         }
         .call
     end
 
     def execute_after_callbacks
-      self.class.much_rails_call_callbacks_config.after_callbacks.each do |callback|
-        instance_exec(&callback)
-      end
+      self
+        .class
+        .much_rails_call_callbacks_config
+        .after_callbacks
+        .each do |callback|
+          instance_exec(&callback)
+        end
     end
   end
 
@@ -111,4 +120,3 @@ module MuchRails::CallMethodCallbacks
     end
   end
 end
-

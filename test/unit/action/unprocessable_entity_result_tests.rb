@@ -8,24 +8,24 @@ require "test/support/fake_action_controller"
 class MuchRails::Action::UnprocessableEntityResult
   class UnitTests < Assert::Context
     desc "MuchRails::Action::UnprocessableEntityResult"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Action::UnprocessableEntityResult }
+    let(:unit_class){ MuchRails::Action::UnprocessableEntityResult }
   end
 
   class InitTests < UnitTests
     desc "when init"
-    subject { unit_class.new(errors1) }
+    subject{ unit_class.new(errors1) }
 
-    let(:controller1) { FakeController.new(params1) }
-    let(:params1) {
+    let(:controller1){ FakeController.new(params1) }
+    let(:params1) do
       {
         MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Show",
       }
-    }
-    let(:errors1) {
+    end
+    let(:errors1) do
       { field: "ERROR 1" }
-    }
+    end
 
     should have_readers :errors
 
@@ -40,7 +40,7 @@ class MuchRails::Action::UnprocessableEntityResult
               field: "ERROR 1",
               "nested[field]" => "ERROR 1",
             },
-          status: :unprocessable_entity
+          status: :unprocessable_entity,
         )
     end
   end

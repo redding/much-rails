@@ -6,11 +6,11 @@ require "much-rails/json"
 module MuchRails::JSON
   class UnitTests < Assert::Context
     desc "MuchRails::JSON"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::JSON }
+    let(:unit_class){ MuchRails::JSON }
 
-    let(:object) { { some_key: "SOME VALUE" } }
+    let(:object){ { some_key: "SOME VALUE" } }
 
     should have_imeths :default_mode, :encode, :decode
 
@@ -28,7 +28,7 @@ module MuchRails::JSON
 
       time_object = { some_key: Time.now }
       mode = :null
-      assert_that { subject.encode(time_object) }.raises(TypeError)
+      assert_that{ subject.encode(time_object) }.raises(TypeError)
       assert_that(subject.encode(time_object, mode: mode))
         .equals(Oj.dump(time_object, mode: mode))
 
@@ -47,7 +47,7 @@ module MuchRails::JSON
 
       encoded_object = "some-rando-string-that-isnt-JSON"
       ex =
-        assert_that { subject.decode(encoded_object) }
+        assert_that{ subject.decode(encoded_object) }
           .raises(unit_class::InvalidError)
       assert_that(ex.message).includes("Oj::ParseError")
     end

@@ -4,15 +4,15 @@
 # put any test helpers here
 
 # add the root dir to the load path
-$LOAD_PATH.unshift(File.expand_path("../..", __FILE__))
-TEST_SUPPORT_PATH = File.expand_path("../support", __FILE__)
+$LOAD_PATH.unshift(File.expand_path("..", __dir__))
+TEST_SUPPORT_PATH = File.expand_path("support", __dir__)
 
 # require pry for debugging (`binding.pry`)
 require "pry"
 
 require "test/support/factory"
 
-ENV['RAILS_ENV'] ||= "test"
+ENV["RAILS_ENV"] ||= "test"
 
 require "rails"
 require "action_mailer/railtie"

@@ -6,9 +6,9 @@ require "much-rails/records/always_destroyable"
 module MuchRails::Records::AlwaysDestroyable
   class UnitTests < Assert::Context
     desc "MuchRails::Records::AlwaysDestroyable"
-    subject { unit_class }
+    subject{ unit_class }
 
-    let(:unit_class) { MuchRails::Records::AlwaysDestroyable }
+    let(:unit_class){ MuchRails::Records::AlwaysDestroyable }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -17,9 +17,9 @@ module MuchRails::Records::AlwaysDestroyable
 
   class ReceiverTests < UnitTests
     desc "receiver"
-    subject { receiver_class.new }
+    subject{ receiver_class.new }
 
-    let(:receiver_class) {
+    let(:receiver_class) do
       Class.new do
         def destroy(*)
           true
@@ -27,7 +27,7 @@ module MuchRails::Records::AlwaysDestroyable
 
         include MuchRails::Records::AlwaysDestroyable
       end
-    }
+    end
 
     should "enable destroying a record" do
       assert_that(subject.destruction_error_messages).equals([])

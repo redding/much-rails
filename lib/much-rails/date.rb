@@ -20,7 +20,7 @@ module MuchRails::Date
     if value.respond_to?(:to_date) && !value.is_a?(::String)
       value.to_date
     else
-      self.parse(value)
+      parse(value)
     end
   rescue
     raise MuchRails::Date::InvalidError, "Invalid Date: #{value.inspect}."

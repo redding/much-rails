@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "much-plugin"
+require "much-mixin"
 
 module MuchRails
-  Plugin = MuchPlugin
+  Mixin = MuchMixin
 end

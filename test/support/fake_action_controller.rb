@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module FakeActionController
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  after_plugin_included do
+  after_mixin_included do
     include MuchRails::Action::Controller
 
     attr_reader :params
     attr_reader :head_called_with, :render_called_with
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def before_action(method_name)
       before_actions << method_name
     end
@@ -22,7 +22,7 @@ module FakeActionController
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def initialize(params)
       @params = FakeParams.new(params)
       self.class.before_actions.each do |before_action|

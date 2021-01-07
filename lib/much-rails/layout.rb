@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "much-rails/layout/helper"
-require "much-rails/plugin"
+require "much-rails/mixin"
 require "much-rails/view_models/breadcrumb"
 
 module MuchRails; end
@@ -10,9 +10,9 @@ module MuchRails; end
 # in a layout. It adds a DSL for accumulating page titles, stylesheets and
 # javascripts.
 module MuchRails::Layout
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_class_methods do
+  mixin_class_methods do
     def page_title(&block)
       page_titles << block
     end
@@ -59,7 +59,7 @@ module MuchRails::Layout
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def page_title
       @page_title ||= instance_eval(&(self.class.page_titles.last || ->(_) {}))
     end

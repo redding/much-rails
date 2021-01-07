@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 require "active_record"
-require "much-rails/plugin"
+require "much-rails/mixin"
 require "much-rails/result"
 require "much-rails/service"
 
 # MuchRails::SaveService is a common mix-in for all service objects that
 # save (e.g. create/update) records.
 module MuchRails::SaveService
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::Service
 
     around_call do |receiver|

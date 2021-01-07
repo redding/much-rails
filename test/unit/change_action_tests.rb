@@ -10,8 +10,8 @@ module MuchRails::ChangeAction
 
     let(:unit_class) { MuchRails::ChangeAction }
 
-    should "include MuchRails::Plugin" do
-      assert_that(subject).includes(MuchRails::Plugin)
+    should "include MuchRails::Mixin" do
+      assert_that(subject).includes(MuchRails::Mixin)
     end
   end
 

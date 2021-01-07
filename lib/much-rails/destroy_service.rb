@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "much-rails/plugin"
+require "much-rails/mixin"
 require "much-rails/records"
 require "much-rails/records/validate_destroy"
 require "much-rails/result"
@@ -11,9 +11,9 @@ module MuchRails; end
 # MuchRails::DestroyService is a common mix-in for all service objects that
 # destroy records.
 module MuchRails::DestroyService
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::Service
 
     around_call do |receiver|

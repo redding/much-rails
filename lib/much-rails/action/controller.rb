@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "much-rails/action/router"
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module MuchRails; end
 module MuchRails::Action; end
@@ -9,16 +9,16 @@ module MuchRails::Action; end
 # MuchRails::Action::Controller defines the behaviors for controllers processing
 # MuchRails::Actions.
 module MuchRails::Action::Controller
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     attr_reader :much_rails_action_class
 
     before_action :require_much_rails_action_class
     before_action :permit_all_much_rails_action_params
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     define_method(MuchRails::Action::Router::CONTROLLER_METHOD_NAME) do
       respond_to do |format|
         format.public_send(much_rails_action_class.format) {

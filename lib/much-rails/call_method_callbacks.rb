@@ -2,7 +2,7 @@
 
 require "much-rails/call_method"
 require "much-rails/config"
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module MuchRails; end
 
@@ -13,16 +13,16 @@ module MuchRails; end
 # just wanting to use the basic `MuchRails::CallMethod`. This allows opting-in
 # to callback support as needed.
 module MuchRails::CallMethodCallbacks
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::CallMethod
     include MuchRails::Config
 
     add_config :much_rails_call_callbacks
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def before_call(&block)
       much_rails_call_callbacks_config.before_callbacks.append(block) if block
     end
@@ -48,7 +48,7 @@ module MuchRails::CallMethodCallbacks
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def call
       set_the_return_value_for_the_call_method(nil)
 

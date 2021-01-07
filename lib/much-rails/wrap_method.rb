@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 require "much-rails/config"
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 # MuchRails::WrapMethod is a mix-in to implement the `wrap` class/instance
 # method pattern used in service objects, etc.
 module MuchRails; end
 module MuchRails::WrapMethod
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::Config
 
     add_config :wrap_method
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def wrap(objects, *args)
       Array.wrap(objects).map { |object|
         public_send(wrap_initializer_method, object, *args)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "much-rails/call_method"
-require "much-rails/plugin"
+require "much-rails/mixin"
 require "much-rails/result"
 require "much-rails/wrap_method"
 
@@ -9,14 +9,14 @@ require "much-rails/wrap_method"
 # and `wrap_and_map_call` class/instance method pattern.
 module MuchRails; end
 module MuchRails::WrapAndCallMethod
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::CallMethod
     include MuchRails::WrapMethod
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def wrap_and_call(objects, *args)
       wrap(objects, *args).each(&:call)
     end

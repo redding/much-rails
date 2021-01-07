@@ -3,16 +3,16 @@
 require "much-rails/action"
 require "much-rails/change_action_result"
 require "much-rails/config"
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module MuchRails; end
 
 module MuchRails::ChangeAction
   Error = Class.new(StandardError)
 
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_included do
+  mixin_included do
     include MuchRails::Config
     include MuchRails::Action
 
@@ -28,13 +28,13 @@ module MuchRails::ChangeAction
     end
   end
 
-  plugin_class_methods do
+  mixin_class_methods do
     def change_result(&block)
       much_rails_change_action_config.change_result_block = block
     end
   end
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def change_result
       @change_result ||=
         begin

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "much-rails/plugin"
+require "much-rails/mixin"
 
 module MuchRails; end
 module MuchRails::Records; end
@@ -14,9 +14,9 @@ module MuchRails::Records; end
 # record is not destroyable, the #validate_destroy method should add
 # #destruction_error_messages.
 module MuchRails::Records::ValidateDestroy
-  include MuchRails::Plugin
+  include MuchRails::Mixin
 
-  plugin_instance_methods do
+  mixin_instance_methods do
     def destruction_error_messages
       @destruction_error_messages ||= []
     end

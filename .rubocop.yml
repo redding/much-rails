@@ -1,2 +1,6 @@
-inherit_from:
-  - https://raw.githubusercontent.com/redding/styleguides/0.0.4/rubocop/rubocop.yml
+inherit_gem:
+  much-style-guide:
+    - "lib/much-style-guide/rubocop.yml"
+
+AllCops:
+  SuggestExtensions: false

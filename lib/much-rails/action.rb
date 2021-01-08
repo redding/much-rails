@@ -172,9 +172,7 @@ module MuchRails::Action
 
     def validate_action_required_params
       self.class.required_params.each do |param_name|
-        if params[param_name].blank?
-          add_required_param_error(param_name)
-        end
+        add_required_param_error(param_name) if params[param_name].blank?
       end
     end
 
@@ -251,7 +249,7 @@ module MuchRails::Action
     def render(*args, **kargs)
       template, view_model =
         [
-          args.last.kind_of?(::String) ? args.pop : nil,
+          args.last.is_a?(::String) ? args.pop : nil,
           args.pop,
         ]
       result_kargs =
@@ -407,7 +405,7 @@ module MuchRails::Action
         if instance_variable_get(instance_variable_name).nil?
           instance_variable_set(
             instance_variable_name,
-            MuchRails::Boolean::convert(params[method_name]),
+            MuchRails::Boolean.convert(params[method_name]),
           )
         end
         instance_variable_get(instance_variable_name)

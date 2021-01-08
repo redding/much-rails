@@ -1,6 +1,6 @@
+# -*- encoding: utf-8 -*-
 # frozen_string_literal: true
 
-# -*- encoding: utf-8 -*-
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "much-rails/version"
@@ -23,8 +23,9 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = "~> 2.5"
 
-  gem.add_development_dependency("assert", ["~> 2.19.2"])
-  gem.add_development_dependency("rails",  ["> 5.0", "< 7.0"])
+  gem.add_development_dependency("assert",           ["~> 2.19.2"])
+  gem.add_development_dependency("much-style-guide", ["~> 0.3.0"])
+  gem.add_development_dependency("rails",            ["> 5.0", "< 7.0"])
 
   gem.add_dependency("activerecord",   ["> 5.0", "< 7.0"])
   gem.add_dependency("activesupport",  ["> 5.0", "< 7.0"])

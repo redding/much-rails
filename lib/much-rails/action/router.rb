@@ -65,18 +65,18 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
         )
       end
 
-      if definition.has_default_action_class_name?
-        application_routes_draw_scope.public_send(
-          definition.http_method,
-          definition.path,
-          to: draw_route_to,
-          as: definition.name,
-          defaults:
-            definition.default_params.merge({
-              ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,
-            }),
-        )
-      end
+      next unless definition.has_default_action_class_name?
+
+      application_routes_draw_scope.public_send(
+        definition.http_method,
+        definition.path,
+        to: draw_route_to,
+        as: definition.name,
+        defaults:
+          definition.default_params.merge({
+            ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,
+          }),
+      )
     end
   end
   alias_method :draw, :apply_to

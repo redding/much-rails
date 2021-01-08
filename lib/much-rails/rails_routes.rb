@@ -13,11 +13,11 @@ class MuchRails::RailsRoutes
   # These methods support stubbing #method_missing in tests but have no real
   # effect or behavior.
 
-  def method_missing(name, *args, &block) # rubocop:disable Lint/UselessMethodDefinition
+  def method_missing(name, *args, &block)
     super
   end
 
-  def respond_to_missing?(*args) # rubocop:disable Lint/UselessMethodDefinition
+  def respond_to_missing?(*args)
     super
   end
 

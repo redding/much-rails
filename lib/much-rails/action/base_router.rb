@@ -38,12 +38,12 @@ class MuchRails::Action::BaseRouter
         end
       end
 
-      if definition.has_default_action_class_name?
-        begin
-          definition.default_action_class_name.constantize
-        rescue NameError => ex
-          raise(NameError, ex.message, definition.called_from, cause: ex)
-        end
+      next unless definition.has_default_action_class_name?
+
+      begin
+        definition.default_action_class_name.constantize
+      rescue NameError => ex
+        raise(NameError, ex.message, definition.called_from, cause: ex)
       end
     end
   end
@@ -120,14 +120,14 @@ class MuchRails::Action::BaseRouter
   #       get :root, "Root::Index"
   #     }
   def url(name, path)
-    unless name.kind_of?(::Symbol)
+    unless name.is_a?(::Symbol)
       raise(
         ArgumentError,
         "Named URLs must be defined with Symbol names, "\
         "given `#{name.inspect}`.",
       )
     end
-    unless path.kind_of?(::String)
+    unless path.is_a?(::String)
       raise(
         ArgumentError,
         "Named URLs must be defined with String paths, "\
@@ -359,7 +359,7 @@ class MuchRails::Action::BaseRouter
     end
 
     def self.for(router, url_or_path)
-      return url_or_path if url_or_path.kind_of?(self)
+      return url_or_path if url_or_path.is_a?(self)
 
       new(router, url_or_path)
     end
@@ -388,12 +388,12 @@ class MuchRails::Action::BaseRouter
       raise NotImplementedError
     end
 
-    def ==(other_url)
-      return super unless other_url.kind_of?(self.class)
+    def ==(other)
+      return super unless other.is_a?(self.class)
 
-      @router   == other_url.router &&
-      @url_path == other_url.url_path &&
-      @url_name == other_url.url_name
+      @router   == other.router &&
+      @url_path == other.url_path &&
+      @url_name == other.url_name
     end
   end
 
@@ -439,16 +439,16 @@ class MuchRails::Action::BaseRouter
       !@default_action_class_name.nil?
     end
 
-    def ==(other_definition)
-      return super unless other_definition.kind_of?(self.class)
+    def ==(other)
+      return super unless other.is_a?(self.class)
 
-      @http_method == other_definition.http_method &&
-      @path == other_definition.path &&
-      @name == other_definition.name &&
-      @default_params == other_definition.default_params &&
+      @http_method == other.http_method &&
+      @path == other.path &&
+      @name == other.name &&
+      @default_params == other.default_params &&
       @default_action_class_name ==
-        other_definition.default_action_class_name &&
-      @request_type_actions == other_definition.request_type_actions
+        other.default_action_class_name &&
+      @request_type_actions == other.request_type_actions
     end
   end
 end

@@ -4,6 +4,7 @@
 .rbx/
 .bundle
 .config
+.rubocop-*-yml
 .yardoc
 Gemfile.lock
 InstalledFiles

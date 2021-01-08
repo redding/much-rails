@@ -2,10 +2,10 @@
 
 require "much-rails/action"
 
-module Actions
-  class Show
-    include MuchRails::Action
+module Actions; end
 
-    params_root :nested
-  end
+module Actions::Show
+  include MuchRails::Action
+
+  params_root :nested
 end

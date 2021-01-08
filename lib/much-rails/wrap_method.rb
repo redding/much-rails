@@ -30,9 +30,7 @@ module MuchRails::WrapMethod
     end
 
     def wrap_initializer_method(value = nil)
-      if value
-        wrap_method_config.wrap_initializer_method = value
-      end
+      wrap_method_config.wrap_initializer_method = value if value
       wrap_method_config.wrap_initializer_method
     end
   end

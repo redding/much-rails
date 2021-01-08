@@ -22,8 +22,15 @@ module MuchRails::Time
         assert_that(subject.for(object)).is_nil
       end
 
+      assert_equal 1, 1
+
       # Time, DateTime, or Date
-      objects = [Time.current, DateTime.current, Date.today]
+      objects =
+        [
+          Time.current,
+          DateTime.current, # rubocop:disable Style/DateTime
+          Date.today,
+        ]
       objects.each do |object|
         assert_that(subject.for(object)).equals(object.to_time)
       end

@@ -23,8 +23,8 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = "~> 2.5"
 
-  gem.add_development_dependency("assert",           ["~> 2.19.3"])
   gem.add_development_dependency("much-style-guide", ["~> 0.6.0"])
+  gem.add_development_dependency("assert",           ["~> 2.19.4"])
   gem.add_development_dependency("rails",            ["> 5.0", "< 7.0"])
 
   gem.add_dependency("activerecord",   ["> 5.0", "< 7.0"])

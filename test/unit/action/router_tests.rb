@@ -22,8 +22,10 @@ class MuchRails::Action::Router
 
     should "know its constants" do
       assert_that(subject::DEFAULT_CONTROLLER_NAME).equals("application")
-      assert_that(subject::CONTROLLER_METHOD_NAME)
+      assert_that(subject::CONTROLLER_CALL_ACTION_METHOD_NAME)
         .equals(:much_rails_call_action)
+      assert_that(subject::CONTROLLER_NOT_FOUND_METHOD_NAME)
+        .equals(:much_rails_not_found)
       assert_that(subject::ACTION_CLASS_PARAM_NAME)
         .equals(:much_rails_action_class_name)
       assert_that(subject.url_class).equals(unit_class::URL)
@@ -88,17 +90,25 @@ class MuchRails::Action::Router
       subject.patch(url_name, default_class_name)
       subject.delete(url_name, default_class_name)
 
+      url2_name = Factory.symbol
+      url2_path = Factory.url
+      subject.url(url2_name, url2_path)
+
       application_routes = FakeApplicationRoutes.new
       subject.draw(application_routes)
 
+      expected_draw_url_to =
+        "#{subject.controller_name}"\
+        "##{unit_class::CONTROLLER_NOT_FOUND_METHOD_NAME}"
       expected_draw_route_to =
-        "#{subject.controller_name}##{unit_class::CONTROLLER_METHOD_NAME}"
+        "#{subject.controller_name}"\
+        "##{unit_class::CONTROLLER_CALL_ACTION_METHOD_NAME}"
       expected_default_defaults =
         { unit_class::ACTION_CLASS_PARAM_NAME => default_class_name }
 
-      assert_that(application_routes.get_calls.size).equals(2)
-      assert_that(application_routes.get_calls.first.pargs).equals([url_path])
-      assert_that(application_routes.get_calls.first.kargs)
+      assert_that(application_routes.get_calls.size).equals(3)
+      assert_that(application_routes.get_calls[0].pargs).equals([url_path])
+      assert_that(application_routes.get_calls[0].kargs)
         .equals(
           to: expected_draw_route_to,
           as: url_name,
@@ -106,12 +116,18 @@ class MuchRails::Action::Router
             { unit_class::ACTION_CLASS_PARAM_NAME => request_type_class_name },
           constraints: request_type_proc,
         )
-      assert_that(application_routes.get_calls.last.pargs).equals([url_path])
-      assert_that(application_routes.get_calls.last.kargs)
+      assert_that(application_routes.get_calls[1].pargs).equals([url_path])
+      assert_that(application_routes.get_calls[1].kargs)
         .equals(
           to: expected_draw_route_to,
           as: url_name,
           defaults: expected_default_defaults,
+        )
+      assert_that(application_routes.get_calls[2].pargs).equals([url2_path])
+      assert_that(application_routes.get_calls[2].kargs)
+        .equals(
+          to: expected_draw_url_to,
+          as: url2_name,
         )
 
       assert_that(application_routes.post_calls.size).equals(1)

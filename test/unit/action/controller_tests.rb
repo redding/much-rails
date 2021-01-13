@@ -44,7 +44,12 @@ module MuchRails::Action::Controller
 
     should have_readers :much_rails_action_class
 
-    should have_imeths MuchRails::Action::Router::CONTROLLER_METHOD_NAME
+    should have_imeths(
+      MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
+    )
+    should have_imeths(
+      MuchRails::Action::Router::CONTROLLER_NOT_FOUND_METHOD_NAME,
+    )
     should have_imeths :much_rails_action_class_name
     should have_imeths :much_rails_action_params
     should have_imeths :require_much_rails_action_class

@@ -19,6 +19,7 @@ class MuchRails::Action::BaseRouter
     @request_type_set = RequestTypeSet.new
     @url_set = URLSet.new(self)
     @definitions = []
+    @defined_urls = []
 
     @base_url = DEFAULT_BASE_URL
     instance_exec(&(block || proc{}))
@@ -26,6 +27,10 @@ class MuchRails::Action::BaseRouter
 
   def url_class
     self.class.url_class
+  end
+
+  def unrouted_urls
+    @url_set.urls - @defined_urls
   end
 
   def validate!
@@ -240,15 +245,22 @@ class MuchRails::Action::BaseRouter
           acc
         end
 
-    Definition
-      .for_route(
+    add_definition(
+      Definition.for_route(
         http_method: http_method,
         url: url,
         default_action_class_name: default_class_name,
         request_type_actions: request_type_actions,
         called_from: called_from,
-      )
-      .tap{ |definition| @definitions << definition }
+      ),
+    )
+  end
+
+  def add_definition(definition)
+    @definitions << definition
+    @defined_urls << definition.url
+
+    definition
   end
 
   class RequestTypeSet
@@ -299,6 +311,10 @@ class MuchRails::Action::BaseRouter
 
     def empty?
       @set.empty?
+    end
+
+    def urls
+      @set.values
     end
 
     def add(name, path)
@@ -406,33 +422,38 @@ class MuchRails::Action::BaseRouter
           called_from:)
       new(
         http_method: http_method,
-        path: url.path,
-        name: url.name,
+        url: url,
         default_action_class_name: default_action_class_name,
         request_type_actions: request_type_actions,
         called_from: called_from,
       )
     end
 
-    attr_reader :http_method, :path, :name, :default_params
+    attr_reader :http_method, :url, :default_params
     attr_reader :default_action_class_name, :request_type_actions
     attr_reader :called_from
 
     def initialize(
           http_method:,
-          path:,
-          name:,
+          url:,
           default_action_class_name:,
           request_type_actions:,
           called_from:,
           default_params: nil)
       @http_method = http_method
-      @path = path
-      @name = name
+      @url = url
       @default_params = default_params || {}
       @default_action_class_name = default_action_class_name
       @request_type_actions = request_type_actions || []
       @called_from = called_from
+    end
+
+    def name
+      @url.name
+    end
+
+    def path
+      @url.path
     end
 
     def has_default_action_class_name?
@@ -443,8 +464,7 @@ class MuchRails::Action::BaseRouter
       return super unless other.is_a?(self.class)
 
       @http_method == other.http_method &&
-      @path == other.path &&
-      @name == other.name &&
+      @url == other.url &&
       @default_params == other.default_params &&
       @default_action_class_name ==
         other.default_action_class_name &&

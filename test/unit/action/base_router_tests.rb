@@ -52,7 +52,7 @@ class MuchRails::Action::BaseRouter
     should have_readers :name
     should have_readers :request_type_set, :url_set, :definitions
 
-    should have_imeths :url_class, :apply_to
+    should have_imeths :url_class, :unrouted_urls, :apply_to
     should have_imeths :path_for, :url_for
     should have_imeths :request_type
     should have_imeths :base_url, :url
@@ -62,6 +62,7 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.name).is_nil
       assert_that(subject.request_type_set).is_empty
       assert_that(subject.url_set).is_empty
+      assert_that(subject.unrouted_urls).is_empty
       assert_that(subject.definitions).is_empty
       assert_that(subject.base_url).equals(unit_class::DEFAULT_BASE_URL)
       assert_that(subject.url_class).equals(unit_class.url_class)
@@ -106,6 +107,7 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.url_set).is_not_empty
       assert_that(url).is_kind_of(subject.url_class)
       assert_that(@url_set_add_call.args).equals([:url1, path])
+      assert_that(subject.unrouted_urls).equals([url])
 
       ex =
         assert_that{ subject.url(:url2.to_s, Factory.url) }
@@ -338,13 +340,14 @@ class MuchRails::Action::BaseRouter
 
     let(:router1){ unit_class.new }
 
-    should have_imeths :empty?, :add, :fetch, :path_for, :url_for
+    should have_imeths :empty?, :urls, :add, :fetch, :path_for, :url_for
 
     should "add URLs" do
       assert_that(subject).is_empty
 
       url = subject.add(:url1.to_s, path = Factory.url)
       assert_that(subject).is_not_empty
+      assert_that(subject.urls).equals([url])
       assert_that(url).is_kind_of(router1.url_class)
       assert_that(@url_new_call.args).equals([router1, path, :url1])
 
@@ -472,8 +475,7 @@ class MuchRails::Action::BaseRouter
       definition1 =
         definition_class.new(
           http_method: http_method1,
-          path: url_path1,
-          name: url_name1,
+          url: url1,
           default_action_class_name: default_action_class_name1,
           request_type_actions: request_type_actions1,
           called_from: caller1,
@@ -496,8 +498,7 @@ class MuchRails::Action::BaseRouter
     subject do
       definition_class.new(
         http_method: http_method1,
-        path: url_path1,
-        name: url_name1,
+        url: url1,
         default_action_class_name: default_action_class_name1,
         request_type_actions: request_type_actions1,
         default_params: default_params1,
@@ -509,19 +510,21 @@ class MuchRails::Action::BaseRouter
       { Factory.string => Factory.string }
     end
 
-    should have_readers :http_method, :path, :name, :default_params
+    should have_readers :http_method, :url, :default_params
     should have_readers :default_action_class_name, :request_type_actions
-    should have_reader :called_from
+    should have_readers :called_from
+    should have_imeths :path, :name, :has_default_action_class_name?
 
     should "know its attributes" do
       assert_that(subject.http_method).equals(http_method1)
-      assert_that(subject.path).equals(url_path1)
-      assert_that(subject.name).equals(url_name1)
+      assert_that(subject.url).equals(url1)
       assert_that(subject.default_params).equals(default_params1)
       assert_that(subject.default_action_class_name)
         .equals(default_action_class_name1)
       assert_that(subject.request_type_actions).equals(request_type_actions1)
       assert_that(subject.called_from).equals(caller1)
+      assert_that(subject.path).equals(url_path1)
+      assert_that(subject.name).equals(url_name1)
     end
   end
 end

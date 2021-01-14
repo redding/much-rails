@@ -14,12 +14,17 @@ module MuchRails::Action::Controller
   mixin_included do
     attr_reader :much_rails_action_class
 
-    before_action :require_much_rails_action_class
+    before_action(
+      :require_much_rails_action_class,
+      only: MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME
+    )
     before_action :permit_all_much_rails_action_params
   end
 
   mixin_instance_methods do
-    define_method(MuchRails::Action::Router::CONTROLLER_METHOD_NAME) do
+    define_method(
+      MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
+    ) do
       respond_to do |format|
         format.public_send(much_rails_action_class.format) do
           result =
@@ -29,6 +34,16 @@ module MuchRails::Action::Controller
               request: request,
             )
           instance_exec(result, &result.execute_block)
+        end
+      end
+    end
+
+    define_method(
+      MuchRails::Action::Router::CONTROLLER_NOT_FOUND_METHOD_NAME,
+    ) do
+      respond_to do |format|
+        format.html do
+          head :not_found
         end
       end
     end

@@ -7,7 +7,8 @@ module MuchRails::Action; end
 
 class MuchRails::Action::Router < MuchRails::Action::BaseRouter
   DEFAULT_CONTROLLER_NAME = "application"
-  CONTROLLER_METHOD_NAME = :much_rails_call_action
+  CONTROLLER_CALL_ACTION_METHOD_NAME = :much_rails_call_action
+  CONTROLLER_NOT_FOUND_METHOD_NAME = :much_rails_not_found
   ACTION_CLASS_PARAM_NAME = :much_rails_action_class_name
 
   def self.url_class
@@ -48,7 +49,8 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
   #   end
   def apply_to(application_routes_draw_scope)
     validate!
-    draw_route_to = "#{controller_name}##{CONTROLLER_METHOD_NAME}"
+    draw_url_to   = "#{controller_name}##{CONTROLLER_NOT_FOUND_METHOD_NAME}"
+    draw_route_to = "#{controller_name}##{CONTROLLER_CALL_ACTION_METHOD_NAME}"
 
     definitions.each do |definition|
       definition.request_type_actions.each do |request_type_action|
@@ -77,6 +79,12 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
             ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,
           }),
       )
+    end
+
+    # Draw each URL that doesn't have a route definition so that we can generate
+    # them using MuchRails::RailsRoutes.
+    unrouted_urls.each do |url|
+      application_routes_draw_scope.get(url.path, to: draw_url_to, as: url.name)
     end
   end
   alias_method :draw, :apply_to

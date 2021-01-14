@@ -13,7 +13,7 @@ module FakeActionController
   end
 
   mixin_class_methods do
-    def before_action(method_name)
+    def before_action(method_name, **)
       before_actions << method_name
     end
 

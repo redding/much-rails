@@ -16,7 +16,7 @@ module MuchRails::Action::Controller
 
     before_action(
       :require_much_rails_action_class,
-      only: MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME
+      only: MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
     )
     before_action :permit_all_much_rails_action_params
   end

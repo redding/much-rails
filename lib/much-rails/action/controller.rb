@@ -9,6 +9,8 @@ module MuchRails::Action; end
 # MuchRails::Action::Controller defines the behaviors for controllers processing
 # MuchRails::Actions.
 module MuchRails::Action::Controller
+  DEFAULT_ACTION_CLASS_FORMAT = :any
+
   include MuchRails::Mixin
 
   mixin_included do
@@ -26,7 +28,7 @@ module MuchRails::Action::Controller
       MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
     ) do
       respond_to do |format|
-        format.public_send(much_rails_action_class.format) do
+        format.public_send(much_rails_action_class_format) do
           result =
             much_rails_action_class.call(
               params: much_rails_action_params,
@@ -50,6 +52,10 @@ module MuchRails::Action::Controller
 
     def much_rails_action_class_name
       "::#{params[MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME]}"
+    end
+
+    def much_rails_action_class_format
+      much_rails_action_class.format || DEFAULT_ACTION_CLASS_FORMAT
     end
 
     def much_rails_action_params

@@ -16,6 +16,10 @@ module MuchRails::Action::Controller
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
     end
+
+    should "know its constants" do
+      assert_that(subject::DEFAULT_ACTION_CLASS_FORMAT).equals(:any)
+    end
   end
 
   class ReceiverTests < UnitTests
@@ -51,6 +55,7 @@ module MuchRails::Action::Controller
       MuchRails::Action::Router::CONTROLLER_NOT_FOUND_METHOD_NAME,
     )
     should have_imeths :much_rails_action_class_name
+    should have_imeths :much_rails_action_class_format
     should have_imeths :much_rails_action_params
     should have_imeths :require_much_rails_action_class
     should have_imeths :permit_all_much_rails_action_params
@@ -59,6 +64,9 @@ module MuchRails::Action::Controller
       assert_that(subject.much_rails_action_class_name)
         .equals("::Actions::Show")
 
+      assert_that(subject.much_rails_action_class_format)
+        .equals(unit_module::DEFAULT_ACTION_CLASS_FORMAT)
+
       assert_that(subject.much_rails_action_params)
         .equals(
           nested: { value: "VALUE 1" },
@@ -66,6 +74,11 @@ module MuchRails::Action::Controller
         )
 
       assert_that(subject.much_rails_action_class).equals(Actions::Show)
+
+      Actions::Show.format(:html)
+      receiver = receiver_class.new(params1)
+      assert_that(receiver.much_rails_action_class_format).equals(:html)
+      Actions::Show.format(nil)
     end
   end
 
@@ -92,51 +105,6 @@ module MuchRails::Action::Controller
 
       assert_that{ subject.much_rails_action_class }
         .raises(MuchRails::Action::ActionError)
-    end
-  end
-
-  class FakeController
-    def self.before_action(method_name)
-      before_actions << method_name
-    end
-
-    def self.before_actions
-      @before_actions ||= []
-    end
-
-    attr_reader :params, :head_called_with
-
-    def initialize(params)
-      @params = FakeParams.new(params)
-      self.class.before_actions.each do |before_action|
-        public_send(before_action)
-      end
-    end
-
-    def head(*args)
-      @head_called_with = args
-      self
-    end
-  end
-
-  class FakeParams
-    def initialize(params)
-      @params = params
-    end
-
-    def permit!
-      @permit_called = true
-      self
-    end
-
-    def [](key)
-      @params[key]
-    end
-
-    def to_h
-      raise "params haven't been permitted" unless @permit_called
-
-      @params
     end
   end
 end

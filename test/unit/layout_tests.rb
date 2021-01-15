@@ -6,9 +6,9 @@ require "much-rails/layout"
 module MuchRails::Layout
   class UnitTests < Assert::Context
     desc "MuchRails::Layout"
-    subject{ unit_class }
+    subject{ unit_module }
 
-    let(:unit_class){ MuchRails::Layout }
+    let(:unit_module){ MuchRails::Layout }
 
     should "include MuchRails::Mixin" do
       assert_that(subject).includes(MuchRails::Mixin)
@@ -30,15 +30,16 @@ module MuchRails::Layout
     end
 
     should have_imeths :page_title, :page_titles, :application_page_title
-    should have_imeths :breadcrumb, :breadcrumbs, :stylesheet, :stylesheets
-    should have_imeths :javascript, :javascripts, :layout, :layouts
+    should have_imeths :breadcrumb, :breadcrumbs
+    should have_imeths :stylesheet, :stylesheets, :javascript, :javascripts
+    should have_imeths :head_link, :head_links, :layout, :layouts
   end
 
   class InitTests < ReceiverTests
     desc "when init"
     subject{ receiver_class.new }
 
-    should "know its #page_title" do
+    should "know its page title" do
       assert_that(subject.page_title).is_nil
 
       receiver_class.page_title{ "Some Portal" }
@@ -47,7 +48,7 @@ module MuchRails::Layout
       assert_that(subject.page_title).equals("Some Resource attribute1")
     end
 
-    should "know its #application_page_title" do
+    should "know its application page title" do
       assert_that(subject.application_page_title).is_nil
 
       receiver_class.application_page_title{ "Some App" }
@@ -56,12 +57,12 @@ module MuchRails::Layout
       assert_that(subject.application_page_title).equals("Some App attribute1")
     end
 
-    should "know its #full_page_title "\
+    should "know its full page title "\
            "given no application page title or page title segments" do
       assert_that(subject.full_page_title).is_nil
     end
 
-    should "know its #full_page_title "\
+    should "know its full page title "\
            "given an application page title but no page title segments" do
       receiver_class.application_page_title{ "Some App" }
 
@@ -69,7 +70,7 @@ module MuchRails::Layout
         .equals(subject.application_page_title)
     end
 
-    should "know its #full_page_title "\
+    should "know its full page title "\
            "given no application page title but page title segments" do
       receiver_class.page_title{ "Some Portal" }
       receiver_class.page_title{ "Some Resource #{attribute1}" }
@@ -78,7 +79,7 @@ module MuchRails::Layout
         .equals("Some Resource attribute1 - Some Portal")
     end
 
-    should "know its #full_page_title "\
+    should "know its full page title "\
            "given both an application page title and page title segments" do
       receiver_class.application_page_title{ "Some App" }
       receiver_class.page_title{ "Some Portal" }
@@ -88,13 +89,14 @@ module MuchRails::Layout
         .equals("Some Resource attribute1 - Some Portal | Some App")
     end
 
-    should "know its #breadcrumbs" do
+    should "know its breadcrumbs" do
       receiver = receiver_class.new
+      assert_that(receiver.any_breadcrumbs?).is_false
       assert_that(receiver.breadcrumbs).is_empty
 
       receiver_class.breadcrumb{ ["Item1", "item1-url"] }
       receiver_class.breadcrumb{ "Item2" }
-
+      assert_that(subject.any_breadcrumbs?).is_true
       assert_that(subject.breadcrumbs)
         .equals([
           MuchRails::ViewModels::Breadcrumb.new("Item1", "item1-url"),
@@ -102,7 +104,7 @@ module MuchRails::Layout
         ])
     end
 
-    should "know its #stylesheets" do
+    should "know its stylesheets" do
       receiver = receiver_class.new
       assert_that(receiver.stylesheets).is_empty
 
@@ -116,7 +118,7 @@ module MuchRails::Layout
         ])
     end
 
-    should "know its #javascripts" do
+    should "know its javascripts" do
       receiver = receiver_class.new
       assert_that(receiver.javascripts).is_empty
 
@@ -134,12 +136,16 @@ module MuchRails::Layout
         ])
     end
 
-    should "know its #any_breadcrumbs?" do
+    should "know its head links" do
       receiver = receiver_class.new
-      assert_that(receiver.any_breadcrumbs?).is_false
+      assert_that(receiver.head_links).is_empty
 
-      receiver_class.breadcrumb{ "Item2" }
-      assert_that(subject.any_breadcrumbs?).is_true
+      url1 = Factory.url
+      attributes1 = { some_attribute: Factory.string }
+      receiver_class.head_link(url1, **attributes1)
+
+      assert_that(subject.head_links)
+        .equals([unit_module::HeadLink.new(url1, **attributes1)])
     end
 
     should "know its #layouts" do

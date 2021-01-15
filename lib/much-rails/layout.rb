@@ -50,6 +50,14 @@ module MuchRails::Layout
       @javascripts ||= []
     end
 
+    def head_link(url, **attributes)
+      head_links << HeadLink.new(url, **attributes)
+    end
+
+    def head_links
+      @head_links ||= []
+    end
+
     def layout(value)
       layouts << value
     end
@@ -104,12 +112,31 @@ module MuchRails::Layout
       @javascripts ||= self.class.javascripts.map(&:call)
     end
 
-    def any_breadcrumbs?
-      breadcrumbs.any?
+    def head_links
+      @head_links ||= self.class.head_links
     end
 
     def layouts
       self.class.layouts
+    end
+
+    def any_breadcrumbs?
+      breadcrumbs.any?
+    end
+  end
+
+  class HeadLink
+    attr_reader :href, :attributes
+
+    def initialize(href, **attributes)
+      @href = href
+      @attributes = attributes
+    end
+
+    def ==(other)
+      super unless other.is_a?(self.class)
+
+      href == other.href && attributes == other.attributes
     end
   end
 end

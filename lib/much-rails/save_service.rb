@@ -4,6 +4,7 @@ require "active_record"
 require "much-rails/mixin"
 require "much-rails/result"
 require "much-rails/service"
+require "much-rails/service_validation_errors"
 
 module MuchRails; end
 
@@ -17,15 +18,41 @@ module MuchRails::SaveService
 
     around_call do |receiver|
       receiver.call
-    rescue ActiveRecord::RecordInvalid => ex
+    rescue *MuchRails::SaveService::ValidationErrors.exception_classes => ex
       set_the_return_value_for_the_call_method(
-        MuchRails::Result.failure(
-          record: ex.record,
-          exception: ex,
-          validation_errors: ex.record&.errors.to_h,
-          validation_error_messages: ex.record&.errors&.full_messages.to_a,
-        ),
+        MuchRails::SaveService::ValidationErrors.result_for(ex),
       )
+    end
+  end
+
+  module ValidationErrors
+    def self.add(exception_class, &block)
+      service_validation_errors.add(exception_class, &block)
+    end
+
+    def self.exception_classes
+      service_validation_errors.exception_classes
+    end
+
+    def self.result_for(ex)
+      service_validation_errors.result_for(ex)
+    end
+
+    def self.service_validation_errors
+      @service_validation_errors ||=
+        MuchRails::ServiceValidationErrors
+          .new
+          .tap do |e|
+            e.add(ActiveRecord::RecordInvalid) do |ex|
+              MuchRails::Result.failure(
+                record: ex.record,
+                exception: ex,
+                validation_errors: ex.record&.errors.to_h,
+                validation_error_messages:
+                  ex.record&.errors&.full_messages.to_a,
+              )
+            end
+          end
     end
   end
 end

@@ -23,10 +23,51 @@ module MuchRails
     desc ".config"
     subject{ unit_class.config }
 
-    should have_imeths :action
+    should have_imeths :action, :layout
+    should have_imeths :add_save_service_validation_error
+    should have_imeths :add_destroy_service_validation_error
 
     should "be configured as expected" do
       assert_that(subject.action).is_not_nil
+      assert_that(subject.layout).is_not_nil
+    end
+  end
+
+  class ConfigServiceValidationErrorTests < ConfigTests
+    setup do
+      Assert.stub_on_call(
+        MuchRails::SaveService::ValidationErrors,
+        :add,
+      ) do |call|
+        @save_service_validation_errors_add_call = call
+      end
+      Assert.stub_on_call(
+        MuchRails::DestroyService::ValidationErrors,
+        :add,
+      ) do |call|
+        @destroy_service_validation_errors_add_call = call
+      end
+    end
+
+    let(:exception_class){ StandardError }
+    let(:block){ proc{ MuchResult.failure } }
+
+    should "know how to add an exception class "\
+           "to the save service validation errors" do
+      subject.add_save_service_validation_error(exception_class, &block)
+      assert_that(@save_service_validation_errors_add_call.args)
+        .equals([exception_class])
+      assert_that(@save_service_validation_errors_add_call.block)
+        .is(block)
+    end
+
+    should "know how to add an exception class "\
+           "to the destroy service validation errors" do
+      subject.add_destroy_service_validation_error(exception_class, &block)
+      assert_that(@destroy_service_validation_errors_add_call.args)
+        .equals([exception_class])
+      assert_that(@destroy_service_validation_errors_add_call.block)
+        .is(block)
     end
   end
 

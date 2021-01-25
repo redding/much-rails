@@ -18,15 +18,40 @@ module MuchRails::DestroyService
 
     around_call do |receiver|
       receiver.call
-    rescue MuchRails::Records::DestructionInvalid => ex
+    rescue *MuchRails::DestroyService::ValidationErrors.exception_classes => ex
       set_the_return_value_for_the_call_method(
-        MuchRails::Result.failure(
-          record: ex.record,
-          exception: ex,
-          validation_errors: ex.errors.to_h,
-          validation_error_messages: ex.error_full_messages.to_a,
-        ),
+        MuchRails::DestroyService::ValidationErrors.result_for(ex),
       )
+    end
+  end
+
+  module ValidationErrors
+    def self.add(exception_class, &block)
+      service_validation_errors.add(exception_class, &block)
+    end
+
+    def self.exception_classes
+      service_validation_errors.exception_classes
+    end
+
+    def self.result_for(ex)
+      service_validation_errors.result_for(ex)
+    end
+
+    def self.service_validation_errors
+      @service_validation_errors ||=
+        MuchRails::ServiceValidationErrors
+          .new
+          .tap do |e|
+            e.add(MuchRails::Records::DestructionInvalid) do |ex|
+              MuchRails::Result.failure(
+                record: ex.record,
+                exception: ex,
+                validation_errors: ex.errors.to_h,
+                validation_error_messages: ex.error_full_messages.to_a,
+              )
+            end
+          end
     end
   end
 end

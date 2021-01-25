@@ -34,7 +34,7 @@ module MuchRails::Records::AlwaysDestroyable
 
       assert_that(subject.destroy).is_true
 
-      # won't raise MuchRails::Records::ValidateDestroy::DestructionInvalid
+      # won't raise MuchRails::Records::DestructionInvalid
       subject.destroy!
 
       assert_that(subject.destroyable?).is_true

@@ -33,7 +33,7 @@ module MuchRails::Records::ValidateDestroy
 
     def destroy!(as: :base, validate: true)
       if validate && !destroyable?
-        raise DestructionInvalid.new(self, field_name: as)
+        raise MuchRails::Records::DestructionInvalid.new(self, field_name: as)
       end
 
       # `_raise_record_not_destroyed` is from ActiveRecord. This logic was
@@ -61,22 +61,22 @@ module MuchRails::Records::ValidateDestroy
       raise NotImplementedError
     end
   end
+end
 
-  class DestructionInvalid < StandardError
-    attr_reader :record, :destruction_errors
+class MuchRails::Records::DestructionInvalid < StandardError
+  attr_reader :record, :destruction_errors
 
-    def initialize(record = nil, field_name: :base)
-      super(record&.destruction_error_messages.to_a.join("\n"))
+  def initialize(record = nil, field_name: :base)
+    super(record&.destruction_error_messages.to_a.join("\n"))
 
-      @record = record
+    @record = record
 
-      messages = record&.destruction_error_messages.to_a
-      @destruction_errors =
-        if messages.any?
-          { field_name.to_sym => messages }
-        else
-          {}
-        end
-    end
+    messages = record&.destruction_error_messages.to_a
+    @destruction_errors =
+      if messages.any?
+        { field_name.to_sym => messages }
+      else
+        {}
+      end
   end
 end

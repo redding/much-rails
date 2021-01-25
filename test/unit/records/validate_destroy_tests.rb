@@ -62,7 +62,7 @@ module MuchRails::Records::ValidateDestroy
 
       exception =
         assert_that(->{ subject.destroy! })
-          .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
+          .raises(MuchRails::Records::DestructionInvalid)
       assert_that(exception.message)
         .equals("TEST DESTRUCTION ERROR1\nTEST DESTRUCTION ERROR2")
       assert_that(exception.destruction_errors)
@@ -71,7 +71,7 @@ module MuchRails::Records::ValidateDestroy
 
       exception =
         assert_that(->{ subject.destroy!(as: :thing) })
-          .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
+          .raises(MuchRails::Records::DestructionInvalid)
       assert_that(exception.destruction_errors)
         .equals(thing: subject.destruction_error_messages.to_a)
 

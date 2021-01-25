@@ -45,14 +45,12 @@ module MuchRails::DestroyService
   end
 
   class DestructionInvalidErrorSetupTests < ReceiverTests
-    desc "with a MuchRails::Records::ValidateDestroy::DestructionInvalid error"
+    desc "with a MuchRails::Records::DestructionInvalid error"
     setup do
       Assert.stub(exception, :record){ record }
     end
 
-    let(:exception) do
-      MuchRails::Records::ValidateDestroy::DestructionInvalid.new
-    end
+    let(:exception){ MuchRails::Records::DestructionInvalid.new }
   end
 
   class ExceptionWithDestructionErrorMessagesTests <

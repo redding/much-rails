@@ -18,7 +18,7 @@ module MuchRails::DestroyService
 
     around_call do |receiver|
       receiver.call
-    rescue MuchRails::Records::ValidateDestroy::DestructionInvalid => ex
+    rescue MuchRails::Records::DestructionInvalid => ex
       set_the_return_value_for_the_call_method(
         MuchRails::Result.failure(
           exception: ex,

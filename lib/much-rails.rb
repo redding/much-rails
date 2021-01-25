@@ -46,6 +46,14 @@ module MuchRails
     add_instance_config :action, method_name: :action
     add_instance_config :layout, method_name: :layout
 
+    def add_save_service_validation_error(exception_class, &block)
+      MuchRails::SaveService::ValidationErrors.add(exception_class, &block)
+    end
+
+    def add_destroy_service_validation_error(exception_class, &block)
+      MuchRails::DestroyService::ValidationErrors.add(exception_class, &block)
+    end
+
     class ActionConfig
       attr_accessor :namespace
       attr_accessor :sanitized_exception_classes

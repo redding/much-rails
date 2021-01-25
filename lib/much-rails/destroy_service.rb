@@ -21,8 +21,10 @@ module MuchRails::DestroyService
     rescue MuchRails::Records::DestructionInvalid => ex
       set_the_return_value_for_the_call_method(
         MuchRails::Result.failure(
+          record: ex.record,
           exception: ex,
-          validation_errors: ex&.destruction_errors.to_h,
+          validation_errors: ex.errors.to_h,
+          validation_error_messages: ex.error_full_messages.to_a,
         ),
       )
     end

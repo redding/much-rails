@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "active_model/error"
 require "much-rails/mixin"
 
 module MuchRails; end
@@ -64,7 +65,7 @@ module MuchRails::Records::ValidateDestroy
 end
 
 class MuchRails::Records::DestructionInvalid < StandardError
-  attr_reader :record, :destruction_errors
+  attr_reader :record, :errors, :error_full_messages
 
   def initialize(record = nil, field_name: :base)
     super(record&.destruction_error_messages.to_a.join("\n"))
@@ -72,11 +73,20 @@ class MuchRails::Records::DestructionInvalid < StandardError
     @record = record
 
     messages = record&.destruction_error_messages.to_a
-    @destruction_errors =
+    @errors =
       if messages.any?
         { field_name.to_sym => messages }
       else
         {}
+      end
+
+    @error_full_messages =
+      if field_name == :base
+        messages
+      else
+        messages.map do |m|
+          ActiveModel::Error.new(@record, field_name, m).full_message
+        end
       end
   end
 end

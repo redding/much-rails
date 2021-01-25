@@ -63,8 +63,11 @@ module MuchRails::DestroyService
       result = subject.call(exception: exception)
 
       assert_that(result.failure?).is_true
+      assert_that(result.record).is(record)
       assert_that(result.exception).equals(exception)
-      assert_that(result.validation_errors).equals(exception.destruction_errors)
+      assert_that(result.validation_errors).equals(exception.errors)
+      assert_that(result.validation_error_messages)
+        .equals(exception.error_full_messages)
     end
   end
 
@@ -79,8 +82,11 @@ module MuchRails::DestroyService
       result = subject.call(exception: exception)
 
       assert_that(result.failure?).is_true
+      assert_that(result.record).is_nil
       assert_that(result.exception).equals(exception)
-      assert_that(result.validation_errors).equals({})
+      assert_that(result.validation_errors).equals(exception.errors)
+      assert_that(result.validation_error_messages)
+        .equals(exception.error_full_messages)
     end
   end
 

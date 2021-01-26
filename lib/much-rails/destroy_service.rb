@@ -44,7 +44,7 @@ module MuchRails::DestroyService
           .new
           .tap do |e|
             e.add(MuchRails::Records::DestructionInvalid) do |ex|
-              MuchRails::Result.failure(
+              MuchRails::DestroyService::FailureResult.new(
                 record: ex.record,
                 exception: ex,
                 validation_errors: ex.errors.to_h,
@@ -52,6 +52,16 @@ module MuchRails::DestroyService
               )
             end
           end
+    end
+  end
+
+  module FailureResult
+    def self.new(exception:, validation_errors:, **kargs)
+      MuchResult.failure(
+        exception: exception,
+        validation_errors: validation_errors,
+        **kargs,
+      )
     end
   end
 end

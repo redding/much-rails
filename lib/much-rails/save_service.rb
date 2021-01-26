@@ -44,7 +44,7 @@ module MuchRails::SaveService
           .new
           .tap do |e|
             e.add(ActiveRecord::RecordInvalid) do |ex|
-              MuchRails::Result.failure(
+              MuchRails::SaveService::FailureResult.new(
                 record: ex.record,
                 exception: ex,
                 validation_errors: ex.record&.errors.to_h,
@@ -53,6 +53,16 @@ module MuchRails::SaveService
               )
             end
           end
+    end
+  end
+
+  module FailureResult
+    def self.new(exception:, validation_errors:, **kargs)
+      MuchResult.failure(
+        exception: exception,
+        validation_errors: validation_errors,
+        **kargs,
+      )
     end
   end
 end

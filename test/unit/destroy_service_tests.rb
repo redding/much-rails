@@ -185,6 +185,51 @@ module MuchRails::DestroyService
     end
   end
 
+  class FailureResultTests < UnitTests
+    desc "FailureResult"
+    subject{ unit_class::FailureResult }
+
+    setup do
+      Assert.stub_tap_on_call(MuchResult, :failure) do |_, call|
+        @much_result_failure_call = call
+      end
+    end
+
+    let(:exception){ StandardError.new(Factory.string) }
+    let(:validation_errors){ { Factory.symbol => Factory.string } }
+    let(:custom_value){ Factory.string }
+
+    should have_imeths :new
+
+    should "use MuchResult.failure to build a result" do
+      result =
+        subject.new(
+          exception: exception,
+          validation_errors: validation_errors,
+          custom: custom_value,
+        )
+      assert_that(result.failure?).is_true
+      assert_that(@much_result_failure_call.kargs)
+        .equals(
+          exception: exception,
+          validation_errors: validation_errors,
+          custom: custom_value,
+        )
+    end
+
+    should "raise an error without an exception or validation errors" do
+      assert_that{
+        subject.new(validation_errors: validation_errors)
+      }.raises(ArgumentError)
+    end
+
+    should "raise an error without an exception or validation errors" do
+      assert_that{
+        subject.new(exception: exception)
+      }.raises(ArgumentError)
+    end
+  end
+
   class FakeRecord
     def destruction_error_messages
       ["ERROR1", "ERROR2"]

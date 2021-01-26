@@ -27,6 +27,13 @@ class MuchRails::Railtie < Rails::Railtie
       # This should be `false` in all other envs so proper HTTP response
       # statuses are returned.
       config.action.raise_response_exceptions = Rails.env.development?
+
+      config.save_service_validation_error_exception_classes = [
+        ActiveRecord::RecordInvalid,
+      ]
+      config.destroy_service_validation_error_exception_classes = [
+        MuchRails::Records::DestructionInvalid,
+      ]
     end
   end
 end

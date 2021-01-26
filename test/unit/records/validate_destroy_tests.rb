@@ -62,17 +62,17 @@ module MuchRails::Records::ValidateDestroy
 
       exception =
         assert_that(->{ subject.destroy! })
-          .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
+          .raises(MuchRails::Records::DestructionInvalid)
       assert_that(exception.message)
         .equals("TEST DESTRUCTION ERROR1\nTEST DESTRUCTION ERROR2")
-      assert_that(exception.destruction_errors)
+      assert_that(exception.errors)
         .equals(base: subject.destruction_error_messages.to_a)
       assert_that(subject.super_destroy_called).is_true
 
       exception =
         assert_that(->{ subject.destroy!(as: :thing) })
-          .raises(MuchRails::Records::ValidateDestroy::DestructionInvalid)
-      assert_that(exception.destruction_errors)
+          .raises(MuchRails::Records::DestructionInvalid)
+      assert_that(exception.errors)
         .equals(thing: subject.destruction_error_messages.to_a)
 
       subject.super_destroy_called = nil
@@ -138,9 +138,85 @@ module MuchRails::Records::ValidateDestroy
     end
   end
 
+  class DestructionInvalidTests < UnitTests
+    desc "MuchRails::Records::DestructionInvalid"
+    subject{ exception_class }
+
+    let(:exception_class){ MuchRails::Records::DestructionInvalid }
+
+    let(:record){ FakeRecordClass.new }
+
+    should "be configured as expected" do
+      assert_that(subject < StandardError).is_true
+    end
+  end
+
+  class DestructionInvalidInitTests < DestructionInvalidTests
+    desc "when init"
+    subject{ exception_class.new(record) }
+
+    should have_readers :record, :errors, :error_full_messages
+
+    should "know its attributes when destruction errors exist" do
+      record.destruction_errors_exist = true
+      record.validate_destroy
+
+      assert_that(subject.message)
+        .equals(record.destruction_error_messages.to_a.join("\n"))
+      assert_that(subject.record).is(record)
+      assert_that(subject.errors).equals(
+        base: record.destruction_error_messages.to_a,
+      )
+      assert_that(subject.error_full_messages)
+        .equals(record.destruction_error_messages.to_a)
+    end
+
+    should "know its attributes when destruction errors don't exist" do
+      assert_that(subject.message).equals("")
+      assert_that(subject.record).is(record)
+      assert_that(subject.errors).equals({})
+      assert_that(subject.error_full_messages).equals([])
+    end
+  end
+
+  class DestructionInvalidInitWithFieldNameTests < DestructionInvalidTests
+    desc "when init with a field name"
+    subject{ exception_class.new(record, field_name: field_name) }
+
+    let(:field_name){ Factory.string }
+
+    should "know its attributes when destruction errors exist" do
+      record.destruction_errors_exist = true
+      record.validate_destroy
+
+      assert_that(subject.message)
+        .equals(record.destruction_error_messages.to_a.join("\n"))
+      assert_that(subject.record).is(record)
+      assert_that(subject.errors).equals(
+        field_name.to_sym => record.destruction_error_messages.to_a,
+      )
+      assert_that(subject.error_full_messages)
+        .equals(
+          record
+            .destruction_error_messages
+            .map do |m|
+              ActiveModel::Error.new(record, field_name, m).full_message
+            end,
+        )
+    end
+
+    should "know its attributes when destruction errors don't exist" do
+      assert_that(subject.message).equals("")
+      assert_that(subject.record).is(record)
+      assert_that(subject.errors).equals({})
+      assert_that(subject.error_full_messages).equals([])
+    end
+  end
+
   require "active_record"
 
   class FakeRecordBaseClass
+    extend ActiveRecord::Translation
     # Include ActiveRecord::Persistence to test the `destroy!` logic
     # (the `_raise_record_not_destroyed` method) that we had to re-implement in
     # the MuchRails::Records::ValidateDestroy.
@@ -149,6 +225,10 @@ module MuchRails::Records::ValidateDestroy
     attr_accessor :super_destroy_called
 
     attr_accessor :destruction_errors_exist
+
+    def self.base_class?
+      true
+    end
 
     def destroy
       @super_destroy_called = true

@@ -33,20 +33,39 @@ module MuchRails::Assets
         config.file_store rails.root.join("public")
       end
 
-      # Look for asset files in the app/assets folder. Support ERB processing
-      # on all .js and .scss files. Support compilation of .scss files.
-      config.source rails.root.join("app", "assets") do |s|
+      # Look for asset files in the app/assets/css folder. Support ERB
+      # on all .scss files. Support compilation of .scss files.
+      config.source rails.root.join("app", "assets", "css") do |s|
+        s.base_path "css"
+
         # Reject SCSS partials
         s.filter do |paths|
           paths.reject{ |p| File.basename(p) =~ /^_.*\.scss$/ }
         end
 
-        s.engine "js",   MuchRails::Assets::Erubi::Engine
         s.engine "scss", MuchRails::Assets::Erubi::Engine
         s.engine "scss", MuchRails::Assets::Sass::Engine, {
           syntax: "scss",
           output_style: "compressed",
         }
+      end
+
+      # Look for asset files in the app/assets/img folder.
+      config.source rails.root.join("app", "assets", "img") do |s|
+        s.base_path "img"
+      end
+
+      # Look for asset files in the app/assets/js folder. Support ERB
+      # on all .js files.
+      config.source rails.root.join("app", "assets", "js") do |s|
+        s.base_path "js"
+
+        s.engine "js", MuchRails::Assets::Erubi::Engine
+      end
+
+      # Look for asset files in the app/assets/vendor folder
+      config.source rails.root.join("app", "assets", "vendor") do |s|
+        s.base_path "vendor"
       end
     end
     MuchRails::Assets.init

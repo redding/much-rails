@@ -49,21 +49,54 @@ module MuchRails::Assets
         .is_not_equal_to(FakeRails.root.join("public"))
     end
 
-    should "configure the app's app/assets folder as a source" do
+    should "configure the app's app/assets/css folder as a source" do
       source =
         subject.config.sources.detect do |source|
-          source.path == FakeRails.root.join("app", "assets").to_s
+          source.path == FakeRails.root.join("app", "assets", "css").to_s
         end
 
       assert_that(source).is_not_nil
-      assert_that(source.engines["js"].size).equals(1)
-      assert_that(source.engines["js"].first)
-        .is_instance_of(subject::Erubi::Engine)
+      assert_that(source.base_path).equals("css")
       assert_that(source.engines["scss"].size).equals(2)
       assert_that(source.engines["scss"].first)
         .is_instance_of(subject::Erubi::Engine)
       assert_that(source.engines["scss"].last)
         .is_instance_of(subject::Sass::Engine)
+    end
+
+    should "configure the app's app/assets/img folder as a source" do
+      source =
+        subject.config.sources.detect do |source|
+          source.path == FakeRails.root.join("app", "assets", "img").to_s
+        end
+
+      assert_that(source).is_not_nil
+      assert_that(source.base_path).equals("img")
+      assert_that(source.engines.empty?).is_true
+    end
+
+    should "configure the app's app/assets/js folder as a source" do
+      source =
+        subject.config.sources.detect do |source|
+          source.path == FakeRails.root.join("app", "assets", "js").to_s
+        end
+
+      assert_that(source).is_not_nil
+      assert_that(source.base_path).equals("js")
+      assert_that(source.engines["js"].size).equals(1)
+      assert_that(source.engines["js"].first)
+        .is_instance_of(subject::Erubi::Engine)
+    end
+
+    should "configure the app's app/assets/vendor folder as a source" do
+      source =
+        subject.config.sources.detect do |source|
+          source.path == FakeRails.root.join("app", "assets", "vendor").to_s
+        end
+
+      assert_that(source).is_not_nil
+      assert_that(source.base_path).equals("vendor")
+      assert_that(source.engines.empty?).is_true
     end
 
     should "initialize itself" do

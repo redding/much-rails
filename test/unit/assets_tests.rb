@@ -23,7 +23,7 @@ module MuchRails::Assets
     setup do
       subject.reset
 
-      in_development_env = Factory.boolean
+      in_development_env = true
       Assert.stub(FakeRails.env, :development?){ in_development_env }
       Assert.stub(FakeRails.env, :test?){ !in_development_env }
 
@@ -34,14 +34,11 @@ module MuchRails::Assets
       subject.configure_for_rails(FakeRails)
     end
 
-    should "configure the fingerprint cache to use a memory cache" do
+    should "configure the fingerprint/content cache to use no cache" do
       assert_that(subject.config.fingerprint_cache)
-        .is_instance_of(subject::MemCache)
-    end
-
-    should "configure the content cache to use a memory cache" do
+        .is_instance_of(subject::NoCache)
       assert_that(subject.config.content_cache)
-        .is_instance_of(subject::MemCache)
+        .is_instance_of(subject::NoCache)
     end
 
     should "not configure a file store" do
@@ -117,9 +114,11 @@ module MuchRails::Assets
       subject.configure_for_rails(FakeRails)
     end
 
-    should "configure the content cache to use no cache" do
+    should "configure the fingerprint/content cache to use a memory cache" do
+      assert_that(subject.config.fingerprint_cache)
+        .is_instance_of(subject::MemCache)
       assert_that(subject.config.content_cache)
-        .is_instance_of(subject::NoCache)
+        .is_instance_of(subject::MemCache)
     end
 
     should "configure a file store for the app's public folder" do

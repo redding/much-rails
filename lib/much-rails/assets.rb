@@ -12,20 +12,16 @@ end
 module MuchRails::Assets
   def self.configure_for_rails(rails)
     MuchRails::Assets.configure do |config|
-      # Cache fingerprints in memory for performance gains.
-      config.fingerprint_cache MuchRails::Assets::MemCache.new
-
-      # Cache compiled content in memory in development/test for performance
-      # gains since we aren't caching to the file system. Otherwise, don't
-      # cache in memory as we are caching to the file system and won't benefit
-      # from the in memory cache.
-      much_rails_content_cache =
-        if rails.env.development? || rails.env.test?
-          MuchRails::Assets::MemCache.new
-        else
-          MuchRails::Assets::NoCache.new
-        end
-      config.content_cache much_rails_content_cache
+      # Cache fingerprints/content in memory in non-development for performance
+      # gains. Don't cache in memory in developlemnt so changes are reflected
+      # without restarting the server.
+      if !rails.env.development?
+        config.fingerprint_cache MuchRails::Assets::MemCache.new
+        config.content_cache MuchRails::Assets::MemCache.new
+      else
+        config.fingerprint_cache MuchRails::Assets::NoCache.new
+        config.content_cache MuchRails::Assets::NoCache.new
+      end
 
       # Cache out compiled file content to the public folder in non
       # development/test environments.

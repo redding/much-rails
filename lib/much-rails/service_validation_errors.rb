@@ -10,7 +10,7 @@ class MuchRails::ServiceValidationErrors
   end
 
   def add(exception_class, &block)
-    unless exception_class < Exception
+    unless exception_class && exception_class < Exception
       raise(ArgumentError, "#{exception_class} is not an Exception")
     end
 

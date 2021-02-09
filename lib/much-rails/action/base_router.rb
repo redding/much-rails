@@ -70,8 +70,8 @@ class MuchRails::Action::BaseRouter
   #       url :users, "/users", "Users::Index"
   #     }
   #   AdminRouter.path_for(:users) # => "/admin/users"
-  def path_for(name, *args)
-    @url_set.path_for(name, *args)
+  def path_for(name, **kargs)
+    @url_set.path_for(name, **kargs)
   end
 
   # Example:
@@ -87,8 +87,8 @@ class MuchRails::Action::BaseRouter
   #       url :users, "/users", "Users::Index"
   #     }
   #   AdminRouter.url_for(:users) # => "http://example.org/admin/users"
-  def url_for(name, *args)
-    @url_set.url_for(name, *args)
+  def url_for(name, **kargs)
+    @url_set.url_for(name, **kargs)
   end
 
   # Example:
@@ -350,12 +350,12 @@ class MuchRails::Action::BaseRouter
       end
     end
 
-    def path_for(name, *args)
-      fetch(name).path_for(*args)
+    def path_for(name, **kargs)
+      fetch(name).path_for(**kargs)
     end
 
-    def url_for(name, *args)
-      fetch(name).url_for(*args)
+    def url_for(name, **kargs)
+      fetch(name).url_for(**kargs)
     end
   end
 
@@ -396,11 +396,11 @@ class MuchRails::Action::BaseRouter
       self.class.url_path(@router, @url_path)
     end
 
-    def path_for(*args)
+    def path_for(**kargs)
       raise NotImplementedError
     end
 
-    def url_for(*args)
+    def url_for(**kargs)
       raise NotImplementedError
     end
 

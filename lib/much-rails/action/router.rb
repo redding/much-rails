@@ -90,12 +90,18 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
   alias_method :draw, :apply_to
 
   class URL < MuchRails::Action::BaseRouter::BaseURL
-    def path_for(*args)
-      MuchRails::RailsRoutes.instance.public_send("#{name}_path", *args)
+    def path_for(**kargs)
+      MuchRails::RailsRoutes.instance.public_send(
+        "#{name}_path",
+        **kargs.symbolize_keys,
+      )
     end
 
-    def url_for(*args)
-      MuchRails::RailsRoutes.instance.public_send("#{name}_url", *args)
+    def url_for(**kargs)
+      MuchRails::RailsRoutes.instance.public_send(
+        "#{name}_url",
+        **kargs.symbolize_keys,
+      )
     end
   end
 end

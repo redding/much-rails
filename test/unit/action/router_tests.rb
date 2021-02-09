@@ -206,15 +206,15 @@ class MuchRails::Action::Router
     should have_imeths :path_for, :url_for
 
     should "know its attributes" do
-      path_string = subject.path_for("TEST PATH ARGS")
+      path_string = subject.path_for(test: "args")
       assert_that(path_string).equals("TEST PATH OR URL STRING")
       assert_that(@rails_routes_method_missing_call.args)
-        .equals(["#{url_name1}_path".to_sym, "TEST PATH ARGS"])
+        .equals(["#{url_name1}_path".to_sym, { test: "args" }])
 
-      url_string = subject.url_for("TEST URL ARGS")
+      url_string = subject.url_for(test: "args")
       assert_that(url_string).equals("TEST PATH OR URL STRING")
       assert_that(@rails_routes_method_missing_call.args)
-        .equals(["#{url_name1}_url".to_sym, "TEST URL ARGS"])
+        .equals(["#{url_name1}_url".to_sym, { test: "args" }])
     end
   end
 

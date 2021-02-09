@@ -80,13 +80,13 @@ class MuchRails::Action::BaseRouter
     end
 
     should "build path/URL strings for named URLs" do
-      path_string = subject.path_for(:url1, "TEST PATH ARGS")
+      path_string = subject.path_for(:url1, test: "args")
       assert_that(path_string).equals("TEST PATH STRING")
-      assert_that(@url_set_path_for_call.args).equals([:url1, "TEST PATH ARGS"])
+      assert_that(@url_set_path_for_call.args).equals([:url1, { test: "args" }])
 
-      url_string = subject.url_for(:url1, "TEST URL ARGS")
+      url_string = subject.url_for(:url1, test: "args")
       assert_that(url_string).equals("TEST URL STRING")
-      assert_that(@url_set_url_for_call.args).equals([:url1, "TEST URL ARGS"])
+      assert_that(@url_set_url_for_call.args).equals([:url1, { test: "args" }])
     end
 
     should "define request types" do
@@ -380,13 +380,13 @@ class MuchRails::Action::BaseRouter
 
       subject.add(:url1, Factory.url)
 
-      path_string = subject.path_for(:url1, "TEST PATH ARGS")
+      path_string = subject.path_for(:url1, test: "args")
       assert_that(path_string).equals("TEST PATH STRING")
-      assert_that(@url_path_for_call.args).equals(["TEST PATH ARGS"])
+      assert_that(@url_path_for_call.args).equals([{ test: "args" }])
 
-      url_string = subject.url_for(:url1, "TEST URL ARGS")
+      url_string = subject.url_for(:url1, test: "args")
       assert_that(url_string).equals("TEST URL STRING")
-      assert_that(@url_url_for_call.args).equals(["TEST URL ARGS"])
+      assert_that(@url_url_for_call.args).equals([{ test: "args" }])
     end
   end
 
@@ -450,8 +450,8 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.path)
         .equals(base_url_class.url_path(router1, url_path1))
 
-      assert_that{ subject.path_for("TEST ARGS") }.raises(NotImplementedError)
-      assert_that{ subject.url_for("TEST ARGS") }.raises(NotImplementedError)
+      assert_that{ subject.path_for(test: "args") }.raises(NotImplementedError)
+      assert_that{ subject.url_for(test: "args") }.raises(NotImplementedError)
     end
   end
 

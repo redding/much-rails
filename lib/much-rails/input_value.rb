@@ -7,7 +7,7 @@ module MuchRails::InputValue
   def self.strip(value)
     return if value.blank?
 
-    value.to_s.strip
+    value.to_s.strip.presence
   end
 
   def self.strip_all(values)

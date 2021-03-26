@@ -9,12 +9,21 @@ module MuchRails::InputValue
     subject{ unit_class }
 
     let(:unit_class){ MuchRails::InputValue }
+    let(:non_blank_but_empty_to_s_object) do
+      Class
+        .new{
+          def to_s
+            ["", " "].sample
+          end
+        }
+        .new
+    end
 
     should have_imeths :strip, :strip_all
 
     should "know its attributes" do
       # strip
-      input_value = [nil, "", " "].sample
+      input_value = [nil, "", " ", non_blank_but_empty_to_s_object].sample
       assert_that(subject.strip(input_value)).is_nil
 
       input_value = [" VALUE  ", "\r VALUE\n"].sample

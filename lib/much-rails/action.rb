@@ -107,10 +107,7 @@ module MuchRails::Action
 
     def default_action_template_name
       @default_action_template_name ||=
-        to_s
-          .remove(/\A#{MuchRails.config.action.namespace}/)
-          .tableize
-          .singularize
+        to_s.remove(/\A#{MuchRails.config.action.namespace}/).underscore
     end
   end
 

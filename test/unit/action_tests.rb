@@ -178,7 +178,7 @@ module MuchRails::Action
     subject do
       receiver_class.new(
         params: params1,
-        current_user: current_user1,
+        current_session: current_session1,
         request: request1,
       )
     end
@@ -234,15 +234,15 @@ module MuchRails::Action
         active: "true",
       }
     end
-    let(:current_user1){ "CURRENT USER 1" }
+    let(:current_session1){ "CURRENT SESSION 1" }
     let(:request1){ "REQUEST 1" }
 
-    should have_readers :params, :current_user, :request, :errors
+    should have_readers :params, :current_session, :request, :errors
     should have_imeths :on_call, :valid_action?, :successful_action?
 
     should "know its attributes" do
       assert_that(subject.params).equals(params1.with_indifferent_access)
-      assert_that(subject.current_user).equals(current_user1)
+      assert_that(subject.current_session).equals(current_session1)
       assert_that(subject.request).equals(request1)
     end
 

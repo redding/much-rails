@@ -53,7 +53,7 @@ module MuchRails::SaveAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end

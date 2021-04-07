@@ -31,7 +31,7 @@ module MuchRails::Action
 
     add_config :much_rails_action
 
-    attr_reader :params, :current_user, :request, :errors
+    attr_reader :params, :current_session, :request, :errors
   end
 
   mixin_class_methods do
@@ -115,9 +115,9 @@ module MuchRails::Action
   end
 
   mixin_instance_methods do
-    def initialize(params: nil, current_user: nil, request: nil)
+    def initialize(params: nil, current_session: nil, request: nil)
       @params = params.to_h.with_indifferent_access
-      @current_user = current_user
+      @current_session = current_session
       @request = request
       @errors = Hash.new{ |hash, key| hash[key] = [] }
     end

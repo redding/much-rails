@@ -167,7 +167,7 @@ module MuchRails::Action
       assert_that(subject.default_action_template_name)
         .equals(
           "some/namespace/for/"\
-          "#{MuchRails.config.action.namespace.tableize.singularize}"\
+          "#{MuchRails.config.action.namespace.underscore}"\
           "thing/show",
         )
     end

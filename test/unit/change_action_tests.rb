@@ -61,7 +61,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end
@@ -87,7 +87,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end
@@ -121,7 +121,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end
@@ -152,7 +152,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end
@@ -181,7 +181,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end
@@ -208,7 +208,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end
@@ -235,7 +235,7 @@ module MuchRails::ChangeAction
     subject do
       receiver_class.new(
         params: {},
-        current_user: nil,
+        current_session: nil,
         request: nil,
       )
     end

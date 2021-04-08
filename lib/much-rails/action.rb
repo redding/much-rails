@@ -254,6 +254,10 @@ module MuchRails::Action
           template: template || default_action_template_name,
         }.merge(**kargs)
 
+      if view_model&.respond_to?(:much_rails_action=)
+        view_model.much_rails_action = self
+      end
+
       @much_rails_action_result =
         MuchRails::Action::RenderResult.new(view_model, *args, **result_kargs)
       halt

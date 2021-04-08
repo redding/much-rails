@@ -318,6 +318,7 @@ module MuchRails::Action
           layout: false,
         )
 
+      view_model = Object.new
       receiver_class.on_call do
         render(view_model, "some/view/template", layout: false)
       end
@@ -330,18 +331,29 @@ module MuchRails::Action
           layout: false,
         )
 
+      view_model =
+        Class
+          .new{
+            def much_rails_action
+              "NOT A MUCH RAILS ACTION"
+            end
+          }
+          .new
       receiver_class.on_call do
         render(view_model, "some/view/template", template: "other/template")
       end
       action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_view_model.much_rails_action).is_not(action)
       assert_that(result.render_kargs).equals(template: "other/template")
 
+      view_model = Struct.new(:much_rails_action).new(nil)
       receiver_class.on_call{ render(view_model, template: "other/template") }
       action = receiver_class.new(params: params1)
       result = action.call
       assert_that(result.render_view_model).is(view_model)
+      assert_that(result.render_view_model.much_rails_action).is(action)
       assert_that(result.render_kargs).equals(template: "other/template")
     end
 

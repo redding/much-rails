@@ -120,7 +120,7 @@ class MuchRails::Action::Router
       assert_that(application_routes.get_calls[1].kargs)
         .equals(
           to: expected_draw_route_to,
-          as: url_name,
+          as: nil,
           defaults: expected_default_defaults,
         )
       assert_that(application_routes.get_calls[2].pargs).equals([url2_path])
@@ -135,7 +135,7 @@ class MuchRails::Action::Router
       assert_that(application_routes.post_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
-          as: url_name,
+          as: nil,
           defaults: expected_default_defaults,
         )
 
@@ -153,7 +153,7 @@ class MuchRails::Action::Router
       assert_that(application_routes.patch_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
-          as: url_name,
+          as: nil,
           defaults: expected_default_defaults,
         )
 
@@ -162,7 +162,7 @@ class MuchRails::Action::Router
       assert_that(application_routes.delete_calls.last.kargs)
         .equals(
           to: expected_draw_route_to,
-          as: url_name,
+          as: nil,
           defaults: expected_default_defaults,
         )
     end

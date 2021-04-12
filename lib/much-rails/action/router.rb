@@ -52,13 +52,15 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     draw_url_to   = "#{controller_name}##{CONTROLLER_NOT_FOUND_METHOD_NAME}"
     draw_route_to = "#{controller_name}##{CONTROLLER_CALL_ACTION_METHOD_NAME}"
 
+    definition_names = Set.new
+
     definitions.each do |definition|
       definition.request_type_actions.each do |request_type_action|
         application_routes_draw_scope.public_send(
           definition.http_method,
           definition.path,
           to: draw_route_to,
-          as: definition.name,
+          as: (definition.name if definition_names.add?(definition.name)),
           defaults:
             definition.default_params.merge({
               ACTION_CLASS_PARAM_NAME => request_type_action.class_name,
@@ -73,7 +75,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
         definition.http_method,
         definition.path,
         to: draw_route_to,
-        as: definition.name,
+        as: (definition.name if definition_names.add?(definition.name)),
         defaults:
           definition.default_params.merge({
             ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,

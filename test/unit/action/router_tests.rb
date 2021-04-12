@@ -104,7 +104,10 @@ class MuchRails::Action::Router
         "#{subject.controller_name}"\
         "##{unit_class::CONTROLLER_CALL_ACTION_METHOD_NAME}"
       expected_default_defaults =
-        { unit_class::ACTION_CLASS_PARAM_NAME => default_class_name }
+        {
+          unit_class::ACTION_CLASS_PARAM_NAME => default_class_name,
+          "format" => :html,
+        }
 
       assert_that(application_routes.get_calls.size).equals(3)
       assert_that(application_routes.get_calls[0].pargs).equals([url_path])
@@ -113,7 +116,10 @@ class MuchRails::Action::Router
           to: expected_draw_route_to,
           as: url_name,
           defaults:
-            { unit_class::ACTION_CLASS_PARAM_NAME => request_type_class_name },
+            {
+              unit_class::ACTION_CLASS_PARAM_NAME => request_type_class_name,
+              "format" => :html,
+            },
           constraints: request_type_proc,
         )
       assert_that(application_routes.get_calls[1].pargs).equals([url_path])

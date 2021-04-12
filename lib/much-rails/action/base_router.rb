@@ -149,7 +149,7 @@ class MuchRails::Action::BaseRouter
   #       get    "/new",    "Root::New"
   #       post   "/",       "Root::Create"
   #       get    "/edit",   "Root::Edit"
-  #       put    "/",       "Root::Update"
+  #       put    "/",       "Root::Upsert"
   #       patch  "/",       "Root::Update"
   #       get    "/remove", "Root::Remove"
   #       delete "/",       "Root::Destroy"
@@ -300,6 +300,14 @@ class MuchRails::Action::BaseRouter
     Struct.new(:request_type, :class_name) do
       def constraints_lambda
         request_type.constraints_lambda
+      end
+
+      def class_constant
+        @class_constant ||= class_name.constantize
+      end
+
+      def format
+        class_constant.format
       end
     end
 
@@ -458,6 +466,16 @@ class MuchRails::Action::BaseRouter
 
     def has_default_action_class_name?
       !@default_action_class_name.nil?
+    end
+
+    def default_action_class_constant
+      return unless has_default_action_class_name?
+
+      @default_action_class_constant ||= default_action_class_name.constantize
+    end
+
+    def default_action_format
+      default_action_class_constant&.format
     end
 
     def ==(other)

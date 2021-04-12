@@ -64,6 +64,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
           defaults:
             definition.default_params.merge({
               ACTION_CLASS_PARAM_NAME => request_type_action.class_name,
+              "format" => request_type_action.format,
             }),
           constraints: request_type_action.constraints_lambda,
         )
@@ -79,6 +80,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
         defaults:
           definition.default_params.merge({
             ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,
+            "format" => definition.default_action_format,
           }),
       )
     end

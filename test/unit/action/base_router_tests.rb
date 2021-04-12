@@ -296,20 +296,30 @@ class MuchRails::Action::BaseRouter
     desc "when init"
     subject{ request_type_action_class.new(request_type1, action_class_name1) }
 
+    setup do
+      Assert.stub(action_class_name1, :constantize){ action_class1 }
+    end
+
     let(:name1){ Factory.symbol }
     let(:constraints_lambda1){ ->(request){} }
     let(:request_type1) do
       unit_class::RequestType.new(name1, constraints_lambda1)
     end
     let(:action_class_name1){ Factory.string }
+    let(:action_class1) do
+      Struct.new(:format).new([:html, :any].sample)
+    end
 
     should have_imeths :request_type, :class_name, :constraints_lambda
+    should have_imeths :class_constant, :format
 
     should "know its attributes" do
       assert_that(subject.request_type).equals(request_type1)
       assert_that(subject.class_name).equals(action_class_name1)
       assert_that(subject.constraints_lambda)
         .equals(request_type1.constraints_lambda)
+      assert_that(subject.class_constant).equals(action_class1)
+      assert_that(subject.format).equals(subject.class_constant.format)
     end
   end
 
@@ -506,6 +516,15 @@ class MuchRails::Action::BaseRouter
       )
     end
 
+    setup do
+      Assert.stub(default_action_class_name1, :constantize) do
+        default_action_class1
+      end
+    end
+
+    let(:default_action_class1) do
+      Struct.new(:format).new([:html, :any].sample)
+    end
     let(:default_params1) do
       { Factory.string => Factory.string }
     end
@@ -514,6 +533,7 @@ class MuchRails::Action::BaseRouter
     should have_readers :default_action_class_name, :request_type_actions
     should have_readers :called_from
     should have_imeths :path, :name, :has_default_action_class_name?
+    should have_imeths :default_action_class_constant, :default_action_format
 
     should "know its attributes" do
       assert_that(subject.http_method).equals(http_method1)
@@ -525,6 +545,10 @@ class MuchRails::Action::BaseRouter
       assert_that(subject.called_from).equals(caller1)
       assert_that(subject.path).equals(url_path1)
       assert_that(subject.name).equals(url_name1)
+      assert_that(subject.default_action_class_constant)
+        .equals(default_action_class1)
+      assert_that(subject.default_action_format)
+        .equals(subject.default_action_class_constant.format)
     end
   end
 end

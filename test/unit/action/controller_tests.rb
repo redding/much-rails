@@ -35,6 +35,10 @@ module MuchRails::Action::Controller
     desc "when init"
     subject{ receiver_class.new(params1) }
 
+    setup do
+      Assert.stub(::Actions::Show, :format){ nil }
+    end
+
     let(:params1) do
       {
         MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Show",
@@ -75,10 +79,9 @@ module MuchRails::Action::Controller
 
       assert_that(subject.much_rails_action_class).equals(Actions::Show)
 
-      Actions::Show.format(:html)
+      Assert.stub(::Actions::Show, :format){ :html }
       receiver = receiver_class.new(params1)
       assert_that(receiver.much_rails_action_class_format).equals(:html)
-      Actions::Show.format(nil)
     end
   end
 

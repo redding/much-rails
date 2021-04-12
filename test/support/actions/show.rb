@@ -7,5 +7,7 @@ module Actions; end
 module Actions::Show
   include MuchRails::Action
 
+  format :html
+
   params_root :nested
 end

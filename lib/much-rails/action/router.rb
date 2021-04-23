@@ -97,14 +97,14 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
     def path_for(**kargs)
       MuchRails::RailsRoutes.instance.public_send(
         "#{name}_path",
-        **kargs.symbolize_keys,
+        **kargs.symbolize_keys.except(:format),
       )
     end
 
     def url_for(**kargs)
       MuchRails::RailsRoutes.instance.public_send(
         "#{name}_url",
-        **kargs.symbolize_keys,
+        **kargs.symbolize_keys.except(:format),
       )
     end
   end

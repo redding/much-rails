@@ -3,6 +3,7 @@
 linters:
   - name: "Rubocop"
     cmd: "bundle exec rubocop"
+    autocorrect_cmd: "bundle exec rubocop -a"
     extensions:
       - ".rb"
     cli_abbrev: "u"

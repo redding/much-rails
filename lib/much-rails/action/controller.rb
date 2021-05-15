@@ -18,7 +18,7 @@ module MuchRails::Action::Controller
   mixin_included do
     attr_reader :much_rails_action_class
 
-    before_action(
+    prepend_before_action(
       :require_much_rails_action_class,
       only: MuchRails::Action::Router.CONTROLLER_CALL_ACTION_METHOD_NAME,
     )

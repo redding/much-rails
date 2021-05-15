@@ -29,6 +29,19 @@ module MuchRails::Action::Controller
     let(:receiver_class) do
       Class.new{ include FakeActionController }
     end
+
+    should "be configured as expected" do
+      assert_that(subject.prepend_before_action_calls.size).equals(1)
+      assert_that(subject.prepend_before_action_calls.last.args)
+        .equals([
+          :require_much_rails_action_class,
+          only: MuchRails::Action::Router.CONTROLLER_CALL_ACTION_METHOD_NAME,
+        ])
+
+      assert_that(subject.before_action_calls.size).equals(1)
+      assert_that(subject.before_action_calls.last.args)
+        .equals([:permit_all_much_rails_action_params])
+    end
   end
 
   class ReceiverInitTests < ReceiverTests

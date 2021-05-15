@@ -13,20 +13,31 @@ module FakeActionController
   end
 
   mixin_class_methods do
-    def before_action(method_name, **)
-      before_actions << method_name
+    def before_action(*args, &block)
+      before_action_calls << Assert::StubCall.new(*args, &block)
     end
 
-    def before_actions
-      @before_actions ||= []
+    def prepend_before_action(*args, &block)
+      prepend_before_action_calls << Assert::StubCall.new(*args, &block)
+    end
+
+    def before_action_calls
+      @before_action_calls ||= []
+    end
+
+    def prepend_before_action_calls
+      @prepend_before_action_calls ||= []
     end
   end
 
   mixin_instance_methods do
     def initialize(params)
       @params = FakeParams.new(params)
-      self.class.before_actions.each do |before_action|
-        public_send(before_action)
+      self.class.prepend_before_action_calls.each do |before_action_call|
+        public_send(before_action_call.args.first)
+      end
+      self.class.before_action_calls.each do |before_action_call|
+        public_send(before_action_call.args.first)
       end
     end
 

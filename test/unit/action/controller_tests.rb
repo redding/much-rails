@@ -17,8 +17,8 @@ module MuchRails::Action::Controller
       assert_that(subject).includes(MuchRails::Mixin)
     end
 
-    should "know its constants" do
-      assert_that(subject::DEFAULT_ACTION_CLASS_FORMAT).equals(:any)
+    should "know its attributes" do
+      assert_that(subject.DEFAULT_ACTION_CLASS_FORMAT).equals(:any)
     end
   end
 
@@ -41,7 +41,7 @@ module MuchRails::Action::Controller
 
     let(:params1) do
       {
-        MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Show",
+        MuchRails::Action::Router.ACTION_CLASS_PARAM_NAME => "Actions::Show",
         controller: "actions",
         action: "show",
         nested: {
@@ -53,10 +53,10 @@ module MuchRails::Action::Controller
     should have_readers :much_rails_action_class
 
     should have_imeths(
-      MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
+      MuchRails::Action::Router.CONTROLLER_CALL_ACTION_METHOD_NAME,
     )
     should have_imeths(
-      MuchRails::Action::Router::CONTROLLER_NOT_FOUND_METHOD_NAME,
+      MuchRails::Action::Router.CONTROLLER_NOT_FOUND_METHOD_NAME,
     )
     should have_imeths :much_rails_action_class_name
     should have_imeths :much_rails_action_class_format
@@ -69,7 +69,7 @@ module MuchRails::Action::Controller
         .equals("::Actions::Show")
 
       assert_that(subject.much_rails_action_class_format)
-        .equals(unit_module::DEFAULT_ACTION_CLASS_FORMAT)
+        .equals(unit_module.DEFAULT_ACTION_CLASS_FORMAT)
 
       assert_that(subject.much_rails_action_params)
         .equals(
@@ -91,7 +91,7 @@ module MuchRails::Action::Controller
 
     let(:params1) do
       {
-        MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME =>
+        MuchRails::Action::Router.ACTION_CLASS_PARAM_NAME =>
           "Actions::Unknown",
       }
     end

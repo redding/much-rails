@@ -6,10 +6,21 @@ module MuchRails; end
 module MuchRails::Action; end
 
 class MuchRails::Action::Router < MuchRails::Action::BaseRouter
-  DEFAULT_CONTROLLER_NAME = "application"
-  CONTROLLER_CALL_ACTION_METHOD_NAME = :much_rails_call_action
-  CONTROLLER_NOT_FOUND_METHOD_NAME = :much_rails_not_found
-  ACTION_CLASS_PARAM_NAME = :much_rails_action_class_name
+  def self.DEFAULT_CONTROLLER_NAME
+    "application"
+  end
+
+  def self.CONTROLLER_CALL_ACTION_METHOD_NAME
+    :much_rails_call_action
+  end
+
+  def self.CONTROLLER_NOT_FOUND_METHOD_NAME
+    :much_rails_not_found
+  end
+
+  def self.ACTION_CLASS_PARAM_NAME
+    :much_rails_action_class_name
+  end
 
   def self.url_class
     MuchRails::Action::Router::URL
@@ -38,7 +49,7 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
   def initialize(name = nil, controller_name: nil, &block)
     super(name, &block)
 
-    @controller_name = controller_name || DEFAULT_CONTROLLER_NAME
+    @controller_name = controller_name || self.class.DEFAULT_CONTROLLER_NAME
   end
 
   # Example:
@@ -49,8 +60,10 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
   #   end
   def apply_to(application_routes_draw_scope)
     validate!
-    draw_url_to   = "#{controller_name}##{CONTROLLER_NOT_FOUND_METHOD_NAME}"
-    draw_route_to = "#{controller_name}##{CONTROLLER_CALL_ACTION_METHOD_NAME}"
+    draw_url_to =
+      "#{controller_name}##{self.class.CONTROLLER_NOT_FOUND_METHOD_NAME}"
+    draw_route_to =
+      "#{controller_name}##{self.class.CONTROLLER_CALL_ACTION_METHOD_NAME}"
 
     definition_names = Set.new
 
@@ -63,7 +76,8 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
           as: (definition.name if definition_names.add?(definition.name)),
           defaults:
             definition.default_params.merge({
-              ACTION_CLASS_PARAM_NAME => request_type_action.class_name,
+              self.class.ACTION_CLASS_PARAM_NAME =>
+                request_type_action.class_name,
               "format" => request_type_action.format,
             }),
           constraints: request_type_action.constraints_lambda,
@@ -79,7 +93,8 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
         as: (definition.name if definition_names.add?(definition.name)),
         defaults:
           definition.default_params.merge({
-            ACTION_CLASS_PARAM_NAME => definition.default_action_class_name,
+            self.class.ACTION_CLASS_PARAM_NAME =>
+              definition.default_action_class_name,
             "format" => definition.default_action_format,
           }),
       )

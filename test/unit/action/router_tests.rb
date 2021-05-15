@@ -16,17 +16,17 @@ class MuchRails::Action::Router
 
     should have_imeths :url_class
 
-    should "be a BaseRouter" do
+    should "be configured as expected" do
       assert_that(subject < MuchRails::Action::BaseRouter).is_true
     end
 
-    should "know its constants" do
-      assert_that(subject::DEFAULT_CONTROLLER_NAME).equals("application")
-      assert_that(subject::CONTROLLER_CALL_ACTION_METHOD_NAME)
+    should "know its attributes" do
+      assert_that(subject.DEFAULT_CONTROLLER_NAME).equals("application")
+      assert_that(subject.CONTROLLER_CALL_ACTION_METHOD_NAME)
         .equals(:much_rails_call_action)
-      assert_that(subject::CONTROLLER_NOT_FOUND_METHOD_NAME)
+      assert_that(subject.CONTROLLER_NOT_FOUND_METHOD_NAME)
         .equals(:much_rails_not_found)
-      assert_that(subject::ACTION_CLASS_PARAM_NAME)
+      assert_that(subject.ACTION_CLASS_PARAM_NAME)
         .equals(:much_rails_action_class_name)
       assert_that(subject.url_class).equals(unit_class::URL)
     end
@@ -64,7 +64,7 @@ class MuchRails::Action::Router
 
     should "know its attributes" do
       assert_that(subject.controller_name)
-        .equals(unit_class::DEFAULT_CONTROLLER_NAME)
+        .equals(unit_class.DEFAULT_CONTROLLER_NAME)
 
       router = unit_class.new(controller_name: controller_name1)
       assert_that(router.controller_name).equals(controller_name1)
@@ -99,13 +99,13 @@ class MuchRails::Action::Router
 
       expected_draw_url_to =
         "#{subject.controller_name}"\
-        "##{unit_class::CONTROLLER_NOT_FOUND_METHOD_NAME}"
+        "##{unit_class.CONTROLLER_NOT_FOUND_METHOD_NAME}"
       expected_draw_route_to =
         "#{subject.controller_name}"\
-        "##{unit_class::CONTROLLER_CALL_ACTION_METHOD_NAME}"
+        "##{unit_class.CONTROLLER_CALL_ACTION_METHOD_NAME}"
       expected_default_defaults =
         {
-          unit_class::ACTION_CLASS_PARAM_NAME => default_class_name,
+          unit_class.ACTION_CLASS_PARAM_NAME => default_class_name,
           "format" => :html,
         }
 
@@ -117,7 +117,7 @@ class MuchRails::Action::Router
           as: url_name,
           defaults:
             {
-              unit_class::ACTION_CLASS_PARAM_NAME => request_type_class_name,
+              unit_class.ACTION_CLASS_PARAM_NAME => request_type_class_name,
               "format" => :html,
             },
           constraints: request_type_proc,

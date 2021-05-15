@@ -31,7 +31,7 @@ module MuchRails::Action
 
     add_config :much_rails_action
 
-    attr_reader :params, :current_session, :request, :errors
+    attr_reader :params, :request, :errors
   end
 
   mixin_class_methods do
@@ -112,9 +112,8 @@ module MuchRails::Action
   end
 
   mixin_instance_methods do
-    def initialize(params: nil, current_session: nil, request: nil)
+    def initialize(params: nil, request: nil)
       @params = params.to_h.with_indifferent_access
-      @current_session = current_session
       @request = request
       @errors = Hash.new{ |hash, key| hash[key] = [] }
     end
@@ -150,7 +149,16 @@ module MuchRails::Action
       @much_rails_successful_action
     end
 
+    def controller_session=(value)
+      @controller_session = value
+    end
+
     private
+
+    def controller_session
+      @controller_session ||=
+        request&.env&.[]("action_controller.instance")&.session
+    end
 
     def default_action_success_result
       MuchRails::Action::HeadResult.new(:ok)

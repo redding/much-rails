@@ -34,7 +34,6 @@ module MuchRails::Action::Controller
           result =
             much_rails_action_class.call(
               params: much_rails_action_params,
-              current_session: current_session,
               request: request,
             )
           instance_exec(result, &result.execute_block)

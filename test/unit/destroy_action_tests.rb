@@ -50,13 +50,7 @@ module MuchRails::DestroyAction
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     should have_imeths :destroy_result
 

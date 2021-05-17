@@ -20,7 +20,7 @@ class MuchRails::Action::UnprocessableEntityResult
     let(:controller1){ FakeController.new(params1) }
     let(:params1) do
       {
-        MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME => "Actions::Show",
+        MuchRails::Action::Router.ACTION_CLASS_PARAM_NAME => "Actions::Show",
       }
     end
     let(:errors1) do

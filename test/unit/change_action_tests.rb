@@ -57,14 +57,7 @@ module MuchRails::ChangeAction
 
   class InitTests < ReceiverTests
     desc "when init"
-    subject{ receiver_class.new(params: {}) }
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     setup do
       Assert.stub(subject, :any_unextracted_change_result_validation_errors?) do
@@ -84,13 +77,7 @@ module MuchRails::ChangeAction
 
   class RecordErrorsWithResultExceptionTests < InitTests
     desc "with record errors and a result exception"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     setup do
       Assert.stub(subject, :any_unextracted_change_result_validation_errors?) do
@@ -118,13 +105,7 @@ module MuchRails::ChangeAction
 
   class RecordErrorsWithNoResultExceptionTests < InitTests
     desc "with record errors and no result exception"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     setup do
       Assert.stub(subject, :any_unextracted_change_result_validation_errors?) do
@@ -149,13 +130,7 @@ module MuchRails::ChangeAction
 
   class ChangeResultMethodTests < InitTests
     desc "#change_result method"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     should "memoize and return the expected Result" do
       result = subject.change_result
@@ -178,13 +153,7 @@ module MuchRails::ChangeAction
 
   class AnyUnextractedChangeResultValidationErrorsMethodTests < ReceiverTests
     desc "#any_unextracted_change_result_validation_errors? method"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     let(:receiver_class) do
       Class.new do
@@ -205,13 +174,7 @@ module MuchRails::ChangeAction
   class NoValidationErrorsTests <
           AnyUnextractedChangeResultValidationErrorsMethodTests
     desc "with no validation errors"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     let(:receiver_class) do
       Class.new do
@@ -232,13 +195,7 @@ module MuchRails::ChangeAction
   class ValidationErrorsTests <
           AnyUnextractedChangeResultValidationErrorsMethodTests
     desc "with validation errors"
-    subject do
-      receiver_class.new(
-        params: {},
-        current_session: nil,
-        request: nil,
-      )
-    end
+    subject{ receiver_class.new(params: {}, request: nil) }
 
     let(:receiver_class) do
       Class.new do

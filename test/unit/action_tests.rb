@@ -176,11 +176,7 @@ module MuchRails::Action
   class InitTests < ReceiverTests
     desc "when init"
     subject do
-      receiver_class.new(
-        params: params1,
-        current_session: current_session1,
-        request: request1,
-      )
+      receiver_class.new(params: params1, request: request1)
     end
 
     let(:receiver_class) do
@@ -218,6 +214,10 @@ module MuchRails::Action
         on_after_call do
           @after_call_called = true
         end
+
+        def action_controller_session
+          controller_session
+        end
       end
     end
 
@@ -234,16 +234,41 @@ module MuchRails::Action
         active: "true",
       }
     end
-    let(:current_session1){ "CURRENT SESSION 1" }
-    let(:request1){ "REQUEST 1" }
+    let(:request1){ FakeRequest.new }
 
-    should have_readers :params, :current_session, :request, :errors
+    should have_readers :params, :request, :errors
+    should have_writers :controller_session
     should have_imeths :on_call, :valid_action?, :successful_action?
 
     should "know its attributes" do
       assert_that(subject.params).equals(params1.with_indifferent_access)
-      assert_that(subject.current_session).equals(current_session1)
       assert_that(subject.request).equals(request1)
+      assert_that(subject.action_controller_session).is_a(FakeSession)
+
+      receiver = receiver_class.new(params: params1)
+      assert_that(receiver.action_controller_session).is_nil
+
+      controller_session = FakeRequest.new
+      receiver.controller_session = controller_session
+      assert_that(receiver.action_controller_session).is(controller_session)
+
+      receiver =
+        receiver_class.new(params: params1, request: FakeRequestWithNoEnv.new)
+      assert_that(receiver.action_controller_session).is_nil
+
+      receiver =
+        receiver_class.new(
+          params: params1,
+          request: FakeRequestWithNoControllerInstance.new,
+        )
+      assert_that(receiver.action_controller_session).is_nil
+
+      receiver =
+        receiver_class.new(
+          params: params1,
+          request: FakeRequestWithNoControllerInstance.new,
+        )
+      assert_that(receiver.action_controller_session).is_nil
     end
 
     should "return the expected Result" do
@@ -407,6 +432,33 @@ module MuchRails::Action
       result = receiver_class.new(params: params1).call
       assert_that(result.errors[:other_param]).includes("can't be blank")
       assert_that(result.errors[:custom_validation]).includes("ERROR1")
+    end
+  end
+
+  class FakeController
+    def session
+      FakeSession.new
+    end
+  end
+
+  class FakeSession
+  end
+
+  class FakeRequest
+    def env
+      { "action_controller.instance" => FakeController.new }
+    end
+  end
+
+  class FakeRequestWithNoControllerInstance
+    def env
+      { "action_controller.instance" => nil }
+    end
+  end
+
+  class FakeRequestWithNoEnv
+    def env
+      nil
     end
   end
 end

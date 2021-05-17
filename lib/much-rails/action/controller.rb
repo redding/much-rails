@@ -9,30 +9,31 @@ module MuchRails::Action; end
 # MuchRails::Action::Controller defines the behaviors for controllers processing
 # MuchRails::Actions.
 module MuchRails::Action::Controller
-  DEFAULT_ACTION_CLASS_FORMAT = :any
-
   include MuchRails::Mixin
+
+  def self.DEFAULT_ACTION_CLASS_FORMAT
+    :any
+  end
 
   mixin_included do
     attr_reader :much_rails_action_class
 
-    before_action(
+    prepend_before_action(
       :require_much_rails_action_class,
-      only: MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
+      only: MuchRails::Action::Router.CONTROLLER_CALL_ACTION_METHOD_NAME,
     )
     before_action :permit_all_much_rails_action_params
   end
 
   mixin_instance_methods do
     define_method(
-      MuchRails::Action::Router::CONTROLLER_CALL_ACTION_METHOD_NAME,
+      MuchRails::Action::Router.CONTROLLER_CALL_ACTION_METHOD_NAME,
     ) do
       respond_to do |format|
         format.public_send(much_rails_action_class_format) do
           result =
             much_rails_action_class.call(
               params: much_rails_action_params,
-              current_session: current_session,
               request: request,
             )
           instance_exec(result, &result.execute_block)
@@ -41,7 +42,7 @@ module MuchRails::Action::Controller
     end
 
     define_method(
-      MuchRails::Action::Router::CONTROLLER_NOT_FOUND_METHOD_NAME,
+      MuchRails::Action::Router.CONTROLLER_NOT_FOUND_METHOD_NAME,
     ) do
       respond_to do |format|
         format.html do
@@ -51,11 +52,12 @@ module MuchRails::Action::Controller
     end
 
     def much_rails_action_class_name
-      "::#{params[MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME]}"
+      "::#{params[MuchRails::Action::Router.ACTION_CLASS_PARAM_NAME]}"
     end
 
     def much_rails_action_class_format
-      much_rails_action_class.format || DEFAULT_ACTION_CLASS_FORMAT
+      much_rails_action_class.format ||
+      MuchRails::Action::Controller.DEFAULT_ACTION_CLASS_FORMAT
     end
 
     def much_rails_action_params
@@ -67,7 +69,7 @@ module MuchRails::Action::Controller
           params
             .to_h
             .except(
-              MuchRails::Action::Router::ACTION_CLASS_PARAM_NAME,
+              MuchRails::Action::Router.ACTION_CLASS_PARAM_NAME,
               :controller,
               :action,
             ),

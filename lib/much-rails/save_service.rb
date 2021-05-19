@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "active_record"
+require "much-rails/invalid_error"
 require "much-rails/mixin"
 require "much-rails/result"
 require "much-rails/service"
@@ -50,6 +51,13 @@ module MuchRails::SaveService
                 validation_errors: ex.record&.errors.to_h,
                 validation_error_messages:
                   ex.record&.errors&.full_messages.to_a,
+              )
+            end
+            e.add(MuchRails::InvalidError) do |ex|
+              MuchRails::SaveService::FailureResult.new(
+                exception: ex,
+                validation_errors: ex.errors,
+                validation_error_messages: ex.error_messages,
               )
             end
           end

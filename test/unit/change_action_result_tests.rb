@@ -64,10 +64,14 @@ class MuchRails::ChangeActionResult
   class ValidationMethodsTests < UnitTests
     desc "validation methods"
     subject do
-      unit_class.failure(validation_errors: {
-        name: ["NAME ERROR"],
-        other: ["OTHER ERROR"],
-      })
+      unit_class.failure(
+        validation_errors: {
+          name: ["NAME ERROR"],
+          other: ["OTHER ERROR"],
+          empty: [],
+          none: nil,
+        },
+      )
     end
 
     should "know its attributes" do
@@ -76,6 +80,8 @@ class MuchRails::ChangeActionResult
         .equals({
           name: ["NAME ERROR"],
           other: ["OTHER ERROR"],
+          empty: [],
+          none: [nil],
         })
 
       # validation_error_messages
@@ -90,6 +96,12 @@ class MuchRails::ChangeActionResult
         .equals(["NAME ERROR"])
       assert_that(subject.extract_validation_error(:other))
         .equals(["OTHER ERROR"])
+      assert_that(subject.extract_validation_error(:empty))
+        .equals([])
+      assert_that(subject.extract_validation_error(:none))
+        .equals([])
+      assert_that(subject.extract_validation_error(:unknown))
+        .equals([])
       assert_that(subject.validation_errors).is_empty
 
       # any_unextracted_validation_errors?

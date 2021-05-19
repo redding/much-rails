@@ -40,7 +40,7 @@ class MuchRails::ChangeActionResult
   end
 
   def extract_validation_error(field_name)
-    validation_errors.delete(field_name)
+    Array.wrap(validation_errors.delete(field_name)).compact
   end
 
   def any_unextracted_validation_errors?

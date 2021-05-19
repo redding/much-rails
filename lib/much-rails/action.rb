@@ -115,7 +115,7 @@ module MuchRails::Action
     def initialize(params: nil, request: nil)
       @params = params.to_h.with_indifferent_access
       @request = request
-      @errors = Hash.new{ |hash, key| hash[key] = [] }
+      @errors = HashWithIndifferentAccess.new{ |hash, key| hash[key] = [] }
     end
 
     def on_call

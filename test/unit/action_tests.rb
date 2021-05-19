@@ -199,7 +199,7 @@ module MuchRails::Action
           end
 
           if params[:fail_custom_validation]
-            errors[:custom_validation] << "ERROR1"
+            errors["custom_validation"] << "ERROR1"
           end
         end
 

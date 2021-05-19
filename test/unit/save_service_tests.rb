@@ -73,6 +73,7 @@ module MuchRails::SaveService
         RuntimeError.new(Factory.string),
         ArgumentError.new(Factory.string),
         ActiveRecord::RecordInvalid.new(FakeRecord.new),
+        MuchRails::InvalidError.new,
       ]
     end
     let(:exception_classes){ exceptions.map(&:class) }
@@ -102,6 +103,8 @@ module MuchRails::SaveService
         .is_an_instance_of(MuchRails::ServiceValidationErrors)
       assert_that(subject.service_validation_errors.exception_classes)
         .includes(ActiveRecord::RecordInvalid)
+      assert_that(subject.service_validation_errors.exception_classes)
+        .includes(MuchRails::InvalidError)
     end
   end
 
@@ -194,6 +197,22 @@ module MuchRails::SaveService
       assert_that(result.exception).equals(no_record_exception)
       assert_that(result.validation_errors).equals({})
       assert_that(result.validation_error_messages).equals([])
+    end
+  end
+
+  class ValidationErrorsResultForInvalidErrorTests < ValidationErrorsTests
+    desc "when .result_for is passed an MuchRails::InvalidError"
+
+    let(:exception){ MuchRails::InvalidError.new }
+
+    should "return a failure result with the record and validation errors" do
+      result = subject.result_for(exception)
+
+      assert_that(result.failure?).is_true
+      assert_that(result.exception).equals(exception)
+      assert_that(result.validation_errors).equals(exception.errors)
+      assert_that(result.validation_error_messages)
+        .equals(exception.error_messages)
     end
   end
 

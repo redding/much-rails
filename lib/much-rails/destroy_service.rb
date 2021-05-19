@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require "much-rails/invalid_error"
 require "much-rails/mixin"
 require "much-rails/records"
 require "much-rails/records/validate_destroy"
 require "much-rails/result"
 require "much-rails/service"
+require "much-rails/service_validation_errors"
 
 module MuchRails; end
 
@@ -49,6 +51,13 @@ module MuchRails::DestroyService
                 exception: ex,
                 validation_errors: ex.errors.to_h,
                 validation_error_messages: ex.error_full_messages.to_a,
+              )
+            end
+            e.add(MuchRails::InvalidError) do |ex|
+              MuchRails::SaveService::FailureResult.new(
+                exception: ex,
+                validation_errors: ex.errors,
+                validation_error_messages: ex.error_messages,
               )
             end
           end

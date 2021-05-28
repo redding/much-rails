@@ -29,7 +29,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency("activerecord",   ["> 5.0", "< 7.0"])
   gem.add_dependency("activesupport",  ["> 5.0", "< 7.0"])
-  gem.add_dependency("dassets",        ["~> 0.15.2"])
+  gem.add_dependency("dassets",        ["~> 0.15.3"])
   gem.add_dependency("dassets-erubi",  ["~> 0.1.1"])
   gem.add_dependency("dassets-sass",   ["~> 0.5.1"])
   gem.add_dependency("much-boolean",   ["~> 0.2.1"])

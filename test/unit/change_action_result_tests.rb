@@ -78,11 +78,13 @@ class MuchRails::ChangeActionResult
       # validation_errors
       assert_that(subject.validation_errors)
         .equals({
-          name: ["NAME ERROR"],
-          other: ["OTHER ERROR"],
-          empty: [],
-          none: [nil],
+          "name" => ["NAME ERROR"],
+          "other" => ["OTHER ERROR"],
+          "empty" => [],
+          "none" => [nil],
         })
+      assert_that(subject.validation_errors[:name]).equals(["NAME ERROR"])
+      assert_that(subject.validation_errors["name"]).equals(["NAME ERROR"])
 
       # validation_error_messages
       assert_that(subject.validation_error_messages)
@@ -94,11 +96,11 @@ class MuchRails::ChangeActionResult
       # extract_validation_error
       assert_that(subject.extract_validation_error(:name))
         .equals(["NAME ERROR"])
-      assert_that(subject.extract_validation_error(:other))
+      assert_that(subject.extract_validation_error("other"))
         .equals(["OTHER ERROR"])
       assert_that(subject.extract_validation_error(:empty))
         .equals([])
-      assert_that(subject.extract_validation_error(:none))
+      assert_that(subject.extract_validation_error("none"))
         .equals([])
       assert_that(subject.extract_validation_error(:unknown))
         .equals([])

@@ -27,12 +27,15 @@ class MuchRails::ChangeActionResult
 
     @service_result = save_service_result
 
-    @service_result.validation_errors ||= {}
+    @service_result.validation_errors ||= HashWithIndifferentAccess.new
   end
 
   def validation_errors
     @validation_errors ||=
-      service_result.get_for_all_results(:validation_errors).to_h
+      service_result
+        .get_for_all_results(:validation_errors)
+        .to_h
+        .with_indifferent_access
   end
 
   def validation_error_messages

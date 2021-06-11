@@ -45,6 +45,12 @@ class MuchRails::Action::Router
       assert_that(router.url_set.fetch(:root).path).equals("/")
     end
 
+    should "eval the nested named routes file" do
+      router = unit_class.load("test/subrouter")
+      assert_that(router.url_set).is_not_empty
+      assert_that(router.url_set.fetch(:root).path).equals("/subrouter")
+    end
+
     should "complain if no file name given" do
       assert_that{ unit_class.load([nil, "", "  "]) }.raises(ArgumentError)
     end

@@ -39,7 +39,10 @@ class MuchRails::Action::Router < MuchRails::Action::BaseRouter
       raise ArgumentError, "routes file `#{file_path.inspect}` does not exist."
     end
 
-    new(routes_file_name, controller_name: controller_name) do
+    new(
+      routes_file_name.to_s.split(File::SEPARATOR).join("_"),
+      controller_name: controller_name,
+    ) do
       instance_eval(File.read(file_path), file_path.to_s, 1)
     end
   end

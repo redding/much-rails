@@ -23,8 +23,8 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = "~> 2.5"
 
-  gem.add_development_dependency("much-style-guide", ["~> 0.6.0"])
-  gem.add_development_dependency("assert",           ["~> 2.19.5"])
+  gem.add_development_dependency("much-style-guide", ["~> 0.6.4"])
+  gem.add_development_dependency("assert",           ["~> 2.19.6"])
   gem.add_development_dependency("rails",            ["> 5.0", "< 7.0"])
 
   gem.add_dependency("activerecord",   ["> 5.0", "< 7.0"])
@@ -33,10 +33,11 @@ Gem::Specification.new do |gem|
   gem.add_dependency("dassets-erubi",  ["~> 0.1.1"])
   gem.add_dependency("dassets-sass",   ["~> 0.5.1"])
   gem.add_dependency("much-boolean",   ["~> 0.2.1"])
+  gem.add_dependency("much-config",    ["~> 0.1.0"])
   gem.add_dependency("much-decimal",   ["~> 0.1.3"])
   gem.add_dependency("much-mixin",     ["~> 0.2.4"])
   gem.add_dependency("much-not-given", ["~> 0.1.2"])
   gem.add_dependency("much-result",    ["~> 0.1.3"])
   gem.add_dependency("much-slug",      ["~> 0.1.2"])
-  gem.add_dependency("oj",             ["~> 3.10"])
+  gem.add_dependency("oj",             ["~> 3.11"])
 end

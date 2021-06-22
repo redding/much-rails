@@ -48,7 +48,7 @@ module MuchRails::Assets
 
     should "configure the app's app/assets/css folder as a source" do
       source =
-        subject.config.sources.detect do |source|
+        subject.config.sources.find do |source|
           source.path == FakeRails.root.join("app", "assets", "css").to_s
         end
 
@@ -63,7 +63,7 @@ module MuchRails::Assets
 
     should "configure the app's app/assets/img folder as a source" do
       source =
-        subject.config.sources.detect do |source|
+        subject.config.sources.find do |source|
           source.path == FakeRails.root.join("app", "assets", "img").to_s
         end
 
@@ -74,7 +74,7 @@ module MuchRails::Assets
 
     should "configure the app's app/assets/js folder as a source" do
       source =
-        subject.config.sources.detect do |source|
+        subject.config.sources.find do |source|
           source.path == FakeRails.root.join("app", "assets", "js").to_s
         end
 
@@ -87,7 +87,7 @@ module MuchRails::Assets
 
     should "configure the app's app/assets/vendor folder as a source" do
       source =
-        subject.config.sources.detect do |source|
+        subject.config.sources.find do |source|
           source.path == FakeRails.root.join("app", "assets", "vendor").to_s
         end
 

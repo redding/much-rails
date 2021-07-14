@@ -32,6 +32,7 @@ module MuchRails::Layout
     should have_imeths :page_title, :page_titles, :application_page_title
     should have_imeths :breadcrumb, :breadcrumbs
     should have_imeths :stylesheet, :stylesheets, :javascript, :javascripts
+    should have_imeths :external_javascript, :external_javascripts
     should have_imeths :head_link, :head_links, :layout, :layouts
   end
 
@@ -133,6 +134,24 @@ module MuchRails::Layout
           "some/other/javascript/pack.js",
           "https://some/javascript/file.js",
           "https://some/other/javascript/file.js",
+        ])
+    end
+
+    should "know its external_javascripts" do
+      receiver = receiver_class.new
+      assert_that(receiver.external_javascripts).is_empty
+
+      receiver_class.external_javascript("some/ext_js/pack.js")
+      receiver_class.external_javascript{ "some/other/ext_js/pack.js" }
+      receiver_class.external_javascript("https://some/ext_js/file.js")
+      receiver_class.external_javascript{ "https://some/other/ext_js/file.js" }
+
+      assert_that(subject.external_javascripts)
+        .equals([
+          "some/ext_js/pack.js",
+          "some/other/ext_js/pack.js",
+          "https://some/ext_js/file.js",
+          "https://some/other/ext_js/file.js",
         ])
     end
 

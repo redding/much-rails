@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "much-rails"
 require "much-rails/layout/helper"
 require "much-rails/mixin"
 require "much-rails/view_models/breadcrumb"
@@ -48,6 +49,14 @@ module MuchRails::Layout
 
     def javascripts
       @javascripts ||= []
+    end
+
+    def external_javascript(value = nil, &block)
+      external_javascripts << (block || ->{ value })
+    end
+
+    def external_javascripts
+      @external_javascripts ||= []
     end
 
     def head_link(url, **attributes)
@@ -110,6 +119,10 @@ module MuchRails::Layout
 
     def javascripts
       @javascripts ||= self.class.javascripts.map(&:call)
+    end
+
+    def external_javascripts
+      @external_javascripts ||= self.class.external_javascripts.map(&:call)
     end
 
     def head_links

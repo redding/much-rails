@@ -96,6 +96,25 @@ module MuchRails::Assets
       assert_that(source.engines.empty?).is_true
     end
 
+    should "configure the app's app/views folder as a source" do
+      source =
+        subject.config.sources.find do |source|
+          source.path == FakeRails.root.join("app", "views").to_s
+        end
+
+      assert_that(source).is_not_nil
+
+      assert_that(source.engines["scss"].size).equals(2)
+      assert_that(source.engines["scss"].first)
+        .is_instance_of(subject::Erubi::Engine)
+      assert_that(source.engines["scss"].last)
+        .is_instance_of(subject::Sass::Engine)
+
+      assert_that(source.engines["js"].size).equals(1)
+      assert_that(source.engines["js"].first)
+        .is_instance_of(subject::Erubi::Engine)
+    end
+
     should "initialize itself" do
       assert_that(@init_call).is_not_nil
     end

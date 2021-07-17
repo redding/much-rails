@@ -63,7 +63,28 @@ module MuchRails::Assets
       config.source rails.root.join("app", "assets", "vendor") do |s|
         s.base_path "vendor"
       end
+
+      # Look for CSS/JS files in the app/views folder. Support ERB
+      # on all .scss/.js files. Support compilation of .scss files.
+      config.source rails.root.join("app", "views") do |s|
+        # Reject SCSS partials
+        # Only include SCSS, CSS, and JS files
+        # (e.g. don't host resource.js.erb rails templates)
+        s.filter do |paths|
+          paths
+            .reject{ |p| File.basename(p) =~ /^_.*\.scss$/ }
+            .select{ |p| File.basename(p) =~ /\.scss|css|js$/ }
+        end
+
+        s.engine "scss", MuchRails::Assets::Erubi::Engine
+        s.engine "scss", MuchRails::Assets::Sass::Engine, {
+          syntax: "scss",
+          output_style: "compressed",
+        }
+        s.engine "js", MuchRails::Assets::Erubi::Engine
+      end
     end
+
     MuchRails::Assets.init
   end
 end

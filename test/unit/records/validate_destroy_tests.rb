@@ -238,6 +238,14 @@ module MuchRails::Records::ValidateDestroy
   class FakeRecordClass < FakeRecordBaseClass
     include MuchRails::Records::ValidateDestroy
 
+    def self.primary_key
+      :id
+    end
+
+    def id
+      Factory.integer
+    end
+
     def validate_destroy
       return unless destruction_errors_exist
 

@@ -15,7 +15,6 @@ require "test/support/factory"
 ENV["RAILS_ENV"] ||= "test"
 
 require "rails"
-require "action_mailer/railtie"
 
 module TestRails
   class Application < Rails::Application

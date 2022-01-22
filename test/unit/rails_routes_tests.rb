@@ -22,7 +22,7 @@ class MuchRails::RailsRoutes
 
     should "know its default URL options" do
       assert_that(subject.__send__(:default_url_options))
-        .equals(::Rails.application.config.action_mailer.default_url_options)
+        .equals(::Rails.application.routes.default_url_options)
     end
   end
 end

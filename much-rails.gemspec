@@ -25,10 +25,10 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency("much-style-guide", ["~> 0.6.6"])
   gem.add_development_dependency("assert",           ["~> 2.19.6"])
-  gem.add_development_dependency("rails",            ["> 5.0", "< 7.0"])
+  gem.add_development_dependency("rails",            ["> 5.0"])
 
-  gem.add_dependency("activerecord",   ["> 5.0", "< 7.0"])
-  gem.add_dependency("activesupport",  ["> 5.0", "< 7.0"])
+  gem.add_dependency("activerecord",   ["> 5.0"])
+  gem.add_dependency("activesupport",  ["> 5.0"])
   gem.add_dependency("dassets",        ["~> 0.15.3"])
   gem.add_dependency("dassets-erubi",  ["~> 0.1.1"])
   gem.add_dependency("dassets-sass",   ["~> 0.5.1"])
